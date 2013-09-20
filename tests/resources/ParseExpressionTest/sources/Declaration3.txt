@@ -1,0 +1,4 @@
+() => {
+	int property = 1;
+	return property;
+}

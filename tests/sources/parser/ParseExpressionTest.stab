@@ -367,6 +367,11 @@ package stab.tools.parser.test {
 		}
 
 		[Test]
+		public void testDeclaration3() {
+			doTest("Declaration3");
+		}
+
+		[Test]
 		public void testIf() {
 			doTest("If");
 		}

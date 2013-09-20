@@ -1,0 +1,5 @@
+Lambda( => {
+int property = Literal(DecimalInteger, [1]);
+return(Name(property));
+}
+)
