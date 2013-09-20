@@ -20,6 +20,7 @@ package stab.tools.parser {
         Abstract,
         As,
         Ascending,
+		Async, 
         Boolean,
         Break,
         By,
@@ -66,6 +67,7 @@ package stab.tools.parser {
         Params,
         Partial,
         Private,
+		Property,
         Protected,
         Public,
         Return,
@@ -90,6 +92,7 @@ package stab.tools.parser {
         Virtual,
         Void,
         Volatile,
+		Wait,
         Where,
         While,
         Yield

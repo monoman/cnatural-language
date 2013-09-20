@@ -165,11 +165,16 @@ package stab.tools.parser {
                 return LexicalUnit.GreaterThan;
 
             case '?':
-                if (advance() == '?') {
+                switch (advance()) {
+                case '?':
                     advance();
                     return LexicalUnit.NullCoalescing;
+                case '.':
+                    advance();
+                    return LexicalUnit.NullSafeMemberAccess;
+                default:
+                    return LexicalUnit.QuestionMark;
                 }
-                return LexicalUnit.QuestionMark;
 
             case '!':
                 if (advance() == '=') {
@@ -298,6 +303,8 @@ package stab.tools.parser {
                     switch (advance()) {
                     case 'c':
                         return scanContextualKeyword("cending", Keyword.Ascending);
+					case 'y':
+						return scanContextualKeyword("ync", Keyword.Async);
                     default:
                         return scanKeyword("", Keyword.As);
                     }
@@ -541,7 +548,14 @@ package stab.tools.parser {
                     case 'i':
                         return scanKeyword("ivate", Keyword.Private);
                     case 'o':
-                        return scanKeyword("otected", Keyword.Protected);
+						switch (advance()) {
+						case 'p':
+							return scanKeyword("perty", Keyword.Property);
+						case 't':
+							return scanKeyword("tected", Keyword.Protected);
+                        default:
+                            return scanKeyword("", Keyword.None);
+						}
                     default:
                         return scanKeyword("", Keyword.None);
                     }
@@ -662,6 +676,8 @@ package stab.tools.parser {
 
             case 'w':
                 switch (advance()) {
+                case 'a':
+                    return scanKeyword("ait", Keyword.Wait);
                 case 'h':
                     switch (advance()) {
                     case 'e':

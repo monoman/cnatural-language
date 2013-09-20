@@ -62,6 +62,7 @@ package stab.tools.parser {
         Not,
         NotEqual,
         NullCoalescing,
+		NullSafeMemberAccess,
         OpenBrace,
         OpenBracket,
         OpenParenthesis,
