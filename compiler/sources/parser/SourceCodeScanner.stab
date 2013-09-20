@@ -550,7 +550,7 @@ package stab.tools.parser {
                     case 'o':
 						switch (advance()) {
 						case 'p':
-							return scanKeyword("perty", Keyword.Property);
+							return scanContextualKeyword("perty", Keyword.Property);
 						case 't':
 							return scanKeyword("tected", Keyword.Protected);
                         default:
