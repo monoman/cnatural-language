@@ -1,4 +1,8 @@
 eclipse/eclipse/
 *.class
 *.bak
-
+generated/
+*.jar
+!bin/*.jar
+bin/tests.jar
+runtime/doc.xml
