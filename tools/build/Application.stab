@@ -60,9 +60,9 @@ package stab.tools.build {
 			if ((code = buildTests()) != 0) {
 				return code;
 			}
-			if ((code = buildEclipse()) != 0) {
-				return code;
-			}
+			//if ((code = buildEclipse()) != 0) {
+			//	return code;
+			//}
 			return buildBuild();
 		}
 		
