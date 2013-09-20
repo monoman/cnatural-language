@@ -1,0 +1,15 @@
+Features ==============================
+
+1 - Generic constructors
+	* syntax for this and super clauses (this<T1, T2>(...))
+	* syntax for new (new <T1, T2> C(...))
+
+Issues ================================
+
+- validate generic constraints
+- create an InternalErrorException class
+- test partial methods
+- check that #define/#undef is used before any lexical unit
+- check that enum constructors are private
+- check indexers override
+- test that foreach and using variables are read only
