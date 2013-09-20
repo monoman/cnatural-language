@@ -1,0 +1,907 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using java.util;
+using stab.query;
+using stab.reflection;
+using stab.tools.compiler;
+using stab.tools.parser;
+using stab.tools.syntaxtree;
+
+package stab.tools.eclipse.editors {
+
+	class SyntaxNodeBounds {
+		SyntaxNodeBounds(Token start, Token end) {
+			this.StartToken = start;
+			this.EndToken = end;
+		}
+	
+		Token StartToken {
+			get;
+			private set;
+		}
+		
+		Token EndToken {
+			get;
+			private set;
+		}
+		
+		boolean containsOffset(int offset) {
+			if (this.StartToken.IsUpdated) {
+				return false;
+			}
+			return this.StartToken.offset < offset && this.EndToken.offset + this.EndToken.length >= offset;
+		}
+		
+		boolean isAfterOffset(int offset) {
+			return this.StartToken.offset >= offset;
+		}
+		
+		boolean isBeforeOffset(int offset) {
+			return this.EndToken.offset + this.EndToken.length < offset;
+		}
+	}
+
+	class CompilationUnitHighlighter {
+		private List<Token> tokens;
+		private StatementHandler<Void, Void> statementHighlighter;
+		private ExpressionHandler<Void, Void> expressionHighlighter;
+	
+		CompilationUnitHighlighter() {
+			this.statementHighlighter = new StatementHighlightHandler(this);
+			this.expressionHighlighter = new ExpressionHighlightHandler(this);
+		}
+		
+		public void highlight(CompilationUnitNode compilationUnit, List<Token> tokens) {
+			Environment.trace(this, "highlight");
+			var t0 = System.nanoTime();
+		
+			this.tokens = tokens;
+			highlightPackage(compilationUnit.Body);
+		
+			Environment.trace(this, "highlight done in " + ((System.nanoTime() - t0) / 1e6) + "ms");
+		}
+		
+		private Token getToken(int offset) {
+			return tokens[Highlighter.getPositionIndex(tokens, offset)];
+		}
+		
+		private void highlightPackage(PackageBodyNode packageBody) {
+			if (packageBody != null) {
+				foreach (var u in packageBody.UsingDirectives) {
+					setStartAndEndTokens(u);
+				}
+				foreach (var m in packageBody.Members) {
+					switch (m.getPackageMemberKind()) {
+					case Package:
+						PackageDeclarationNode pd = (PackageDeclarationNode)m;
+						setStartAndEndTokens(pd);
+						highlightPackage(pd.Body);
+						break;
+					case Class:
+						highlightClass((ClassDeclarationNode)m);
+						break;
+					case Interface:
+						highlightInterface((InterfaceDeclarationNode)m);
+						break;
+					case Delegate:
+						highlightDelegate((DelegateDeclarationNode)m);
+						break;
+					}
+				}
+			}
+		}
+		
+		private void highlightClass(ClassDeclarationNode declaration) {
+			setStartAndEndTokens(declaration);
+			getToken(declaration.NameOffset).SemanticStyle = (declaration.IsEnum) ? SemanticStyle.Enum : SemanticStyle.Class;
+			
+			var t = declaration.getUserData(typeof(TypeInfo));
+			int i = 0;
+			var classBase = declaration.ClassBase;
+			if (classBase.size() != t.Interfaces.count()) {
+				i++;
+				highlightType(classBase[0], t.BaseType);
+			}
+			foreach (var si in t.Interfaces) {
+				highlightType(classBase[i++], si);
+			}
+			
+			foreach (var name in declaration.TypeParameters) {
+				getToken(name.NameOffset).SemanticStyle = SemanticStyle.GenericParameter;
+			}
+			
+			foreach (var m in declaration.Members) {
+				switch (m.TypeMemberKind) {
+				case Class:
+					highlightClass((ClassDeclarationNode)m);
+					break;
+				case Interface:
+					highlightInterface((InterfaceDeclarationNode)m);
+					break;
+				case Delegate:
+					highlightDelegate((DelegateDeclarationNode)m);
+					break;
+				case EnumConstant:
+					highlightEnumConstant((EnumConstantDeclarationNode)m);
+					break;
+				case Field:
+					highlightField((FieldDeclarationNode)m);
+					break;
+				case Property:
+					highlightProperty((PropertyDeclarationNode)m);
+					break;
+				case Indexer:
+					highlightIndexer((IndexerDeclarationNode)m);
+					break;
+				case Constructor:
+					highlightConstructor((ConstructorDeclarationNode)m);
+					break;
+				case Destructor:
+					highlightDestructor((DestructorDeclarationNode)m);
+					break;
+				case Method:
+					highlightMethod((MethodDeclarationNode)m);
+					break;
+				}
+			}
+		}
+
+		private void highlightInterface(InterfaceDeclarationNode declaration) {
+			setStartAndEndTokens(declaration);
+			getToken(declaration.NameOffset).SemanticStyle = SemanticStyle.Interface;
+			
+			highlightAnnotations(declaration.Annotations);
+			
+			var t = declaration.getUserData(typeof(TypeInfo));
+			int i = 0;
+			foreach (var si in t.Interfaces) {
+				highlightType(declaration.InterfaceBase[i++], si);
+			}
+			foreach (var name in declaration.TypeParameters) {
+				getToken(name.NameOffset).SemanticStyle = SemanticStyle.GenericParameter;
+			}
+			foreach (var m in declaration.Members) {
+				switch (m.TypeMemberKind) {
+				case Property:
+					highlightProperty((PropertyDeclarationNode)m);
+					break;
+				case Indexer:
+					highlightIndexer((IndexerDeclarationNode)m);
+					break;
+				case Method:
+					highlightMethod((MethodDeclarationNode)m);
+					break;
+				}
+			}
+		}
+
+		private void highlightDelegate(DelegateDeclarationNode declaration) {
+			setStartAndEndTokens(declaration);
+			getToken(declaration.NameOffset).SemanticStyle = SemanticStyle.MethodDeclaration;
+			// TODO
+		}
+
+		private void highlightEnumConstant(EnumConstantDeclarationNode declaration) {
+			setStartAndEndTokens(declaration);
+			getToken(declaration.NameOffset).SemanticStyle = SemanticStyle.ConstantField;
+			
+			foreach (var e in declaration.Arguments) {
+				expressionHighlighter.handleExpression(e, null, true);
+			}
+			// TODO
+		}
+
+		private void highlightField(FieldDeclarationNode declaration) {
+			setStartAndEndTokens(declaration);
+			var f = declaration.Declarators[0].getUserData(typeof(FieldInfo));
+			highlightType(declaration.Type, f.Type);
+			SemanticStyle style;
+			if (declaration.getModifiers().contains(Modifier.Static)) {
+				if (declaration.getModifiers().contains(Modifier.Final)) {
+					style = SemanticStyle.ConstantField;
+				} else {
+					style = SemanticStyle.StaticField;
+				}
+			} else {
+				style = SemanticStyle.Field;
+			}
+			foreach (var decl in declaration.Declarators) {
+				setStartAndEndTokens(decl);
+				getToken(decl.NameOffset).SemanticStyle = style;
+				if (decl.Value != null) {
+					expressionHighlighter.handleExpression(decl.Value, null, true);
+				}
+			}
+		}
+
+		private void highlightProperty(PropertyDeclarationNode declaration) {
+			setStartAndEndTokens(declaration);
+			getToken(declaration.NameOffset).SemanticStyle = SemanticStyle.PropertyDeclaration;
+			
+			var get = declaration.GetAccessor;
+			highlightAccessor(get, Keyword.Get);
+			var set = declaration.SetAccessor;
+			highlightAccessor(set, Keyword.Set);
+			
+			if (get != null) {
+				var m = get.getUserData(typeof(MethodInfo));
+				highlightType(declaration.Type, m.ReturnType);
+			} else if (set != null) {
+				var m = set.getUserData(typeof(MethodInfo));
+				highlightType(declaration.Type, m.Parameters.first().Type);
+			}
+		}
+
+		private void highlightAccessor(AccessorDeclarationNode accessor, Keyword getOrSet) {
+			if (accessor != null) {
+				setStartAndEndTokens(accessor);
+				int i = Highlighter.getPositionIndex(tokens, accessor.getStartPosition());
+				if (i != -1) {
+					Token token;
+					while ((token = tokens[i]).LexicalUnit != LexicalUnit.ContextualKeyword && token.Keyword != getOrSet) {
+						i++;
+					}
+					token.SemanticStyle = SemanticStyle.Keyword;
+				}
+				if (accessor.Body != null) {
+					statementHighlighter.handleStatement(accessor.Body, null);
+				}
+			}
+		}
+		
+		private void highlightIndexer(IndexerDeclarationNode declaration) {
+			setStartAndEndTokens(declaration);
+			MethodInfo m = null;
+			var get = declaration.GetAccessor;
+			if (get != null) {
+				m = get.getUserData(typeof(MethodInfo));
+				highlightType(declaration.Type, m.ReturnType);
+			}
+			var set = declaration.SetAccessor;
+			if (m == null && set != null) {
+				m = set.getUserData(typeof(MethodInfo));
+				highlightType(declaration.Type, m.Parameters.last().Type);
+			}
+			highlightParameters(declaration.Parameters, m);
+			highlightAccessor(get, Keyword.Get);
+			highlightAccessor(set, Keyword.Set);
+		}
+		
+		private void highlightMethod(MethodDeclarationNode declaration) {
+			setStartAndEndTokens(declaration);
+			getToken(declaration.NameOffset).SemanticStyle = SemanticStyle.MethodDeclaration;
+			
+			var m = declaration.getUserData(typeof(MethodInfo));
+			highlightType(declaration.ReturnType, m.ReturnType);
+			foreach (var name in declaration.TypeParameters) {
+				getToken(name.NameOffset).SemanticStyle = SemanticStyle.GenericParameter;
+			}
+			highlightParameters(declaration.Parameters, m);
+			if (declaration.Body != null) {
+				statementHighlighter.handleStatement(declaration.Body, null);
+			}
+		}
+
+		private void highlightConstructor(ConstructorDeclarationNode declaration) {
+			setStartAndEndTokens(declaration);
+			getToken(declaration.NameOffset).SemanticStyle = SemanticStyle.MethodDeclaration;
+			
+			var m = declaration.getUserData(typeof(MethodInfo));
+			highlightParameters(declaration.Parameters, m);
+			if (declaration.Initializer != null) {
+				foreach (var e in declaration.Initializer.Arguments) {
+					expressionHighlighter.handleExpression(e, null, true);
+				}
+			}
+			statementHighlighter.handleStatement(declaration.Body, null);
+		}
+	
+		private void highlightDestructor(DestructorDeclarationNode declaration) {
+			setStartAndEndTokens(declaration);
+			getToken(declaration.NameOffset).SemanticStyle = SemanticStyle.MethodDeclaration;
+			
+			if (declaration.Body != null) {
+				statementHighlighter.handleStatement(declaration.Body, null);
+			}
+		}
+		
+		private void highlightParameters(List<ParameterNode> parameters, MethodInfo m) {
+			var pit = m.Parameters.iterator();
+			foreach (var p in parameters) {
+				setStartAndEndTokens(p);
+				highlightType(p.Type, pit.next().Type);
+				getToken(p.NameOffset).SemanticStyle = SemanticStyle.Parameter;
+			}
+		}
+
+		private void highlightAnnotations(List<AnnotationSectionNode> annotations) {
+			foreach (var a in annotations.selectMany(p => p.Annotations)) {
+				setStartAndEndTokens(a);
+				highlightType(a.Type, a.getUserData(typeof(TypeInfo)));
+			}
+		}
+	
+		private void highlightType(TypeReferenceNode type, TypeInfo t) {
+			setStartAndEndTokens(type);
+			switch (type.TypeReferenceKind) {
+			case SimpleName:
+				var name = (SimpleNameTypeReferenceNode)type;
+				while (t.TypeKind == TypeKind.Array) {
+					t = t.ElementType;
+				}
+				SemanticStyle style = null;
+				switch (t.TypeKind) {
+				case GenericParameter:
+					style = SemanticStyle.GenericParameter;
+					break;
+					
+				case Reference:
+					if (t.IsInterface) {
+						style = SemanticStyle.Interface;
+					} else if (t.IsEnum) {
+						style = SemanticStyle.Enum;
+					} else {
+						style = SemanticStyle.Class;
+					}
+					break;
+				}
+				if (style != null) {
+					getToken(name.NameOffset).SemanticStyle = style;
+				}
+				if (!name.TypeArguments.isEmpty()) {
+					var it1 = name.TypeArguments.iterator();
+					var it2 = t.GenericArguments.iterator();
+					while (it1.hasNext()) {
+						highlightType(it1.next(), it2.next());
+					}
+				}
+				break;
+				
+			case Qualified:
+				var qtype = (QualifiedTypeReferenceNode)type;
+				highlightType(qtype.SimpleName, t);
+				for (var e = t.DeclaringType; e != null; e = e.DeclaringType) {
+					highlightType(qtype.EnclosingType, e);
+				}
+				break;
+				
+			case Array:
+				var array = (ArrayTypeReferenceNode)type;
+				highlightType(array.ElementType, (t.TypeKind == TypeKind.Array) ? t.ElementType : t);
+				break;
+				
+			case LowerBoundedWildcard:
+			case UpperBoundedWildcard:
+				var wildcard = (WildcardTypeReferenceNode)type;
+				highlightType(wildcard.Bound, t.WildcardBound);
+				break;
+			}
+		}
+		
+		private void setStartAndEndTokens(SyntaxNode syntaxNode) {
+			syntaxNode.addUserData(new SyntaxNodeBounds(getToken(syntaxNode.StartPosition), getToken(syntaxNode.EndPosition - 1)));
+		}
+		
+		private class StatementHighlightHandler : StatementHandler<Void, Void> {
+			private CompilationUnitHighlighter highlighter;
+		
+			StatementHighlightHandler(CompilationUnitHighlighter highlighter)
+					: super(false) {
+				this.highlighter = highlighter;
+			}
+			
+			protected override Void handleBlock(BlockStatementNode block, Void source) {
+				highlighter.setStartAndEndTokens(block);
+				foreach (var s in block.Statements) {
+					handleStatement(s, null);
+				}
+				return null;
+			}
+	
+			protected override Void handleBreak(BreakStatementNode breakStatement, Void source) {
+				highlighter.setStartAndEndTokens(breakStatement);
+				return null;
+			}
+	
+			protected override Void handleContinue(ContinueStatementNode continueStatement, Void source) {
+				highlighter.setStartAndEndTokens(continueStatement);
+				return null;
+			}
+	
+			protected override Void handleDo(DoStatementNode doStatement, Void source) {
+				highlighter.setStartAndEndTokens(doStatement);
+				handleStatement(doStatement.Statement, null);
+				highlighter.expressionHighlighter.handleExpression(doStatement.Condition, null, true);
+				return null;
+			}
+			
+			protected override Void handleExpression(ExpressionStatementNode expression, Void source) {
+				highlighter.setStartAndEndTokens(expression);
+				highlighter.expressionHighlighter.handleExpression(expression.Expression, null, false);
+				return null;
+			}
+	
+			protected override Void handleFor(ForStatementNode forStatement, Void source) {
+				highlighter.setStartAndEndTokens(forStatement);
+				foreach (var s in forStatement.Initializer) {
+					handleStatement(s, null);
+				}
+				if (forStatement.Condition != null) {
+					highlighter.expressionHighlighter.handleExpression(forStatement.Condition, null, true);
+				}
+				foreach (var s in forStatement.Iterator) {
+					handleStatement(s, null);
+				}
+				handleStatement(forStatement.Statement, null);
+				return null;
+			}
+	
+			protected override Void handleForeach(ForeachStatementNode foreachStatement, Void source) {
+				highlighter.setStartAndEndTokens(foreachStatement);
+				if (foreachStatement.Type != null) {
+					var info = foreachStatement.getUserData(typeof(MemberInfo));
+					highlighter.highlightType(foreachStatement.Type, info.Type);
+				}
+				highlighter.getToken(foreachStatement.NameOffset).SemanticStyle = SemanticStyle.Local;
+				highlighter.expressionHighlighter.handleExpression(foreachStatement.Source, null, true);
+				handleStatement(foreachStatement.Statement, null);
+				return null;
+			}
+	
+			protected override Void handleGoto(GotoStatementNode gotoStatement, Void source) {
+				highlighter.setStartAndEndTokens(gotoStatement);
+				highlighter.getToken(gotoStatement.LabelOffset).SemanticStyle = SemanticStyle.Label;
+				return null;
+			}
+			
+			protected override Void handleGotoCase(GotoCaseStatementNode gotoCase, Void source) {
+				highlighter.setStartAndEndTokens(gotoCase);
+				if (gotoCase.Expression != null) {
+					highlighter.expressionHighlighter.handleExpression(gotoCase.Expression, null, true);
+				}
+				return null;
+			}
+			
+			protected override Void handleIf(IfStatementNode ifStatement, Void source) {
+				highlighter.setStartAndEndTokens(ifStatement);
+				highlighter.expressionHighlighter.handleExpression(ifStatement.Condition, null, false);
+				handleStatement(ifStatement.IfTrue, null);
+				if (ifStatement.IfFalse != null) {
+					handleStatement(ifStatement.IfFalse, null);
+				}
+				return null;
+			}
+			
+			protected override Void handleLabeled(LabeledStatementNode labeled, Void source) {
+				highlighter.setStartAndEndTokens(labeled);
+				highlighter.getToken(labeled.NameOffset).SemanticStyle = SemanticStyle.Label;
+				handleStatement(labeled.Statement, null);
+				return null;
+			}
+			
+			protected override Void handleLocalDeclaration(LocalDeclarationStatementNode localDeclaration, Void source) {
+				highlighter.setStartAndEndTokens(localDeclaration);
+				if (localDeclaration.Type == null) {
+					highlighter.getToken(localDeclaration.StartPosition).SemanticStyle = SemanticStyle.Keyword;
+				} else {
+					var info = localDeclaration.getUserData(typeof(ExpressionInfo));
+					highlighter.highlightType(localDeclaration.Type, info.Type);
+				}
+				foreach (var decl in localDeclaration.Declarators) {
+					highlighter.getToken(decl.NameOffset).SemanticStyle = SemanticStyle.Local;
+					if (decl.Value != null) {
+						highlighter.expressionHighlighter.handleExpression(decl.Value, null, true);
+					}
+				}
+				return null;
+			}
+			
+			protected override Void handleReturn(ReturnStatementNode returnStatement, Void source) {
+				if (returnStatement.StartPosition > 0) { // Some return statements can be created by the compiler
+					highlighter.setStartAndEndTokens(returnStatement);
+				}
+				if (returnStatement.Value != null) {
+					highlighter.expressionHighlighter.handleExpression(returnStatement.Value, null, false);
+				}
+				return null;
+			}
+			
+			protected override Void handleSwitch(SwitchStatementNode switchStatement, Void source) {
+				highlighter.setStartAndEndTokens(switchStatement);
+				highlighter.expressionHighlighter.handleExpression(switchStatement.Selector, null, true);
+				var sinfo = switchStatement.Selector.getUserData(typeof(ExpressionInfo));
+				foreach (var section in switchStatement.Sections) {
+					highlighter.setStartAndEndTokens(section);
+					if (section.CaseExpression != null) {
+						if (sinfo.Type.IsEnum) {
+							var name = (SimpleNameExpressionNode)section.CaseExpression;
+							highlighter.getToken(name.NameOffset).SemanticStyle = SemanticStyle.ConstantField;
+						} else {
+							highlighter.expressionHighlighter.handleExpression(section.CaseExpression, null, true);
+						}
+					}
+					foreach (var s in section.Statements) {
+						handleStatement(s, null);
+					}
+				}
+				return null;
+			}
+			
+			protected override Void handleSynchronized(SynchronizedStatementNode synchronizedStatement, Void source) {
+				highlighter.setStartAndEndTokens(synchronizedStatement);
+				highlighter.expressionHighlighter.handleExpression(synchronizedStatement.Lock, null, true);
+				handleStatement(synchronizedStatement.Statement, null);
+				return null;
+			}
+			
+			protected override Void handleThrow(ThrowStatementNode throwStatement, Void source) {
+				highlighter.setStartAndEndTokens(throwStatement);
+				if (throwStatement.Exception != null) {
+					highlighter.expressionHighlighter.handleExpression(throwStatement.Exception, null, false);
+				}
+				return null;
+			}
+	
+			protected override Void handleTry(TryStatementNode tryStatement, Void source) {
+				highlighter.setStartAndEndTokens(tryStatement);
+				handleBlock(tryStatement.Block, null);
+				foreach (var cc in tryStatement.CatchClauses) {
+					highlighter.setStartAndEndTokens(cc);
+					if (cc.ExceptionType != null) {
+						var t = cc.getUserData(typeof(TypeInfo));
+						highlighter.highlightType(cc.ExceptionType, t);
+					}
+					handleBlock(cc.Block, null);
+				}
+				if (tryStatement.Finally != null) {
+					highlighter.setStartAndEndTokens(tryStatement.Finally);
+					handleBlock(tryStatement.Finally, null);
+				}
+				return null;
+			}
+			
+			protected override Void handleUsing(UsingStatementNode usingStatement, Void source) {
+				highlighter.setStartAndEndTokens(usingStatement);
+				handleStatement(usingStatement.ResourceAcquisition, null);
+				handleStatement(usingStatement.Statement, null);
+				return null;
+			}
+			
+			protected override Void handleWhile(WhileStatementNode whileStatement, Void source) {
+				highlighter.setStartAndEndTokens(whileStatement);
+				highlighter.expressionHighlighter.handleExpression(whileStatement.Condition, null, true);
+				handleStatement(whileStatement.Statement, null);
+				return null;
+			}
+			
+			protected override Void handleYield(YieldStatementNode yield, Void source) {
+				if (yield.StartPosition > 0) { // Some yield break statements can be created by the compiler
+					highlighter.setStartAndEndTokens(yield);
+					highlighter.getToken(yield.StartPosition).SemanticStyle = SemanticStyle.Keyword;
+				}
+				if (yield.Value != null) {
+					highlighter.expressionHighlighter.handleExpression(yield.Value, null, false);
+				}
+				return null;
+			}
+		}
+		
+		private class ExpressionHighlightHandler : ExpressionHandler<Void, Void> {
+			private CompilationUnitHighlighter highlighter;
+			
+			ExpressionHighlightHandler(CompilationUnitHighlighter highlighter)
+					: super(false) {
+				this.highlighter = highlighter;
+			}
+			
+			protected override Void handleAnonymousObjectCreation(AnonymousObjectCreationExpressionNode anonymousObject, Void source, boolean nested) {
+				highlighter.setStartAndEndTokens(anonymousObject);
+				foreach (var mi in anonymousObject.MemberDeclarators) {
+					highlighter.setStartAndEndTokens(mi);
+					highlighter.getToken(mi.NameOffset).SemanticStyle = SemanticStyle.Property;
+					handleExpression(mi.Value, null, true);
+				}
+				return null;
+			}
+			
+			protected override Void handleArrayCreation(ArrayCreationExpressionNode arrayCreation, Void source, boolean nested) {
+				highlighter.setStartAndEndTokens(arrayCreation);
+				if (arrayCreation.Type != null) {
+					highlighter.setStartAndEndTokens(arrayCreation.Type);
+					var info = arrayCreation.getUserData(typeof(ExpressionInfo));
+					highlighter.highlightType(arrayCreation.Type, info.Type);
+				}
+				foreach (var e in arrayCreation.DimensionExpressions) {
+					handleExpression(e, null, true);
+				}
+				if (arrayCreation.Initializer != null) {
+					handleExpression(arrayCreation.Initializer, null, true);
+				}
+				return null;
+			}
+	
+			protected override Void handleArrayInitializer(ArrayInitializerExpressionNode arrayInitializer, Void source, boolean nested) {
+				highlighter.setStartAndEndTokens(arrayInitializer);
+				foreach (var e in arrayInitializer.Values) {
+					handleExpression(e, null, true);
+				}
+				return null;
+			}
+	
+			protected override Void handleAssign(AssignExpressionNode assign, Void source, boolean nested) {
+				highlighter.setStartAndEndTokens(assign);
+				handleExpression(assign.Left, null, true);
+				handleExpression(assign.Right, null, true);
+				return null;
+			}
+			
+			protected override Void handleBinary(BinaryExpressionNode binary, Void source, boolean nested) {
+				highlighter.setStartAndEndTokens(binary);
+				handleExpression(binary.LeftOperand, null, true);
+				handleExpression(binary.RightOperand, null, true);
+				return null;
+			}
+	
+			protected override Void handleCast(CastExpressionNode cast, Void source, boolean nested) {
+				highlighter.setStartAndEndTokens(cast);
+				var info = cast.getUserData(typeof(ExpressionInfo));
+				highlighter.setStartAndEndTokens(cast.TargetType);
+				highlighter.highlightType(cast.TargetType, info.Type);
+				handleExpression(cast.Expression, null, true);
+				return null;
+			}
+	
+			protected override Void handleConditional(ConditionalExpressionNode conditional, Void source, boolean nested) {
+				highlighter.setStartAndEndTokens(conditional);
+				handleExpression(conditional.Condition, null, true);
+				handleExpression(conditional.IfTrue, null, true);
+				handleExpression(conditional.IfFalse, null, true);
+				return null;
+			}
+			
+			protected override Void handleElementAccess(ElementAccessExpressionNode elementAccess, Void source, boolean nested) {
+				highlighter.setStartAndEndTokens(elementAccess);
+				handleExpression(elementAccess.TargetObject, null, true);
+				foreach (var e in elementAccess.Indexes) {
+					handleExpression(e, null, true);
+				}
+				return null;
+			}
+			
+			protected override Void handleInvocation(InvocationExpressionNode invocation, Void source, boolean nested) {
+				highlighter.setStartAndEndTokens(invocation);
+				handleExpression(invocation.TargetObject, null, true);
+				foreach (var e in invocation.Arguments) {
+					handleExpression(e, null, true);
+				}
+				return null;
+			}
+			
+			protected override Void handleLambda(LambdaExpressionNode lambda, Void source, boolean nested) {
+				highlighter.setStartAndEndTokens(lambda);
+				var m = lambda.getUserData(typeof(MethodInfo));
+				var pit = m.Parameters.iterator();
+				foreach (var p in lambda.Parameters) {
+					highlighter.setStartAndEndTokens(p);
+					var t = pit.next().Type;
+					if (p.Type != null) {
+						highlighter.setStartAndEndTokens(p.Type);
+						highlighter.highlightType(p.Type, t);
+					}
+					highlighter.getToken(p.NameOffset).SemanticStyle = SemanticStyle.Parameter;
+				}
+				highlighter.statementHighlighter.handleStatement(lambda.Body, null);
+				return null;
+			}
+
+			protected override Void handleLiteral(LiteralExpressionNode literal, Void source, boolean nested) {
+				highlighter.setStartAndEndTokens(literal);
+				return null;
+			}
+			
+			protected override Void handleMemberAccess(MemberAccessExpressionNode memberAccess, Void source, boolean nested) {
+				highlighter.setStartAndEndTokens(memberAccess);
+				highlighter.setStartAndEndTokens(memberAccess.Member);
+				var info = memberAccess.getUserData(typeof(ExpressionInfo));
+				var member = info.Member;
+				handleExpression(memberAccess.TargetObject, null, true);
+				if (member == null) {
+					var type = info.Type;
+		            if (type != null) {
+						SemanticStyle style;
+						if (type.IsInterface) {
+							style = SemanticStyle.Interface;
+						} else if (type.IsEnum) {
+							style = SemanticStyle.Enum;
+						} else {
+							style = SemanticStyle.Class;
+						}
+						var simpleName = memberAccess.Member;
+						highlighter.getToken(simpleName.NameOffset).SemanticStyle = style;
+		            }
+				} else {
+					var simpleName = memberAccess.Member;
+					switch (member.MemberKind) {
+					case Field:
+						SemanticStyle style;
+						if (member.IsStatic) {
+							if (member.Field.IsFinal) {
+								style = SemanticStyle.ConstantField;
+							} else {
+								style = SemanticStyle.StaticField;
+							}
+						} else {
+							style = SemanticStyle.Field;
+						}
+						highlighter.getToken(simpleName.NameOffset).SemanticStyle = style;
+						break;
+					case Method:
+						style = (member.IsStatic) ? SemanticStyle.StaticMethod : SemanticStyle.Method;
+						highlighter.getToken(simpleName.NameOffset).SemanticStyle = style;
+						if (!simpleName.TypeArguments.isEmpty()) {
+							var it1 = simpleName.TypeArguments.iterator();
+							var it2 = member.Method.GenericArguments.iterator();
+							while (it1.hasNext()) {
+								highlighter.highlightType(it1.next(), it2.next());
+							}
+						}
+						break;
+					case Property:
+						style = (member.IsStatic) ? SemanticStyle.StaticProperty : SemanticStyle.Property;
+						highlighter.getToken(simpleName.NameOffset).SemanticStyle = style;
+						break;
+					case Indexer:
+						break;
+					default:
+						throw new IllegalStateException("Unhandled " + member.getMemberKind());
+					}
+				}
+				return null;
+			}
+	
+			protected override Void handleObjectCreation(ObjectCreationExpressionNode objectCreation, Void source, boolean nested) {
+				highlighter.setStartAndEndTokens(objectCreation);
+				var info = objectCreation.getUserData(typeof(ExpressionInfo));
+				highlighter.setStartAndEndTokens(objectCreation.Type);
+				highlighter.highlightType(objectCreation.Type, info.Type);
+				foreach (var e in objectCreation.Arguments) {
+					handleExpression(e, null, true);
+				}
+				if (objectCreation.Initializer != null) {
+					handleExpression(objectCreation.Initializer, null, true);
+				}
+				return null;
+			}
+	
+			protected override Void handleCollectionInitializer(CollectionInitializerExpressionNode initializer, Void source, boolean nested) {
+				highlighter.setStartAndEndTokens(initializer);
+				foreach (var e in initializer.Values.selectMany(p => p)) {
+					handleExpression(e, null, true);
+				}
+				return null;
+			}
+	
+			// TODO: handleQuery
+			
+			protected override Void handleObjectInitializer(ObjectInitializerExpressionNode initializer, Void source, boolean nested) {
+				highlighter.setStartAndEndTokens(initializer);
+				foreach (var init in initializer.MemberInitializers) {
+					highlighter.setStartAndEndTokens(init);
+					var member = init.getUserData(typeof(MemberInfo));
+					SemanticStyle style;
+					if (member.getMemberKind() == MemberKind.Property) {
+						style = (member.IsStatic) ? SemanticStyle.StaticProperty : SemanticStyle.Property;
+					} else {
+						style = (member.IsStatic) ? SemanticStyle.StaticField : SemanticStyle.Field;
+					}
+					highlighter.getToken(init.NameOffset).SemanticStyle = style;
+					handleExpression(init.Value, null, true);
+				}
+				return null;
+			}
+			
+			protected override Void handleSimpleName(SimpleNameExpressionNode simpleName, Void source, boolean nested) {
+				highlighter.setStartAndEndTokens(simpleName);
+				var info = simpleName.getUserData(typeof(ExpressionInfo));
+				if (info == null) {
+					highlighter.getToken(simpleName.NameOffset).SemanticStyle = SemanticStyle.ConstantField;
+					return null;
+				}
+				var member = info.Member;
+				if (member != null) {
+					switch (member.MemberKind) {
+					case Type:
+						var type = member.Type;
+						SemanticStyle style;
+						if (type.IsInterface) {
+							style = SemanticStyle.Interface;
+						} else if (type.IsEnum) {
+							style = SemanticStyle.Enum;
+						} else {
+							style = SemanticStyle.Class;
+						}
+						highlighter.getToken(simpleName.NameOffset).SemanticStyle = style;
+						break;
+					case Local:
+						style = (member.IsParameter) ? SemanticStyle.Parameter : SemanticStyle.Local;
+						highlighter.getToken(simpleName.NameOffset).SemanticStyle = style;
+						break;
+					case Field:
+						if (member.IsStatic) {
+							if (member.getField().IsFinal) {
+								style = SemanticStyle.ConstantField;
+							} else {
+								style = SemanticStyle.StaticField;
+							}
+						} else {
+							style = SemanticStyle.Field;
+						}
+						highlighter.getToken(simpleName.NameOffset).SemanticStyle = style;
+						break;
+					case Method:
+						style = (member.IsStatic) ? SemanticStyle.StaticMethod : SemanticStyle.Method;
+						highlighter.getToken(simpleName.NameOffset).SemanticStyle = style;
+						break;
+					case Property:
+						style = (member.IsStatic) ? SemanticStyle.StaticProperty : SemanticStyle.Property;
+						highlighter.getToken(simpleName.NameOffset).SemanticStyle = style;
+						break;
+					default:
+						throw new IllegalStateException("Unhandled " + member.MemberKind);
+					}
+				}
+				return null;
+			}
+	
+			protected override Void handleSizeof(SizeofExpressionNode sizeofExpression, Void source, boolean nested) {
+				highlighter.setStartAndEndTokens(sizeofExpression);
+				handleExpression(sizeofExpression.Expression, null, true);
+				return null;
+			}
+
+			protected override Void handleSuperAccess(SuperAccessExpressionNode superAccess, Void source, boolean nested) {
+				highlighter.setStartAndEndTokens(superAccess);
+				return null;
+			}
+			
+			protected override Void handleThisAccess(ThisAccessExpressionNode thisAccess, Void source, boolean nested) {
+				highlighter.setStartAndEndTokens(thisAccess);
+				return null;
+			}
+	
+			protected override Void handleType(TypeExpressionNode type, Void source, boolean nested) {
+				highlighter.setStartAndEndTokens(type);
+				var info = type.getUserData(typeof(ExpressionInfo));
+				highlighter.highlightType(type.TypeReference, info.Type);
+				return null;
+			}
+			
+			protected override Void handleTypeof(TypeofExpressionNode typeofExpression, Void source, boolean nested) {
+				highlighter.setStartAndEndTokens(typeofExpression);
+				highlighter.highlightType(typeofExpression.Type, typeofExpression.getUserData(typeof(TypeInfo)));
+				return null;
+			}
+			
+			protected override Void handleUnary(UnaryExpressionNode unary, Void source, boolean nested) {
+				highlighter.setStartAndEndTokens(unary);
+				handleExpression(unary.Operand, null, true);
+				return null;
+			}
+		}
+	}
+}

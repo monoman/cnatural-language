@@ -1,0 +1,27 @@
+using java.lang;
+
+public class DoubleArithmetic2 {
+	public static boolean test() {
+		double f = -1, g;
+		long bits = Double.doubleToLongBits(f);
+		int s = ((bits >> 63) == 0) ? 1 : -1;
+		long e = ((bits >> 52) & 0x7ff);
+		long m = (e == 0) ?
+			(bits & 0xfffffffffffffL) << 1 :
+			(bits & 0xfffffffffffffL) | 0x10000000000000L;
+
+		if (f == bits)
+			return false;
+			
+		g = s * m;
+		e -= 1075;
+		if (e > 0)
+			for (int i = 0; i < e; i++)
+				g *= 2;
+		else
+			for (int i = 0; i > e; i--)
+				g /= 2;
+				
+		return f == g;
+	}
+}

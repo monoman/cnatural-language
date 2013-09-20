@@ -1,0 +1,9 @@
+public class IntFieldPostIncrement {
+	private int field;
+
+	public static boolean test() {
+		var obj = new IntFieldPostIncrement();
+		int i = obj.field++;
+		return obj.field == i + 1;
+	}
+}

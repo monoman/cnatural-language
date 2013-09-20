@@ -1,0 +1,27 @@
+using java.lang;
+
+public class FloatArithmetic {
+	public static boolean test() {
+		float f = -1, g;
+		int bits = Float.floatToIntBits(f);
+		int s = ((bits >> 31) == 0) ? 1 : -1;
+		int e = ((bits >> 23) & 0xff);
+		int m = (e == 0) ?
+			(bits & 0x7fffff) << 1 :
+			(bits & 0x7fffff) | 0x800000;
+
+		if (f == bits)
+			return false;
+			
+		g = s * m;
+		e -= 150;
+		if (e > 0)
+			for (int i = 0; i < e; i++)
+				g *= 2;
+		else
+			for (int i = 0; i > e; i--)
+				g /= 2;
+	
+		return f == g;
+	}
+}

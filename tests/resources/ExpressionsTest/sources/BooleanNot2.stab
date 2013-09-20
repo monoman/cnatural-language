@@ -1,0 +1,6 @@
+public class BooleanNot2 {
+	public static boolean test() {
+		var b = true;
+		return ((b = !b) == false);
+	}
+}

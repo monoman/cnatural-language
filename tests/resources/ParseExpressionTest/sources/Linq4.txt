@@ -1,0 +1,6 @@
+query2 = from p in people
+             where p.Age > 20
+             orderby p.Age descending, p.Name
+             group new { 
+                p.Name, Senior = p.Age > 30, p.CanCode
+             } by p.CanCode

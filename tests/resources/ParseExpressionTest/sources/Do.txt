@@ -1,0 +1,6 @@
+() => {
+	do
+		Console.WriteLine("x = " + x++);
+	while (x < 100);
+	return x;
+}

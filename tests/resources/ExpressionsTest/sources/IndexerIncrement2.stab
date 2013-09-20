@@ -1,0 +1,19 @@
+public class IndexerIncrement2 {
+	private int[] t = new int[10];
+
+	public int this[long index] {
+		get {
+			return t[(int)index];
+		}
+		set {
+			t[(int)index] = value;
+		}
+	}
+	
+	public static boolean test() {
+		var obj = new IndexerIncrement2();
+		var d = obj[5]++;
+		++obj[5];
+		return d + 3 == ++obj[5] && obj[5] == 3;
+	}
+}

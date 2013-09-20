@@ -1,0 +1,12 @@
+// Lstab/bytecode/test/classes/NestedClass; / Lstab/bytecode/test/classes/NestedClass;
+public class stab/bytecode/test/classes/NestedClass : java/lang/Object {
+    // Lstab/bytecode/test/classes/NestedClass$InnerClass; / Lstab/bytecode/test/classes/NestedClass$InnerClass;
+    public class stab/bytecode/test/classes/NestedClass$InnerClass : java/lang/Object {
+        // ()V / ()V
+        public V <init>() {
+        }
+    }
+    // ()V / ()V
+    public V <init>() {
+    }
+}

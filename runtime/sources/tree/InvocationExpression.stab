@@ -1,0 +1,50 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using java.lang.reflect;
+using stab.query;
+ 
+package stab.tree {
+
+    public class InvocationExpression : Expression {
+        InvocationExpression(Expression target, Expression[] arguments)
+            : super(ExpressionKind.Invocation, getReturnType(target)) {
+            this.Target = target;
+            this.Arguments = (arguments == null) ? Query.empty<Expression>() : Query.asIterable((Expression[])arguments.clone());
+        }
+        
+        public Expression Target {
+            get;
+            private set;
+        }
+        
+        public Iterable<Expression> Arguments {
+            get;
+            private set;
+        }
+        
+        private static Class<?> getReturnType(Expression delegateExpression) {
+            var t = delegateExpression.Type;
+            foreach (var m in t.getDeclaredMethods()) {
+                if (m.getName().equals("invoke")) {
+                    return m.getReturnType();
+                }
+            }
+            throw new IllegalStateException("Not a delegate");
+        }
+    }
+}

@@ -1,0 +1,52 @@
+public interface GenericConstraints2Aux<T> {
+	T test();
+}
+
+public class GenericConstraints2Aux2<T, S>
+	where T : GenericConstraints2Aux<S>
+	where S : GenericConstraints2Aux<T>
+{
+	public T t;
+	
+	public void test1(S s) {
+		t = s.test();
+	}
+	
+	public S test2() {
+		return t.test();
+	}
+}
+
+public class GenericConstraints2Aux3 : GenericConstraints2Aux<GenericConstraints2Aux4> {
+	public int value;
+	
+	public GenericConstraints2Aux3(int value) {
+		this.value = value;
+	}
+	
+	public GenericConstraints2Aux4 test() {
+		return new GenericConstraints2Aux4(-value);
+	}
+}
+
+public class GenericConstraints2Aux4 : GenericConstraints2Aux<GenericConstraints2Aux3> {
+	public int value;
+	
+	public GenericConstraints2Aux4(int value) {
+		this.value = value;
+	}
+	
+	public GenericConstraints2Aux3 test() {
+		return new GenericConstraints2Aux3(-value);
+	}
+}
+
+public class GenericConstraints2 {
+	public static boolean test() {
+		var obj = new GenericConstraints2Aux2<GenericConstraints2Aux3, GenericConstraints2Aux4>();
+		var obj1 = new GenericConstraints2Aux4(123);
+		obj.test1(obj1);
+		var obj2 = obj.test2();
+		return obj1.value == obj2.value;
+	}
+}

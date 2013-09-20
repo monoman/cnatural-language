@@ -1,0 +1,396 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+
+package stab.tools.parser {
+
+    public class ParserHelper {
+        public static int decodeHexadecimalInteger(String value) {
+            var result = 0;
+            var ndigits = 0;
+            for (var i = 2; i < value.length(); i++) {
+                var digit = ParserHelper.scanHexDigit(value[i]);
+                if (ndigits == 0 && digit == 0) {
+                    continue;
+                }
+                result <<= 4;
+                result |= digit;
+                if (++ndigits == 9) {
+                    throw new NumberFormatException(value);
+                }
+            }
+            return result;
+        }
+    
+        public static long decodeHexadecimalLong(String value) {
+            long result = 0;
+            var ndigits = 0;
+            for (var i = 2; i < value.length(); i++) {
+                var digit = ParserHelper.scanHexDigit(value[i]);
+                if (ndigits == 0 && digit == 0) {
+                    continue;
+                }
+                result <<= 4;
+                result |= digit;
+                if (++ndigits == 17) {
+                    throw new NumberFormatException(value);
+                }
+            }
+            return result;
+        }
+
+        public static char unescapeChar(char[] text, int offset, int length) {
+            char result = 0;
+            var end = offset + length;
+            for (var i = offset; i < end; i++) {
+                var c = text[i];
+                if (c == '\\') {
+                    switch (c = text[++i]) {
+                    case '"':
+                    case '\\':
+                    case '\'':
+                        result = c;
+                        break;
+                    case '0':
+                        result = (char)0;
+                        break;
+                    case 'a':
+                        result = (char)7;
+                        break;
+                    case 'b':
+                        result = (char)8;
+                        break;
+                    case 'f':
+                        result = (char)12;
+                        break;
+                    case 'n':
+                        result = (char)10;
+                        break;
+                    case 'r':
+                        result = (char)13;
+                        break;
+                    case 't':
+                        result = (char)9;
+                        break;
+                    case 'v':
+                        result = (char)11;
+                        break;
+
+                    case 'u': {
+                        var value = 0;
+                        for (var j = 0; j < 4; j++) {
+                            value = value * 16 + ParserHelper.scanHexDigit(text[++i]);
+                        }
+                        result = (char)value;
+                        break;
+                    }
+                    case 'U': {
+                        var value = 0;
+                        for (var j = 0; j < 8; j++) {
+                            value = value * 16 + ParserHelper.scanHexDigit(text[++i]);
+                        }
+                        result = (char)value;
+                        break;
+                    }
+                    case 'x': {
+                        var value = ParserHelper.scanHexDigit(text[++i]);
+                        var d = ParserHelper.scanHexDigit(text[i + 1]);
+                        if (d > -1) {
+                            value = value * 16 + d;
+                            if ((d = ParserHelper.scanHexDigit(text[++i + 1])) > -1) {
+                                value = value * 16 + d;
+                                if ((d = ParserHelper.scanHexDigit(text[++i + 1])) > -1) {
+                                    value = value * 16 + d;
+                                    i++;
+                                }
+                            }
+                        }
+                        result = (char)value;
+                        break;
+                    }
+                    }
+                } else {
+                    result = c;
+                }
+            }
+            return result;
+        }
+    
+        public static String unescapeString(char[] text, int offset, int length) {
+            var sb = new StringBuilder();
+            var end = offset + length;
+            for (var i = offset; i < end; i++) {
+                var c = text[i];
+                if (c == '\\') {
+                    switch (c = text[++i]) {
+                    case '"':
+                    case '\\':
+                    case '\'':
+                        sb.append(c);
+                        break;
+                    case '0':
+                        sb.append((char)0);
+                        break;
+                    case 'a':
+                        sb.append((char)7);
+                        break;
+                    case 'b':
+                        sb.append((char)8);
+                        break;
+                    case 'f':
+                        sb.append((char)12);
+                        break;
+                    case 'n':
+                        sb.append((char)10);
+                        break;
+                    case 'r':
+                        sb.append((char)13);
+                        break;
+                    case 't':
+                        sb.append((char)9);
+                        break;
+                    case 'v':
+                        sb.append((char)11);
+                        break;
+
+                    case 'u': {
+                        var value = 0;
+                        for (var j = 0; j < 4; j++) {
+                            value = value * 16 + ParserHelper.scanHexDigit(text[++i]);
+                        }
+                        sb.append((char)value);
+                        break;
+                    }
+                    case 'U': {
+                        var value = 0;
+                        for (var j = 0; j < 4; j++) {
+                            value = value * 16 + ParserHelper.scanHexDigit(text[++i]);
+                        }
+                        sb.append((char)value);
+                        value = 0;
+                        for (int j = 0; j < 4; j++) {
+                            value = value * 16 + ParserHelper.scanHexDigit(text[++i]);
+                        }
+                        sb.append((char)value);
+                        break;
+                    }
+                    case 'x': {
+                        var value = ParserHelper.scanHexDigit(text[++i]);
+                        var d = ParserHelper.scanHexDigit(text[i + 1]);
+                        if (d > -1) {
+                            value = value * 16 + d;
+                            if ((d = ParserHelper.scanHexDigit(text[++i + 1])) > -1) {
+                                value = value * 16 + d;
+                                if ((d = ParserHelper.scanHexDigit(text[++i + 1])) > -1) {
+                                    value = value * 16 + d;
+                                    i++;
+                                }
+                            }
+                        }
+                        sb.append((char)value);
+                        break;
+                    }
+                    }
+                } else {
+                    sb.append(c);
+                }
+            }
+            return sb.toString();
+        }
+
+        public static String unescapeVerbatimString(char[] text, int offset, int length) {
+            var sb = new StringBuilder();
+            var end = offset + length;
+            for (var i = offset; i < end; i++) {
+                var c = text[i];
+                if (c == '"') {
+                    i++;
+                }
+                sb.append(c);
+            }
+            return sb.toString();
+        }
+    
+        public static int scanHexDigit(int character) {
+            switch (character) {
+            default:
+                return -1;
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+                return character - '0';
+            case 'a':
+            case 'b':
+            case 'c':
+            case 'd':
+            case 'e':
+            case 'f':
+                return 10 + (character - 'a');
+            case 'A':
+            case 'B':
+            case 'C':
+            case 'D':
+            case 'E':
+            case 'F':
+                return 10 + (character - 'A');
+            }
+        }
+        
+        public static boolean isIdentifierStartChar(int c) {
+            return Character.isJavaIdentifierStart(c);
+        }
+
+        public static boolean isIdentifierPartChar(int c) {
+            return Character.isJavaIdentifierPart(c);
+        }
+
+        public static void unescapeIdentifier(StringBuilder sb, char[] text, int offset, int length) {
+            var end = offset + length;
+            if (text[offset] == '@') {
+                offset++;
+            }
+            for (var i = offset; i < end; i++) {
+                var c = text[i];
+                if (c == '\\') {
+                    c = text[++i];
+                    if (c == 'u') {
+                        var value = 0;
+                        for (var j = 0; j < 4; j++) {
+                            value = value * 16 + ParserHelper.scanHexDigit(text[++i]);
+                        }
+                        sb.append((char)value);
+                    } else {
+                        var value = 0;
+                        for (var j = 0; j < 4; j++) {
+                            value = value * 16 + ParserHelper.scanHexDigit(text[++i]);
+                        }
+                        sb.append((char)value);
+                        value = 0;
+                        for (int j = 0; j < 4; j++) {
+                            value = value * 16 + ParserHelper.scanHexDigit(text[++i]);
+                        }
+                        sb.append((char)value);
+                    }
+                } else {
+                    sb.append(c);
+                }
+            }
+        }
+        
+        public static String decodeDocumentation(char[] text, int offset, int length) {
+            var end = offset + length;
+            offset++;
+            var sb = new StringBuilder();
+            if (text[offset] == '*') {
+                offset += 2;
+                for (var i = offset; i < end; i++) {
+                    var c = text[i];
+                    switch (c) {
+                    case '\r':
+                        sb.append(c);
+                        if (text[i + 1] == '\n') {
+                            i++;
+                        }
+                        goto case '\n';
+                        
+                    case '\u2028':
+                    case '\u2029':
+                    case '\n':
+                        sb.append(c);
+                        var done = false;
+                        while (i + 1 < end && !done) {
+                            switch (text[i + 1]) {
+                            case ' ':
+                            case '\t':
+                            case '\v':
+                            case '\f':
+                                i++;
+                                break;
+                            case '*':
+                                if (text[i + 2] != '/') {
+                                    i++;
+                                    if (text[i + 1] == ' ') {
+                                        i++;
+                                    }
+                                }
+                                goto default;
+                            default:
+                                done = true;
+                                break;
+                            }
+                        }
+                        break;
+                       
+                    case '*':
+                        if (text[i + 1] != '/') {
+                            sb.append(c);
+                        } else {
+                            i++;
+                        }
+                        break;
+                       
+                    default:
+                        sb.append(c);
+                        break;
+                    }
+                }                
+            } else {
+                offset += 2;
+                if (offset < end && text[offset] == ' ') {
+                    offset++;
+                }
+                for (var i = offset; i < end; i++) {
+                    var c = text[i];
+                    switch (c) {
+                    case '\r':
+                        sb.append(c);
+                        if (text[i + 1] == '\n') {
+                            c = '\n';
+                            i++;
+                        }
+                        goto case '\n';
+                        
+                    case '\u2028':
+                    case '\u2029':
+                    case '\n':
+                        sb.append(c);
+                        do {
+                            i++;
+                        } while (i < end && text[i] != '/');
+                        i += 2;
+                        if (i + 1 < end && text[i + 1] == ' ') {
+                            i++;
+                        }
+                        break;
+                        
+                    default:
+                        sb.append(c);
+                        break;
+                    }
+                }
+            }
+            return sb.toString();
+        }
+    }
+}

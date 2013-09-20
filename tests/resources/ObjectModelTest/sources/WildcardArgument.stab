@@ -1,0 +1,19 @@
+using java.lang;
+
+public class WildcardArgument<T> {
+	public static boolean test() {
+		WildcardArgument<String> obj1 = new WildcardArgument<String>("str");
+		WildcardArgument<Integer> obj2 = new WildcardArgument<Integer>(1);
+		return method(obj1) instanceof String && method(obj2) instanceof Integer;
+	}
+	
+	T value;
+	
+	WildcardArgument(T value) {
+		this.value = value;
+	}
+	
+	static Object method(WildcardArgument<?> arg) {
+		return arg.value;
+	}
+}

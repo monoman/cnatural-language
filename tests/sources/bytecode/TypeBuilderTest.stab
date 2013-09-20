@@ -1,0 +1,250 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.io;
+using java.lang;
+using java.lang.reflect;
+using org.junit;
+using stab.query;
+using stab.tools.helpers;
+
+package stab.reflection.test {
+
+	public class TypeBuilderTest {
+		
+		[Test]
+		public void SimpleClassTest() {
+			// public class SimpleClass {
+			//     public SimpleClass() {
+			//     }
+			// }
+			var typeSystem = new Library(new String[0]);
+			var typeBuilder = typeSystem.defineType("stab/SimpleClass");
+			typeBuilder.setPublic(true);
+			typeBuilder.setBaseType(typeSystem.getType("java/lang/Object"));
+			
+			createDefaultConstructor(typeBuilder);
+			
+			var bytecode = typeBuilder.createType(typeSystem);
+			
+			saveBytecode("SimpleClass", bytecode);
+			
+			var loader = new DynamicClassLoader();
+			Class<?> c = loader.defineClass("stab.SimpleClass", bytecode);
+			loader.linkClass(c);
+
+			var cstr = c.getConstructor();
+			cstr.newInstance();
+		}
+		
+		[Test]
+		public void classWithFieldTest() {
+			// public class ClassWithField {
+			//     public int field;
+			//     public ClassWithField() {
+			//         field = 123;
+			//     }
+			// }
+			var typeSystem = new Library(new String[0]);
+			var typeBuilder = typeSystem.defineType("stab/ClassWithField");
+			typeBuilder.setPublic(true);
+			typeBuilder.setBaseType(typeSystem.getType("java/lang/Object"));
+
+			var field = typeBuilder.defineField("field", typeSystem.IntType);
+			field.setPublic(true);
+
+			var methodBuilder = typeBuilder.defineMethod("<init>");
+			methodBuilder.setPublic(true);
+			methodBuilder.setReturnType(typeSystem.VoidType);
+			var generator = methodBuilder.getCodeGenerator();
+			generator.beginScope();
+			generator.emit(Opcode.Aload, generator.getLocal("this"));
+			generator.emit(Opcode.Invokespecial, typeBuilder.BaseType.getMethod("<init>", Query.empty<TypeInfo>()));
+			generator.emit(Opcode.Aload, generator.getLocal("this"));
+			generator.emit(Opcode.Ldc, (Object)123);
+			generator.emit(Opcode.Putfield, field);
+			generator.emit(Opcode.Return);
+			generator.endScope();
+			
+			var bytecode = typeBuilder.createType(typeSystem);
+			
+			saveBytecode("ClassWithField", bytecode);
+			
+			var loader = new DynamicClassLoader();
+			var c = loader.defineClass("stab.ClassWithField", bytecode);
+			loader.linkClass(c);
+
+			var cstr = c.getConstructor();
+			var f = c.getField("field");
+			var instance = cstr.newInstance();
+			int value = f.getInt(instance);
+			
+			Assert.assertEquals(123, value);
+		}
+
+		[Test]
+		public void classWithStaticFieldTest() {
+			// public class ClassWithStaticField {
+			//     public static int FIELD = 123;
+			//     public ClassWithStaticField() {
+			//     }
+			// }
+			var typeSystem = new Library(new String[0]);
+			var typeBuilder = typeSystem.defineType("stab/ClassWithStaticField");
+			typeBuilder.setPublic(true);
+			typeBuilder.setBaseType(typeSystem.getType("java/lang/Object"));
+
+			var field = typeBuilder.defineField("FIELD", typeSystem.IntType);
+			field.setPublic(true);
+			field.setStatic(true);
+			field.setValue(new Integer(123));
+
+			createDefaultConstructor(typeBuilder);
+			
+			var bytecode = typeBuilder.createType(typeSystem);
+			
+			saveBytecode("ClassWithStaticField", bytecode);
+			
+			var loader = new DynamicClassLoader();
+			var c = loader.defineClass("stab.ClassWithStaticField", bytecode);
+			loader.linkClass(c);
+
+			var f = c.getField("FIELD");
+			int value = f.getInt(null);
+			
+			Assert.assertEquals(123, value);
+		}
+
+		[Test]
+		public void staticInnerClassTest() {
+			// public class StaticInnerClass {
+			//     public static class Nested {
+			//         public Nested() {
+			//		   }
+			//     }
+			//     public StaticInnerClass() {
+			//     }
+			// }
+			var typeSystem = new Library(new String[0]);
+			var typeBuilder = typeSystem.defineType("stab/StaticInnerClass");
+			typeBuilder.setPublic(true);
+			typeBuilder.setBaseType(typeSystem.getType("java/lang/Object"));
+
+			createDefaultConstructor(typeBuilder);
+			
+			var nestedType = typeBuilder.defineNestedType("Nested");
+			nestedType.setPublic(true);
+			nestedType.setNestedPublic(true);
+			nestedType.setBaseType(typeSystem.getType("java/lang/Object"));
+
+			createDefaultConstructor(nestedType);
+
+			var bytecode = typeBuilder.createType(typeSystem);
+			saveBytecode("StaticInnerClass", bytecode);
+
+			var innerBytecode = nestedType.createType(typeSystem);
+			saveBytecode("StaticInnerClass$Nested", innerBytecode);
+
+			var loader = new DynamicClassLoader();
+			var c = loader.defineClass("stab.StaticInnerClass", bytecode);
+			var nc = loader.defineClass("stab.StaticInnerClass$Nested", innerBytecode);
+			loader.linkClass(c);
+			loader.linkClass(nc);
+
+			var cstr = c.getConstructor();
+			cstr.newInstance();
+
+			var ncstr = nc.getConstructor();
+			ncstr.newInstance();
+		}
+
+		[Test]
+		public void genericClassTest() {
+			// public class GenericClass<T> {
+			//     public T field;
+			//     public GenericClass(T t) {
+			//         this.field = t;
+			//     }
+			// }
+			var typeSystem = new Library(new String[0]);
+			var typeBuilder = typeSystem.defineType("stab/GenericClass");
+			typeBuilder.setPublic(true);
+			typeBuilder.setBaseType(typeSystem.getType("java/lang/Object"));
+			var t = typeBuilder.addGenericArgument("T");
+
+			var field = typeBuilder.defineField("field", t);
+			field.setPublic(true);
+
+			var methodBuilder = typeBuilder.defineMethod("<init>");
+			methodBuilder.setPublic(true);
+			methodBuilder.setReturnType(typeSystem.VoidType);
+			methodBuilder.addParameter(t).setName("t");
+			var generator = methodBuilder.getCodeGenerator();
+			generator.beginScope();
+			generator.emit(Opcode.Aload, generator.getLocal("this"));
+			generator.emit(Opcode.Invokespecial, typeBuilder.BaseType.getMethod("<init>", Query.empty<TypeInfo>()));
+			generator.emit(Opcode.Aload, generator.getLocal("this"));
+			generator.emit(Opcode.Aload, generator.getLocal("t"));
+			generator.emit(Opcode.Putfield, field);
+			generator.emit(Opcode.Return);
+			generator.endScope();
+
+			var bytecode = typeBuilder.createType(typeSystem);
+			saveBytecode("GenericClass", bytecode);
+
+			var loader = new DynamicClassLoader();
+			var c = loader.defineClass("stab.GenericClass", bytecode);
+			loader.linkClass(c);
+
+			var cstr = c.getConstructor(typeof(Object));
+			var f = c.getField("field");
+			var instance = cstr.newInstance("TEST");
+			Assert.assertEquals("TEST", f.get(instance));
+		}
+
+		private void createDefaultConstructor(TypeBuilder typeBuilder) {
+			var methodBuilder = typeBuilder.defineMethod("<init>");
+			methodBuilder.setPublic(true);
+			methodBuilder.setReturnType(typeBuilder.Library.VoidType);
+			var generator = methodBuilder.getCodeGenerator();
+			generator.beginScope();
+			generator.emit(Opcode.Aload, generator.getLocal("this"));
+			generator.emit(Opcode.Invokespecial, typeBuilder.BaseType.getMethod("<init>", Query.empty<TypeInfo>()));
+			generator.emit(Opcode.Return);
+			generator.endScope();
+		}
+
+		private void saveBytecode(String className, byte[] bytecode) {
+			var generatedPath = PathHelper.combine(System.getProperty("user.dir"), "Tests/resources/TypeBuilderTest/stab");
+			var generatedDir = new File(generatedPath);
+			if (!generatedDir.exists()) {
+				generatedDir.mkdir();
+			}
+			var stream = new FileOutputStream(PathHelper.combine(generatedPath, className + ".class"));
+			stream.write(bytecode);
+			stream.close();
+		}
+		
+		private class DynamicClassLoader : ClassLoader {
+			public Class<?> defineClass(String name, byte[] code) {
+				return defineClass(name, code, 0, sizeof(code));
+			}
+			public void linkClass(Class<?> c) {
+				resolveClass(c);
+			}
+		}
+	}
+}

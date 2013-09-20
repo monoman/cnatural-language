@@ -1,0 +1,17 @@
+using java.lang;
+using java.util;
+using stab.query;
+
+public class ToTLongMap {
+	public static boolean test() {
+		var map = Query.asIterable(new[] { 1L, 2L, 3L }).toMap(p => "K" + p);
+		return map.containsValue(1L) &&
+				map.containsValue(2L) &&
+				map.containsValue(3L) &&
+				!map.containsValue(4L) &&
+				map.containsKey("K1") &&
+				map.containsKey("K2") &&
+				map.containsKey("K3") &&
+				!map.containsKey("K4");
+	}
+}

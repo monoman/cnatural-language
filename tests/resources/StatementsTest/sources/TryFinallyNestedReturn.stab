@@ -1,0 +1,24 @@
+using java.lang;
+
+public class TryFinallyNestedReturn {
+	private static int field;
+
+	public static boolean test() {
+		return method() == 0 && field == 101;		
+	}
+
+	public static int method() {
+		try {
+			try {
+				return field;
+			} finally {
+				field++;
+			}
+		} catch (Exception e) {
+			field += 10;
+		} finally {
+			field += 100;
+		}
+		return field;
+	}
+}

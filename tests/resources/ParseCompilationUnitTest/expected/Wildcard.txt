@@ -1,0 +1,6 @@
+using java.util;
+
+class C {
+    Iterable<?> f1;
+    Map<? : object, string : ?> f2;
+}

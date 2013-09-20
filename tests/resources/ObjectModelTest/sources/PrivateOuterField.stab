@@ -1,0 +1,21 @@
+using java.lang;
+
+package p.q {
+
+	public class PrivateOuterField<U, V> {
+		public static int test() {
+			var obj = new PrivateOuterField<Integer, String>();
+			new Nested(obj);
+			return obj.field;
+		}
+
+		private int field;
+
+		class Nested {
+			Nested(PrivateOuterField<Integer, String> obj) {
+				obj.field = 2;
+			}
+		}
+	}
+
+}

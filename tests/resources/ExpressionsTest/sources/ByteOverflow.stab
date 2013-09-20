@@ -1,0 +1,6 @@
+public class ByteOverflow {
+	public static boolean test() {
+		byte v = 127;
+		return ++v == -128;
+	}
+}

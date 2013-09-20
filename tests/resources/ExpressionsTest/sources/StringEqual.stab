@@ -1,0 +1,8 @@
+using java.lang;
+
+public class StringEqual {
+	public static boolean test() {
+		String s = "str";
+		return s == "str";
+	}
+}

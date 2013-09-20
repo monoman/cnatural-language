@@ -1,0 +1,10 @@
+Lambda( => {
+for (Assign(Name(i) Assign Literal(DecimalInteger, [0]));
+Assign(Name(j) Assign Literal(String, ["x"]));
+Condition((Name(i) LessThan (Name(j)).Length));
+Assign(Name(i) Add (Name(j)).Length);
+)
+{
+}
+}
+)

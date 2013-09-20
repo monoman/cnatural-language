@@ -1,0 +1,1 @@
+Name(F)((Name(G) LessThan Name(A)), (Name(B) RightShift Literal(DecimalInteger, [7])))

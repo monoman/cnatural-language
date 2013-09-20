@@ -1,0 +1,2 @@
+from s in Name(names)
+select (Name(s)).ToUpper()

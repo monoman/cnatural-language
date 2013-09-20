@@ -1,0 +1,2 @@
+Lambda(int i, T t => Name(t)(Name(i))?Literal(True, [true]):Literal(False, [false]);
+)

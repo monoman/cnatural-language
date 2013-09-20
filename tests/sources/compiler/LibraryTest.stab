@@ -1,0 +1,729 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using org.junit;
+
+package stab.tools.compiler.test {
+
+	public class LibraryTest : ExecutionTest {
+		protected override String ResourcesPath {
+			get {
+				return "LibraryTest";
+			}
+		}
+		
+		[Test]
+		public void count() {
+			doTest("Count", new Class<?>[] {}, new Object[] {}, 3);
+		}
+		
+		[Test]
+		public void count2() {
+			doTest("Count2", new Class<?>[] {}, new Object[] {}, 2);
+		}
+		
+		[Test]
+		public void any() {
+			doTest("Any", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void range() {
+			doTest("Range", new Class<?>[] {}, new Object[] {}, 3628800);
+		}
+		
+		[Test]
+		public void asIterable() {
+			doTest("AsIterable", new Class<?>[] {}, new Object[] {}, 3628800);
+		}
+		
+		[Test]
+		public void asIterable2() {
+			doTest("AsIterable2", new Class<?>[] {}, new Object[] {}, "abc");
+		}
+		
+		[Test]
+		public void empty() {
+			doTest("Empty", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void countInt() {
+			doTest("CountInt", new Class<?>[] {}, new Object[] {}, 2);
+		}
+		
+		[Test]
+		public void select() {
+			doTest("Select", new Class<?>[] {}, new Object[] {}, "ABC");
+		}
+		
+		[Test]
+		public void selectInt() {
+			doTest("SelectInt", new Class<?>[] {}, new Object[] {}, 6);
+		}
+		
+		[Test]
+		public void selectInt2() {
+			doTest("SelectInt2", new Class<?>[] {}, new Object[] {}, "abc");
+		}
+		
+		[Test]
+		public void selectInt3() {
+			doTest("SelectInt3", new Class<?>[] {}, new Object[] {}, "246");
+		}
+		
+		[Test]
+		public void where() {
+			doTest("Where", new Class<?>[] {}, new Object[] {}, 2);
+		}
+		
+		[Test]
+		public void where2() {
+			doTest("Where2", new Class<?>[] {}, new Object[] {}, 5);
+		}
+		
+		[Test]
+		public void distinct() {
+			doTest("Distinct", new Class<?>[] {}, new Object[] {}, 3);
+		}
+		
+		[Test]
+		public void sequenceEqual() {
+			doTest("SequenceEqual", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void sequenceEqual2() {
+			doTest("SequenceEqual2", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void orderBy() {
+			doTest("OrderBy", new Class<?>[] {}, new Object[] {}, "abbccc");
+		}
+		
+		[Test]
+		public void thenBy() {
+			doTest("ThenBy", new Class<?>[] {}, new Object[] {}, "abcaabbccaaabbbccc");
+		}
+		
+		[Test]
+		public void thenBy2() {
+			doTest("ThenBy2", new Class<?>[] {}, new Object[] {}, "abcaabbccaaabbbccc");
+		}
+		
+		[Test]
+		public void selectMany() {
+			doTest("SelectMany", new Class<?>[] {}, new Object[] {}, "a1b1c1a2b2c2");
+		}
+		
+		[Test]
+		public void whereSequenceEqual() {
+			doTest("WhereSequenceEqual", new Class<?>[] {}, new Object[] {}, "obj2");
+		}
+		
+		[Test]
+		public void cast() {
+			doTest("Cast", new Class<?>[] {}, new Object[] {}, "abcdef");
+		}
+		
+		[Test]
+		public void castToInt() {
+			doTest("CastToInt", new Class<?>[] {}, new Object[] {}, 10);
+		}
+		
+		[Test]
+		public void castToInt2() {
+			doTest("CastToInt2", new Class<?>[] {}, new Object[] {}, 10);
+		}
+		
+		[Test]
+		public void groupBy() {
+			doTest("GroupBy", new Class<?>[] {}, new Object[] {}, "(a)bc(d)efg");
+		}
+		
+		[Test]
+		public void ofType() {
+			doTest("OfType", new Class<?>[] {}, new Object[] {}, "abcdef");
+		}
+		
+		[Test]
+		public void groupBy2() {
+			doTest("GroupBy2", new Class<?>[] {}, new Object[] {}, "(a)BC(d)EFG");
+		}
+		
+		[Test]
+		public void join() {
+			doTest("Join", new Class<?>[] {}, new Object[] {}, "|A1: B1|A2: B2|A2: B3|A3: B4");
+		}
+		
+		[Test]
+		public void groupJoin() {
+			doTest("GroupJoin", new Class<?>[] {}, new Object[] {}, "|A1: B1 |A2: B2 B3 |A3: B4 ");
+		}
+		
+		[Test]
+		public void selectLINQ() {
+			doTest("SelectLINQ", new Class<?>[] {}, new Object[] {}, "ABC");
+		}
+		
+		[Test]
+		public void castLINQ() {
+			doTest("CastLINQ", new Class<?>[] {}, new Object[] {}, "abcdef");
+		}
+		
+		[Test]
+		public void groupByLINQ() {
+			doTest("GroupByLINQ", new Class<?>[] {}, new Object[] {}, "(a)bc(d)efg");
+		}
+		
+		[Test]
+		public void groupBy2LINQ() {
+			doTest("GroupBy2LINQ", new Class<?>[] {}, new Object[] {}, "(a)BC(d)EFG");
+		}
+		
+		[Test]
+		public void groupJoinLINQ() {
+			doTest("GroupJoinLINQ", new Class<?>[] {}, new Object[] {}, "|A1: B1 |A2: B2 B3 |A3: B4 ");
+		}
+		
+		[Test]
+		public void orderByLINQ() {
+			doTest("OrderByLINQ", new Class<?>[] {}, new Object[] {}, "abbccc");
+		}
+		
+		[Test]
+		public void thenByLINQ() {
+			doTest("ThenByLINQ", new Class<?>[] {}, new Object[] {}, "abcaabbccaaabbbccc");
+		}
+		
+		[Test]
+		public void thenBy2LINQ() {
+			doTest("ThenBy2LINQ", new Class<?>[] {}, new Object[] {}, "abcaabbccaaabbbccc");
+		}
+		
+		[Test]
+		public void whereLINQ() {
+			doTest("WhereLINQ", new Class<?>[] {}, new Object[] {}, 2);
+		}
+		
+		[Test]
+		public void where2LINQ() {
+			doTest("Where2LINQ", new Class<?>[] {}, new Object[] {}, 5);
+		}
+		
+		[Test]
+		public void conditionalTest() {
+			doTest(new String[]{ "ConditionalTest", "ConditionalAux" }, new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void conditionalTest2() {
+			doTest(new String[]{ "ConditionalTest2", "ConditionalAux" }, new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void allAny() {
+			doTest("AllAny", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void allContains() {
+			doTest("AllContains", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void linqWhere() {
+			doTest("LinqWhere", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void linqExecution() {
+			doTest("LinqExecution", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void expressionTreeParameter() {
+			doTest("ExpressionTreeParameter", new Class<?>[] {}, new Object[] {}, "p");
+		}
+		
+		[Test]
+		public void expressionTreeConstant() {
+			doTest("ExpressionTreeConstant", new Class<?>[] {}, new Object[] {}, 1);
+		}
+		
+		[Test]
+		public void expressionTreeVariable() {
+			doTest("ExpressionTreeVariable", new Class<?>[] {}, new Object[] {}, 1);
+		}
+		
+		[Test]
+		public void expressionTreeMethodCall() {
+			doTest("ExpressionTreeMethodCall", new Class<?>[] {}, new Object[] {}, "method");
+		}
+		
+		[Test]
+		public void expressionTreeInvoke() {
+			doTest("ExpressionTreeInvoke", new Class<?>[] {}, new Object[] {}, "ExpressionTreeInvoke$D");
+		}
+		
+		[Test]
+		public void expressionTreeField() {
+			doTest("ExpressionTreeField", new Class<?>[] {}, new Object[] {}, "field");
+		}
+		
+		[Test]
+		public void expressionTreeProperty() {
+			doTest("ExpressionTreeProperty", new Class<?>[] {}, new Object[] {}, "getProperty");
+		}
+		
+		[Test]
+		public void expressionTreeIncrement() {
+			doTest("ExpressionTreeIncrement", new Class<?>[] {}, new Object[] {}, "PreIncrement");
+		}
+		
+		[Test]
+		public void expressionTreeAdd() {
+			doTest("ExpressionTreeAdd", new Class<?>[] {}, new Object[] {}, "Add");
+		}
+		
+		[Test]
+		public void expressionTreeField2() {
+			doTest("ExpressionTreeField2", new Class<?>[] {}, new Object[] {}, "field");
+		}
+		
+		[Test]
+		public void expressionTreeTypeof() {
+			doTest("ExpressionTreeTypeof", new Class<?>[] {}, new Object[] {}, "ExpressionTreeTypeof");
+		}
+		
+		[Test]
+		public void expressionTreeIndexer() {
+			doTest("ExpressionTreeIndexer", new Class<?>[] {}, new Object[] {}, 1);
+		}
+		
+		[Test]
+		public void expressionTreeAddAssign() {
+			doTest("ExpressionTreeAddAssign", new Class<?>[] {}, new Object[] {}, "AddAssign");
+		}
+		
+		[Test]
+		public void expressionTreeCast() {
+			doTest("ExpressionTreeCast", new Class<?>[] {}, new Object[] {}, "Cast");
+		}
+		
+		[Test]
+		public void expressionTreeObjectCreation() {
+			doTest("ExpressionTreeObjectCreation", new Class<?>[] {}, new Object[] {}, "java.lang.Object");
+		}
+		
+		[Test]
+		public void expressionTreeObjectCreation2() {
+			doTest("ExpressionTreeObjectCreation2", new Class<?>[] {}, new Object[] {}, "field");
+		}
+		
+		[Test]
+		public void expressionTreeObjectCreation3() {
+			doTest("ExpressionTreeObjectCreation3", new Class<?>[] {}, new Object[] {}, "setProperty");
+		}
+		
+		[Test]
+		public void expressionTreeObjectCreation4() {
+			doTest("ExpressionTreeObjectCreation4", new Class<?>[] {}, new Object[] {}, "add");
+		}
+		
+		[Test]
+		public void expressionTreeAnonymousObjectCreation() {
+			doTest("ExpressionTreeAnonymousObjectCreation", new Class<?>[] {}, new Object[] {}, "p");
+		}
+		
+		[Test]
+		public void expressionTreeArrayCreation() {
+			doTest("ExpressionTreeArrayCreation", new Class<?>[] {}, new Object[] {}, 3);
+		}
+		
+		[Test]
+		public void expressionTreeArrayCreation2() {
+			doTest("ExpressionTreeArrayCreation2", new Class<?>[] {}, new Object[] {}, 3);
+		}
+		
+		[Test]
+		public void expressionTreeReturn() {
+			doTest("ExpressionTreeReturn", new Class<?>[] {}, new Object[] {}, 1);
+		}
+		
+		[Test]
+		public void intList1() {
+			doTest("IntList1", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void intIterable1() {
+			doTest("IntIterable1", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void intIterable2() {
+			doTest("IntIterable2", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void intList2() {
+			doTest("IntList2", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void intList3() {
+			doTest("IntList3", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void intList4() {
+			doTest("IntList4", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void intList5() {
+			doTest("IntList5", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void doubleList1() {
+			doTest("DoubleList1", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void aggregate() {
+			doTest("Aggregate", new Class<?>[] {}, new Object[] {}, "S12345");
+		}
+		
+		[Test]
+		public void average() {
+			doTest("Average", new Class<?>[] {}, new Object[] {}, 2d);
+		}
+		
+		[Test]
+		public void average2() {
+			doTest("Average2", new Class<?>[] {}, new Object[] {}, 2d);
+		}
+		
+		[Test]
+		public void reverse() {
+			doTest("Reverse", new Class<?>[] {}, new Object[] {}, "FEDCBA");
+		}
+		
+		[Test]
+		public void skip() {
+			doTest("Skip", new Class<?>[] {}, new Object[] {}, "DEF");
+		}
+		
+		[Test]
+		public void sum() {
+			doTest("Sum", new Class<?>[] {}, new Object[] {}, 10);
+		}
+		
+		[Test]
+		public void sum2() {
+			doTest("Sum2", new Class<?>[] {}, new Object[] {}, 10);
+		}
+		
+		[Test]
+		public void max() {
+			doTest("Max", new Class<?>[] {}, new Object[] {}, 4d);
+		}
+		
+		[Test]
+		public void intSet1() {
+			doTest("IntSet1", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void intSet2() {
+			doTest("IntSet2", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void intSet3() {
+			doTest("IntSet3", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void toMap() {
+			doTest("ToMap", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void toMap2() {
+			doTest("ToMap2", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void toMap3() {
+			doTest("ToMap3", new Class<?>[] {}, new Object[] {}, 0);
+		}
+		
+		[Test]
+		public void toMap4() {
+			doTest("ToMap4", new Class<?>[] {}, new Object[] {}, 0);
+		}
+		
+		[Test]
+		public void toMap5() {
+			doTest("ToMap5", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void toMap6() {
+			doTest("ToMap6", new Class<?>[] {}, new Object[] {}, 0);
+		}
+		
+		[Test]
+		public void toLongTMap() {
+			doTest("ToLongTMap", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void toLongTMap2() {
+			doTest("ToLongTMap2", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void toLongTMap3() {
+			doTest("ToLongTMap3", new Class<?>[] {}, new Object[] {}, 0);
+		}
+		
+		[Test]
+		public void toLongTMap4() {
+			doTest("ToLongTMap4", new Class<?>[] {}, new Object[] {}, 0);
+		}
+		
+		[Test]
+		public void toLongTMap5() {
+			doTest("ToLongTMap5", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void toTLongMap() {
+			doTest("ToTLongMap", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void toTLongMap2() {
+			doTest("ToTLongMap2", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void toTLongMap3() {
+			doTest("ToTLongMap3", new Class<?>[] {}, new Object[] {}, 0);
+		}
+		
+		[Test]
+		public void toTLongMap4() {
+			doTest("ToTLongMap4", new Class<?>[] {}, new Object[] {}, 0);
+		}
+		
+		[Test]
+		public void toTLongMap5() {
+			doTest("ToTLongMap5", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void toTIntMap() {
+			doTest("ToTIntMap", new Class<?>[] {}, new Object[] {}, true);
+		}
+
+		[Test]
+		public void toTIntMap2() {
+			doTest("ToTIntMap2", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void toTIntMap3() {
+			doTest("ToTIntMap3", new Class<?>[] {}, new Object[] {}, 0);
+		}
+		
+		[Test]
+		public void toTIntMap4() {
+			doTest("ToTIntMap4", new Class<?>[] {}, new Object[] {}, 0);
+		}
+
+		[Test]
+		public void toTIntMap5() {
+			doTest("ToTIntMap5", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void toTFloatMap() {
+			doTest("ToTFloatMap", new Class<?>[] {}, new Object[] {}, true);
+		}
+
+		[Test]
+		public void toTFloatMap2() {
+			doTest("ToTFloatMap2", new Class<?>[] {}, new Object[] {}, true);
+		}
+
+		[Test]
+		public void toTFloatMap3() {
+			doTest("ToTFloatMap3", new Class<?>[] {}, new Object[] {}, 0);
+		}
+
+		[Test]
+		public void toTFloatMap4() {
+			doTest("ToTFloatMap4", new Class<?>[] {}, new Object[] {}, 0);
+		}
+
+		[Test]
+		public void toTFloatMap5() {
+			doTest("ToTFloatMap5", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void toTDoubleMap() {
+			doTest("ToTDoubleMap", new Class<?>[] {}, new Object[] {}, true);
+		}
+
+		[Test]
+		public void toTDoubleMap2() {
+			doTest("ToTDoubleMap2", new Class<?>[] {}, new Object[] {}, true);
+		}
+
+		[Test]
+		public void toTDoubleMap3() {
+			doTest("ToTDoubleMap3", new Class<?>[] {}, new Object[] {}, 0);
+		}
+
+		[Test]
+		public void toTDoubleMap4() {
+			doTest("ToTDoubleMap4", new Class<?>[] {}, new Object[] {}, 0);
+		}
+
+		[Test]
+		public void toTDoubleMap5() {
+			doTest("ToTDoubleMap5", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void toIntTMap() {
+			doTest("ToIntTMap", new Class<?>[] {}, new Object[] {}, true);
+		}
+
+		[Test]
+		public void toIntTMap2() {
+			doTest("ToIntTMap2", new Class<?>[] {}, new Object[] {}, true);
+		}
+
+		[Test]
+		public void toIntTMap3() {
+			doTest("ToIntTMap3", new Class<?>[] {}, new Object[] {}, 0);
+		}
+
+		[Test]
+		public void toIntTMap4() {
+			doTest("ToIntTMap4", new Class<?>[] {}, new Object[] {}, 0);
+		}
+
+		[Test]
+		public void toIntTMap5() {
+			doTest("ToIntTMap5", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void toFloatTMap() {
+			doTest("ToFloatTMap", new Class<?>[] {}, new Object[] {}, true);
+		}
+
+		[Test]
+		public void toFloatTMap2() {
+			doTest("ToFloatTMap2", new Class<?>[] {}, new Object[] {}, true);
+		}
+
+		[Test]
+		public void toFloatTMap3() {
+			doTest("ToFloatTMap3", new Class<?>[] {}, new Object[] {}, 0);
+		}
+
+		[Test]
+		public void toFloatTMap4() {
+			doTest("ToFloatTMap4", new Class<?>[] {}, new Object[] {}, 0);
+		}
+
+		[Test]
+		public void toFloatTMap5() {
+			doTest("ToFloatTMap5", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void toDoubleTMap() {
+			doTest("ToDoubleTMap", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void toDoubleTMap2() {
+			doTest("ToDoubleTMap2", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void toDoubleTMap3() {
+			doTest("ToDoubleTMap3", new Class<?>[] {}, new Object[] {}, 0);
+		}
+		
+		[Test]
+		public void toDoubleTMap4() {
+			doTest("ToDoubleTMap4", new Class<?>[] {}, new Object[] {}, 0);
+		}
+		
+		[Test]
+		public void toDoubleTMap5() {
+			doTest("ToDoubleTMap5", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void union() {
+			doTest("Union", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void union2() {
+			doTest("Union2", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void intersect() {
+			doTest("Intersect", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void intersect2() {
+			doTest("Intersect2", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void skipWhile() {
+			doTest("SkipWhile", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void skipWhile2() {
+			doTest("SkipWhile2", new Class<?>[] {}, new Object[] {}, true);
+		}
+		
+		[Test]
+		public void indexedSelect() {
+			doTest("IndexedSelect", new Class<?>[] {}, new Object[] {}, "A0B1C2");
+		}
+	}
+}

@@ -1,0 +1,616 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using stab.tools.helpers;
+
+package stab.tools.parser {
+
+    public class PreprocessorScanner : ScannerBase {
+        private boolean lineStart;
+        private boolean preprocessorLine;
+    
+        public PreprocessorScanner(CodeErrorManager codeErrorManager, char[] text)
+            : this(codeErrorManager, text, 0, sizeof(text), 0, 0) {
+        }
+
+        public PreprocessorScanner(CodeErrorManager codeErrorManager, char[] text, int position, int length, int line, int column)
+            : super(codeErrorManager, text, position, length, line, column) {
+            this.lineStart = true;
+        }
+
+        public void scanMessage() {
+            while (true) {
+                switch (this.Next) {
+                case -1:
+                case '\r':
+                case '\u2028':
+                case '\u2029':
+                case '\n':
+                    return;
+                }
+                advance();
+            }
+        }
+
+        public final PreprocessorLexicalUnit nextLexicalUnit(boolean skippedSection) {
+            if (this.Next == -1) {
+                return PreprocessorLexicalUnit.EndOfStream;
+            }
+            while (true) {
+                switch (this.Next) {
+                case -1:
+                    if (this.preprocessorLine) {
+                        return PreprocessorLexicalUnit.EndOfStream;
+                    }
+                    return PreprocessorLexicalUnit.SourceCode;
+                case '\r':
+                    this.Line++;
+                    this.Column = -1;
+                    if (advance() == '\n') {
+                        this.Column = -1;
+                        advance();
+                    }
+                    this.lineStart = true;
+                    if (this.preprocessorLine) {
+                        this.preprocessorLine = false;
+                        return PreprocessorLexicalUnit.NewLine;
+                    }
+                    this.preprocessorLine = false;
+                    return PreprocessorLexicalUnit.SourceCode;
+
+                case '\u2028':
+                case '\u2029':
+                case '\n':
+                    this.Line++;
+                    this.Column = -1;
+                    advance();
+                    this.lineStart = true;
+                    if (this.preprocessorLine) {
+                        this.preprocessorLine = false;
+                        return PreprocessorLexicalUnit.NewLine;
+                    }
+                    this.preprocessorLine = false;
+                    return PreprocessorLexicalUnit.SourceCode;
+
+                case ' ':
+                case '\t':
+                case '\v':
+                case '\f':
+                    scanWhitespaces();
+                    if (this.preprocessorLine) {
+                        return PreprocessorLexicalUnit.WhiteSpace;
+                    }
+                    break;
+
+                case '@':
+                    if (this.preprocessorLine) {
+                        throw error(ParseErrorId.InvalidPreprocessorChar);
+                    }
+                    if (!skippedSection) {
+                        if (advance() == '"') {
+                            advance();
+                            for (; ; ) {
+                                switch (this.Next) {
+                                case -1:
+                                    throw error(ParseErrorId.UnclosedVerbatimString);
+                                case '\r':
+                                    this.Line++;
+                                    this.Column = -1;
+                                    if (advance() == '\n') {
+                                        this.Column = -1;
+                                        advance();
+                                    }
+                                    break;
+
+                                case '\u2028':
+                                case '\u2029':
+                                case '\n':
+                                    this.Line++;
+                                    this.Column = -1;
+                                    advance();
+                                    break;
+
+                                case '"':
+                                    switch (advance()) {
+                                    case '"':
+                                        advance();
+                                        break;
+                                    default:
+                                        return PreprocessorLexicalUnit.SourceCode;
+                                    }
+                                    break;
+                                default:
+                                    advance();
+                                    break;
+                                }
+                            }
+                        }
+                    } else {
+                        if (advance() == '"') {
+                            for (; ; ) {
+                                switch (advance()) {
+                                case -1:
+                                case '\u2028':
+                                case '\u2029':
+                                case '\r':
+                                case '\n':
+                                    return PreprocessorLexicalUnit.SourceCode;
+                                }
+                            }
+                        }
+                    }
+                    break;
+
+                case '/':
+                    this.lineStart = false;
+                    switch (advance()) {
+                    case '/':
+                        for (; ; ) {
+                            switch (advance()) {
+                            case -1:
+                            case '\r':
+                            case '\u2028':
+                            case '\u2029':
+                            case '\n':
+                                if (this.preprocessorLine) {
+                                    return PreprocessorLexicalUnit.SingleLineComment;
+                                } else {
+                                    return PreprocessorLexicalUnit.SourceCode;
+                                }
+                            }
+                        }
+
+                    case '*':
+                        if (this.preprocessorLine) {
+                            throw error(ParseErrorId.InvalidPreprocessorChar);
+                        }
+                        if (!skippedSection) {
+                            advance();
+                            for (; ; ) {
+                                switch (this.Next) {
+                                case -1:
+                                    throw error(ParseErrorId.UnclosedDelimitedComment);
+                                case '\r':
+                                    this.Line++;
+                                    this.Column = -1;
+                                    if (advance() == '\n') {
+                                        this.Column = -1;
+                                        advance();
+                                    }
+                                    break;
+
+                                case '\u2028':
+                                case '\u2029':
+                                case '\n':
+                                    this.Line++;
+                                    this.Column = -1;
+                                    advance();
+                                    break;
+                                case '*':
+                                    switch (advance()) {
+                                    case -1:
+                                        throw error(ParseErrorId.UnclosedDelimitedComment);
+                                    case '/':
+                                        advance();
+                                        return PreprocessorLexicalUnit.SourceCode;
+                                    }
+                                    break;
+                                default:
+                                    advance();
+                                    break;
+                                }
+                            }
+                        } else {
+                            for (; ; ) {
+                                switch (advance()) {
+                                case -1:
+                                case '\u2028':
+                                case '\u2029':
+                                case '\r':
+                                case '\n':
+                                    return PreprocessorLexicalUnit.SourceCode;
+                                }
+                            }
+                        }
+
+                    default:
+                        if (this.preprocessorLine) {
+                            throw error(ParseErrorId.InvalidPreprocessorChar);
+                        }
+                        break;
+                    }
+                    break;
+
+                case '|':
+                    if (this.preprocessorLine) {
+                        if (advance() == '|') {
+                            advance();
+                            return PreprocessorLexicalUnit.Or;
+                        } else {
+                            throw error(ParseErrorId.InvalidPreprocessorChar);
+                        }
+                    } else {
+                        this.lineStart = false;
+                        advance();
+                    }
+                    break;
+
+                case '&':
+                    if (this.preprocessorLine) {
+                        if (advance() == '&') {
+                            advance();
+                            return PreprocessorLexicalUnit.And;
+                        } else {
+                            throw error(ParseErrorId.InvalidPreprocessorChar);
+                        }
+                    } else {
+                        this.lineStart = false;
+                        advance();
+                    }
+                    break;
+
+                case '=':
+                    if (this.preprocessorLine) {
+                        if (advance() == '=') {
+                            advance();
+                            return PreprocessorLexicalUnit.Equal;
+                        } else {
+                            throw error(ParseErrorId.InvalidPreprocessorChar);
+                        }
+                    } else {
+                        this.lineStart = false;
+                        advance();
+                    }
+                    break;
+
+                case '!':
+                    if (this.preprocessorLine) {
+                        if (advance() == '=') {
+                            advance();
+                            return PreprocessorLexicalUnit.NotEqual;
+                        } else {
+                            return PreprocessorLexicalUnit.Not;
+                        }
+                    } else {
+                        this.lineStart = false;
+                        advance();
+                    }
+                    break;
+
+                case 'd':
+                    if (this.preprocessorLine) {
+                        return scanKeyword("define", PreprocessorLexicalUnit.Define);
+                    } else {
+                        this.lineStart = false;
+                        advance();
+                    }
+                    break;
+
+                case 'i':
+                    if (this.preprocessorLine) {
+                        return scanKeyword("if", PreprocessorLexicalUnit.If);
+                    } else {
+                        this.lineStart = false;
+                        advance();
+                    }
+                    break;
+
+                case 'p':
+                    if (this.preprocessorLine) {
+                        return scanKeyword("pragma", PreprocessorLexicalUnit.Pragma);
+                    } else {
+                        this.lineStart = false;
+                        advance();
+                    }
+                    break;
+
+                case 'u':
+                    if (this.preprocessorLine) {
+                        return scanKeyword("undef", PreprocessorLexicalUnit.Undef);
+                    } else {
+                        this.lineStart = false;
+                        advance();
+                    }
+                    break;
+
+                case 'l':
+                    if (this.preprocessorLine) {
+                        return scanKeyword("line", PreprocessorLexicalUnit.Line);
+                    } else {
+                        this.lineStart = false;
+                        advance();
+                    }
+                    break;
+
+                case 'w':
+                    if (this.preprocessorLine) {
+                        return scanKeyword("warning", PreprocessorLexicalUnit.Warning);
+                    } else {
+                        this.lineStart = false;
+                        advance();
+                    }
+                    break;
+
+                case 'r':
+                    if (this.preprocessorLine) {
+                        return scanKeyword("region", PreprocessorLexicalUnit.Region);
+                    } else {
+                        this.lineStart = false;
+                        advance();
+                    }
+                    break;
+
+                case 'e':
+                    if (this.preprocessorLine) {
+                        switch (advance()) {
+                        case 'l':
+                            switch (advance()) {
+                            case 'i':
+                                return scanKeyword("if", PreprocessorLexicalUnit.Elif);
+                            case 's':
+                                return scanKeyword("se", PreprocessorLexicalUnit.Else);
+                            default:
+                                if (ParserHelper.isIdentifierPartChar(this.Next)) {
+                                    scanIdentifierPart();
+                                }
+                                return PreprocessorLexicalUnit.Symbol;
+                            }
+                        case 'n':
+                            switch (advance()) {
+                            case 'd':
+                                switch (advance()) {
+                                case 'i':
+                                    return scanKeyword("if", PreprocessorLexicalUnit.Endif);
+                                case 'r':
+                                    return scanKeyword("region", PreprocessorLexicalUnit.Endregion);
+                                default:
+                                    if (ParserHelper.isIdentifierPartChar(this.Next)) {
+                                        scanIdentifierPart();
+                                    }
+                                    return PreprocessorLexicalUnit.Symbol;
+                                }
+                            default:
+                                if (ParserHelper.isIdentifierPartChar(this.Next)) {
+                                    scanIdentifierPart();
+                                }
+                                return PreprocessorLexicalUnit.Symbol;
+                            }
+                        case 'r':
+                            return scanKeyword("rror", PreprocessorLexicalUnit.Error);
+                        default:
+                            if (ParserHelper.isIdentifierPartChar(this.Next)) {
+                                scanIdentifierPart();
+                            }
+                            return PreprocessorLexicalUnit.Symbol;
+                        }
+                    } else {
+                        this.lineStart = false;
+                        advance();
+                    }
+                    break;
+
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                    if (this.preprocessorLine) {
+                        for (; ; ) {
+                            switch (advance()) {
+                            case '0':
+                            case '1':
+                            case '2':
+                            case '3':
+                            case '4':
+                            case '5':
+                            case '6':
+                            case '7':
+                            case '8':
+                            case '9':
+                                break;
+                            default:
+                                return PreprocessorLexicalUnit.DecimalDigits;
+                            }
+                        }
+                    } else {
+                        this.lineStart = false;
+                        advance();
+                    }
+                    break;
+
+                case '\'':
+                    switch (advance()) {
+                    case -1:
+                    case '\r':
+                    case '\u2028':
+                    case '\u2029':
+                    case '\n':
+                    case '\'':
+                        return PreprocessorLexicalUnit.SourceCode;
+
+                    case '\\':
+                        advance();
+                        boolean done = false;
+                        do {
+                            switch (advance()) {
+                            case -1:
+                            case '\r':
+                            case '\u2028':
+                            case '\u2029':
+                            case '\n':
+                            case '\'':
+                                done = true;
+                                break;
+                            }
+                        } while (!done);
+                        break;
+
+                    default:
+                        advance();
+                        advance();
+                        break;
+                    }
+                    break;
+
+                case '"':
+                    if (this.preprocessorLine) {
+                        for (; ; ) {
+                            switch (advance()) {
+                            case -1:
+                            case '\r':
+                            case '\u2028':
+                            case '\u2029':
+                            case '\n':
+                                throw error(ParseErrorId.UnclosedFilename);
+                            case '"':
+                                advance();
+                                return PreprocessorLexicalUnit.Filename;
+                            }
+                        }
+                    } else {
+                        this.lineStart = false;
+                        for (; ; ) {
+                            switch (advance()) {
+                            case -1:
+                            case '\r':
+                            case '\u2028':
+                            case '\u2029':
+                            case '\n':
+                            case '"':
+                                return PreprocessorLexicalUnit.SourceCode;
+
+                            case '\\':
+                                advance();
+                                boolean done = false;
+                                do {
+                                    switch (advance()) {
+                                    case -1:
+                                    case '\r':
+                                    case '\u2028':
+                                    case '\u2029':
+                                    case '\n':
+                                    case '\"':
+                                        done = true;
+                                        break;
+                                    }
+                                } while (!done);
+                                break;
+                            }
+                        }
+                    }
+
+                case '(':
+                    if (this.preprocessorLine) {
+                        advance();
+                        return PreprocessorLexicalUnit.LeftParenthesis;
+                    } else {
+                        this.lineStart = false;
+                        advance();
+                    }
+                    break;
+
+                case ')':
+                    if (this.preprocessorLine) {
+                        advance();
+                        return PreprocessorLexicalUnit.RightParenthesis;
+                    } else {
+                        this.lineStart = false;
+                        advance();
+                    }
+                    break;
+
+                case ',':
+                    if (this.preprocessorLine) {
+                        advance();
+                        return PreprocessorLexicalUnit.Comma;
+                    } else {
+                        this.lineStart = false;
+                        advance();
+                    }
+                    break;
+
+                case '_':
+                    if (this.preprocessorLine) {
+                        scanIdentifierPart();
+                        return PreprocessorLexicalUnit.Symbol;
+                    } else {
+                        this.lineStart = false;
+                        advance();
+                    }
+                    break;
+
+                case '\\':
+                    if (this.preprocessorLine) {
+                        int unicode = scanUnicodeEscapeSequence();
+                        if (ParserHelper.isIdentifierStartChar(unicode)) {
+                            scanIdentifierPart();
+                            return PreprocessorLexicalUnit.Symbol;
+                        } else {
+                            throw error(ParseErrorId.InvalidPreprocessorChar);
+                        }
+                    } else {
+                        this.lineStart = false;
+                        advance();
+                    }
+                    break;
+
+                default:
+                    if (this.preprocessorLine) {
+                        if (ParserHelper.isIdentifierStartChar(this.Next)) {
+                            scanIdentifierPart();
+                            return PreprocessorLexicalUnit.Symbol;
+                        }
+                    }
+                    this.lineStart = false;
+                    advance();
+                    break;
+
+                case '#':
+                    if (!lineStart) {
+                        throw error(ParseErrorId.MisplacedNumberSign);
+                    }
+                    this.lineStart = false;
+                    this.preprocessorLine = true;
+                    advance();
+                    return PreprocessorLexicalUnit.NumberSign;
+                }
+            }
+        }
+        
+        private PreprocessorLexicalUnit scanKeyword(String suffix, PreprocessorLexicalUnit keyword) {
+            boolean isKeyword = true;
+            for (int i = 0; i < suffix.length(); i++) {
+                char c = suffix[i];
+                if (this.Next == -1 || (char)this.Next != c) {
+                    isKeyword = false;
+                    break;
+                }
+                advance();
+            }
+            if (this.Next != -1 && ParserHelper.isIdentifierPartChar(this.Next)) {
+                scanIdentifierPart();
+                return PreprocessorLexicalUnit.Symbol;
+            }
+            return (isKeyword) ? keyword : PreprocessorLexicalUnit.Symbol;
+        }
+    }
+}

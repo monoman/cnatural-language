@@ -1,0 +1,1 @@
+((Literal(DecimalInteger, [1]) Multiply Literal(DecimalInteger, [2])) Add Literal(DecimalInteger, [3]))

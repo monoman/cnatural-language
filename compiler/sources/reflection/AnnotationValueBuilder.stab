@@ -1,0 +1,140 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+
+package stab.reflection {
+
+    public class AnnotationValueBuilder : AnnotationValue {
+        public AnnotationValueBuilder(TypeInfo type, boolean runtimeVisible)
+            : super(type, runtimeVisible) {
+        }
+        
+        public void setBooleanArgument(String name, boolean value) {
+            arguments[name] = new SimpleAnnotationArgument(AnnotationArgumentKind.Boolean, value);
+        }
+        
+        public void setByteArgument(String name, byte value) {
+            arguments[name] = new SimpleAnnotationArgument(AnnotationArgumentKind.Byte, value);
+        }
+        
+        public void setCharArgument(String name, char value) {
+            arguments[name] = new SimpleAnnotationArgument(AnnotationArgumentKind.Char, value);
+        }
+        
+        public void setShortArgument(String name, short value) {
+            arguments[name] = new SimpleAnnotationArgument(AnnotationArgumentKind.Short, value);
+        }
+
+        public void setIntArgument(String name, int value) {
+            arguments[name] = new SimpleAnnotationArgument(AnnotationArgumentKind.Int, value);
+        }
+        
+        public void setLongArgument(String name, long value) {
+            arguments[name] = new SimpleAnnotationArgument(AnnotationArgumentKind.Long, value);
+        }
+
+        public void setFloatArgument(String name, float value) {
+            arguments[name] = new SimpleAnnotationArgument(AnnotationArgumentKind.Float, value);
+        }
+        
+        public void setDoubleArgument(String name, double value) {
+            arguments[name] = new SimpleAnnotationArgument(AnnotationArgumentKind.Double, value);
+        }
+        
+        public void setStringArgument(String name, String value) {
+            arguments[name] = new SimpleAnnotationArgument(AnnotationArgumentKind.String, value);
+        }
+        
+        public void setTypeArgument(String name, TypeInfo value) {
+            arguments[name] = new TypeAnnotationArgument(value);
+        }
+
+        public void setEnumArgument(String name, TypeInfo type, String field) {
+            arguments[name] = new EnumAnnotationArgument(type, field);
+        }
+
+        public AnnotationArrayValueBuilder setArrayArgument(String name) {
+            var result = new AnnotationArrayValueBuilder();
+            arguments[name] = result;
+            return result;
+        }
+        
+        public AnnotationValueBuilder setAnnotationArgument(String name, TypeInfo type, boolean runtimeVisible) {
+            var result = new AnnotationValueBuilder(type, runtimeVisible);
+            arguments[name] = result;
+            return result;
+        }
+    }
+    
+    public class AnnotationArrayValueBuilder : ArrayAnnotationArgument {
+        public void addBooleanArgument(boolean value) {
+            elements.add(new SimpleAnnotationArgument(AnnotationArgumentKind.Boolean, value));
+        }
+        
+        public void addByteArgument(byte value) {
+            elements.add(new SimpleAnnotationArgument(AnnotationArgumentKind.Byte, value));
+        }
+        
+        public void addCharArgument(char value) {
+            elements.add(new SimpleAnnotationArgument(AnnotationArgumentKind.Char, value));
+        }
+        
+        public void addShortArgument(short value) {
+            elements.add(new SimpleAnnotationArgument(AnnotationArgumentKind.Short, value));
+        }
+
+        public void addIntArgument(int value) {
+            elements.add(new SimpleAnnotationArgument(AnnotationArgumentKind.Int, value));
+        }
+        
+        public void addLongArgument(long value) {
+            elements.add(new SimpleAnnotationArgument(AnnotationArgumentKind.Long, value));
+        }
+
+        public void addFloatArgument(float value) {
+            elements.add(new SimpleAnnotationArgument(AnnotationArgumentKind.Float, value));
+        }
+        
+        public void addDoubleArgument(double value) {
+            elements.add(new SimpleAnnotationArgument(AnnotationArgumentKind.Double, value));
+        }
+        
+        public void addStringArgument(String value) {
+            elements.add(new SimpleAnnotationArgument(AnnotationArgumentKind.String, value));
+        }
+        
+        public void addTypeArgument(TypeInfo value) {
+            elements.add(new TypeAnnotationArgument(value));
+        }
+
+        public void addEnumArgument(TypeInfo type, String field) {
+            elements.add(new EnumAnnotationArgument(type, field));
+        }
+
+        public AnnotationArrayValueBuilder addArrayArgument() {
+            var result = new AnnotationArrayValueBuilder();
+            elements.add(result);
+            return result;
+        }
+        
+        public AnnotationValueBuilder addAnnotationArgument(TypeInfo type, boolean runtimeVisible) {
+            var result = new AnnotationValueBuilder(type, runtimeVisible);
+            elements.add(result);
+            return result;
+        }
+    }
+}

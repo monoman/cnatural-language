@@ -1,0 +1,1 @@
+Assign(Name(contacts) Assign new List<Contact>{{new Contact{Name=Literal(String, ["Chris Smith"]), PhoneNumbers={{Literal(String, ["206-555-0101"])}, {Literal(String, ["425-882-8080"])}}}}, {new Contact{Name=Literal(String, ["Bob Harris"]), PhoneNumbers={{Literal(String, ["650-555-0199"])}}}}})

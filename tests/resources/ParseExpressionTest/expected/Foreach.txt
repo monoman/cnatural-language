@@ -1,0 +1,6 @@
+Lambda( => {
+foreach (var v in Name(source)) {
+(Name(Console)).WriteLine((Name(v)).ToString());
+}
+}
+)

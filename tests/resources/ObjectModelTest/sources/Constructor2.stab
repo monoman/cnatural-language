@@ -1,0 +1,14 @@
+public class Constructor2 {
+	public static int test() {
+		Constructor2Aux c = new Constructor2Aux(2);
+		return c.field;
+	}
+}
+
+public class Constructor2Aux {
+	public int field;
+
+	public Constructor2Aux(int field) {
+		this.field = field;
+	}
+}

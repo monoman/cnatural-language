@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+	<!-- ==================================================================================== -->
+	<!-- Content type                                                                         -->
+	<!-- ==================================================================================== -->
+
+	<extension
+			point="org.eclipse.core.contenttype.contentTypes">
+		<content-type
+				id="stab.tools.eclipse.stabSource"
+				name="%stabSource.name"
+				base-type="org.eclipse.core.runtime.text"
+				priority="high"
+				file-extensions="stab"/>
+	</extension>
+
+	<!-- ==================================================================================== -->
+	<!-- Editor                                                                               -->
+	<!-- ==================================================================================== -->
+
+	<extension
+			point="org.eclipse.ui.editors"
+			id="stabeditor">
+		<editor
+				id="stab.tools.eclipse.stabSourceEditor"
+				name="%stabSourceEditor.name"
+				icon="icons/source_editor.gif"
+				contributorClass="stab.tools.eclipse.editors.SourceEditorActionContributor"
+				class="stab.tools.eclipse.editors.SourceEditor">
+			<contentTypeBinding contentTypeId="stab.tools.eclipse.stabSource"/>
+		</editor>
+	</extension>
+
+	<!-- ==================================================================================== -->
+	<!-- Nature                                                                               -->
+	<!-- ==================================================================================== -->
+
+	<extension
+			point="org.eclipse.core.resources.natures"
+			id="stabnature"
+			name="%stabnature.name">
+		<runtime>
+			<run class="stab.tools.eclipse.Nature"/>
+		</runtime>
+		<builder id="stab.tools.eclipse.stabbuilder"/>
+	</extension>
+	
+	<extension
+			point="org.eclipse.ui.popupMenus">
+		<objectContribution
+				adaptable="false"
+				id="stab.tools.eclipse.objectContribution1"
+				objectClass="org.eclipse.core.resources.IProject">
+			<action
+					class="stab.tools.eclipse.ToggleNatureAction"
+					id="stab.tools.eclipse.toggleNatureAction"
+					enablesFor="+"
+					label="%removeStabNatureAction.label">
+			</action>
+			<visibility>
+				<and>
+					<objectState name="projectNature" value="stab.tools.eclipse.stabnature"/>
+					<objectClass name="org.eclipse.core.resources.IProject"/>
+				</and>
+			</visibility>
+		</objectContribution>
+		<objectContribution
+				adaptable="false"
+				id="stab.tools.eclipse.objectContribution2"
+				objectClass="org.eclipse.core.resources.IProject">
+			<action
+					class="stab.tools.eclipse.ToggleNatureAction"
+					id="stab.tools.eclipse.toggleNatureAction"
+					enablesFor="+"
+					label="%addStabNatureAction.label">
+			</action>
+			<visibility>
+				<and>
+					<not>
+						<objectState name="projectNature" value="stab.tools.eclipse.stabnature"/>
+					</not>
+					<objectClass name="org.eclipse.core.resources.IProject"/>
+				</and>
+			</visibility>
+		</objectContribution>
+	</extension>
+
+	<!-- ==================================================================================== -->
+	<!-- Builder                                                                              -->
+	<!-- ==================================================================================== -->
+
+	<extension
+			point="org.eclipse.core.resources.builders"
+			id="stabbuilder"
+			name="%stabbuilder.name">
+		<builder hasNature="true">
+			<run class="stab.tools.eclipse.ProjectBuilder"/>
+		</builder>
+	</extension>
+
+	<!-- ==================================================================================== -->
+	<!-- Perspective                                                                          -->
+	<!-- ==================================================================================== -->
+
+	<extension point="org.eclipse.ui.perspectives">
+		<perspective
+				class="stab.tools.eclipse.PerspectiveFactory"
+				name="%perspective.name"
+				icon="icons/perspective.gif"
+				id="stab.tools.eclipse.perspective">
+		</perspective>
+	</extension>
+
+	<!-- ==================================================================================== -->
+	<!-- Project Viewer                                                                       -->
+	<!-- ==================================================================================== -->
+	
+	<extension
+			point="org.eclipse.ui.navigator.viewer">
+		<viewerContentBinding viewerId="org.eclipse.ui.navigator.ProjectExplorer">
+			<includes>
+				<contentExtension pattern="stab.tools.eclipse.*" />
+			</includes>
+		</viewerContentBinding>
+	</extension>
+
+	<extension
+			point="org.eclipse.ui.navigator.navigatorContent">
+  		<commonFilter
+				activeByDefault="true"
+				class="stab.tools.eclipse.OutputFolderFilter"
+				name="%hideOutputFolder.name"
+				description="%hideOutputFolder.description"
+				id="stab.tools.eclipse.hideOutputFolder"/>
+	</extension>
+	
+	<!-- ==================================================================================== -->
+	<!-- Preferences                                                                          -->
+	<!-- ==================================================================================== -->
+	
+	<extension
+			point="org.eclipse.core.runtime.preferences">
+		<initializer
+			class="stab.tools.eclipse.PreferenceInitializer">
+		</initializer>
+	</extension>
+	
+	<!-- ==================================================================================== -->
+	<!-- Project Properties                                                                   -->
+	<!-- ==================================================================================== -->
+	
+	<extension
+			point="org.eclipse.ui.propertyPages">
+		<page
+				name="%buildSettingsPropertyPage.name"
+				class="stab.tools.eclipse.preferences.BuildSettingsPropertyPage"
+				id="stab.tools.eclipse.preferences.BuildSettingsPropertyPage">
+			<enabledWhen>
+				<adapt type="org.eclipse.core.resources.IProject">
+					<test property="org.eclipse.core.resources.projectNature" value="stab.tools.eclipse.stabnature"/>
+				</adapt>         
+         	</enabledWhen>
+		</page>
+	</extension>
+
+	<!-- ==================================================================================== -->
+	<!-- Annotation                                                                           -->
+	<!-- ==================================================================================== -->
+
+	<extension
+			point="org.eclipse.ui.editors.annotationTypes">
+		<type
+				name="stab.tools.eclipse.parsingErrorAnnotation"
+				super="org.eclipse.ui.workbench.texteditor.error"
+				markerSeverity="2"/>
+		<type
+				name="stab.tools.eclipse.parsingWarningAnnotation"
+				super="org.eclipse.ui.workbench.texteditor.warning"
+				markerSeverity="1"/>
+	</extension>
+
+	<extension
+			point="org.eclipse.ui.editors.markerAnnotationSpecification">
+		<specification
+				annotationType="stab.tools.eclipse.parsingErrorAnnotation"
+				colorPreferenceKey="parsingErrorAnnotationColor"
+				colorPreferenceValue="255,100,100"
+				contributesToHeader="false"
+				highlightPreferenceKey="parsingErrorAnnotationHighlightKey"
+				highlightPreferenceValue="false"
+				includeOnPreferencePage="true"
+				isGoToNextNavigationTarget="true"
+				isGoToNextNavigationTargetKey="parsingErrorAnnotationIsGotoNextKey"
+				isGoToPreviousNavigationTarget="true"
+				isGoToPreviousNavigationTargetKey="parsingErrorAnnotationIsGotoPrevKey"
+				label="%parsingErrorAnnotation.label"
+				overviewRulerPreferenceKey="parsingErrorAnnotationOverviewKey"
+				overviewRulerPreferenceValue="true"
+				presentationLayer="5"
+				showInNextPrevDropdownToolbarAction="true"
+				symbolicIcon="error"
+				textPreferenceKey="parsingErrorAnnotationTextKey"
+				textPreferenceValue="true"
+				textStylePreferenceKey="parsingErrorAnnotationTextStyleKey"
+				textStylePreferenceValue="SQUIGGLES"
+				verticalRulerPreferenceKey="parsingErrorAnnotationVerticalKey"
+				verticalRulerPreferenceValue="true"/>
+		<specification
+				annotationType="stab.tools.eclipse.parsingWarningAnnotation"
+				colorPreferenceKey="parsingWarningAnnotationColor"
+				colorPreferenceValue="255,200,0"
+				contributesToHeader="false"
+				highlightPreferenceKey="parsingWarningAnnotationHighlightKey"
+				highlightPreferenceValue="false"
+				includeOnPreferencePage="true"
+				isGoToNextNavigationTarget="true"
+				isGoToNextNavigationTargetKey="parsingWarningAnnotationIsGotoNextKey"
+				isGoToPreviousNavigationTarget="true"
+				isGoToPreviousNavigationTargetKey="parsingWarningAnnotationIsGotoPrevKey"
+				label="%parsingWarningAnnotation.label"
+				overviewRulerPreferenceKey="parsingWarningAnnotationOverviewKey"
+				overviewRulerPreferenceValue="true"
+				presentationLayer="5"
+				showInNextPrevDropdownToolbarAction="true"
+				symbolicIcon="warning"
+				textPreferenceKey="parsingWarningAnnotationTextKey"
+				textPreferenceValue="true"
+				textStylePreferenceKey="parsingWarningAnnotationTextStyleKey"
+				textStylePreferenceValue="SQUIGGLES"
+				verticalRulerPreferenceKey="parsingWarningAnnotationVerticalKey"
+				verticalRulerPreferenceValue="true"/>
+	</extension>
+
+</plugin>

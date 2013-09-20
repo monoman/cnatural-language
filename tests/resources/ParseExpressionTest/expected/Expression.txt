@@ -1,0 +1,6 @@
+Assign(Name(query2) Assign ((((Name(people)).Where(Lambda(p => ((Name(p)).Age GreaterThan Literal(DecimalInteger, [20]));
+))).OrderByDescending(Lambda(p => (Name(p)).Age;
+))).ThenBy(Lambda(p => (Name(p)).Name;
+))).GroupBy(Lambda(p => (Name(p)).CanCode;
+), Lambda(p => new{(Name(p)).Name, Senior=((Name(p)).Age GreaterThan Literal(DecimalInteger, [30])), (Name(p)).CanCode};
+)))

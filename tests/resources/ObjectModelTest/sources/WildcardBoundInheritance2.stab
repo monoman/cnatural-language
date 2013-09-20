@@ -1,0 +1,25 @@
+using java.util;
+
+public class WildcardBoundInheritance2 {
+	public static boolean test() {
+		// Just test that it compiles
+		method1(new ArrayList<WildcardBoundInheritance2Aux>());
+		method2(new ArrayList<WildcardBoundInheritance2Aux>());
+		return true;
+	}
+	
+	static void method1(List<WildcardBoundInheritance2Aux2 : ?> list) {
+	}
+	
+	static void method2(List<WildcardBoundInheritance2Aux : ?> list) {
+		method1(list);
+	}
+}
+
+public class WildcardBoundInheritance2Aux {
+
+}
+
+public class WildcardBoundInheritance2Aux2 : WildcardBoundInheritance2Aux {
+
+}

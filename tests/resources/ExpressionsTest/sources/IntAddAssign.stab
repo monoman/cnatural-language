@@ -1,0 +1,7 @@
+public class IntAddAssign {
+	public static boolean test(int arg) {
+		int i = arg;
+		arg += 2;
+		return arg == i + 2;
+	}
+}

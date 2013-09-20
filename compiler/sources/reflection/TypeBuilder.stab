@@ -1,0 +1,476 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using java.util;
+using org.objectweb.asm;
+using stab.query;
+
+package stab.reflection {
+
+    public class TypeBuilder : ObjectTypeInfo {
+        boolean created;
+        private int modifiers;
+        private int nestedModifiers;
+        private ArrayList<TypeInfo> genericArguments;
+        private TypeInfo baseType;
+        private ArrayList<TypeInfo> interfaces;
+        private ArrayList<AnnotationValue> annotations;
+        private String sourceFile;
+        private String sourceDebugExtension;
+        
+        TypeBuilder(Library library, TypeInfo declaringType, String name)
+            : super(library, name) {
+            this.declaringType = declaringType;
+            this.genericArguments = new ArrayList<TypeInfo>();
+            this.interfaces = new ArrayList<TypeInfo>();
+            this.annotations = new ArrayList<AnnotationValue>();
+        }
+
+        public String SourceFile {
+            get {
+                return sourceFile;
+            }
+        }
+
+        public void setSourceFile(String sourceFile) {
+            this.sourceFile = sourceFile;
+        }
+        
+        public String SourceDebugExtension {
+            get {
+                return sourceDebugExtension;
+            }
+        }
+
+        public void setSourceDebugExtension(String sourceDebugExtension) {
+            this.sourceDebugExtension = sourceDebugExtension;
+        }
+        
+        public override TypeInfo BaseType {
+            get {
+                return baseType;
+            }
+        }
+
+        public void setBaseType(TypeInfo baseType) {
+            checkCreated();
+            this.baseType = baseType;
+        }
+        
+        public override Iterable<TypeInfo> GenericArguments {
+            get {
+                return genericArguments;
+            }
+        }
+
+        public TypeInfo addGenericArgument(String name) {
+            checkCreated();
+            var type = new GenericParameterType(this.Library, name, null);
+            genericArguments.add(type);
+            return type;
+        }
+
+        public void addGenericConstraint(String name, TypeInfo bound) {
+            checkCreated();
+            foreach (var arg in genericArguments) {
+                if (arg.FullName.equals(name)) {
+                    ((GenericParameterType)arg).genericParameterBounds.add(bound);
+                    return;
+                }
+            }
+            throw new IllegalStateException("Generic parameter " + name+  " not found");
+        }
+        
+        public override Iterable<TypeInfo> Interfaces {
+            get {
+                return interfaces;
+            }
+        }
+
+        public void addInterface(TypeInfo type) {
+            checkCreated();
+            interfaces.add(type);
+        }
+        
+        public override String Signature {
+            get {
+                var result = signature;
+                if (!created || signature == null) {
+                    result = getTypeSignature();
+                }
+                if (created && signature == null) {
+                    signature = result;
+                }
+                return result;
+            }
+        }
+        
+        public override Iterable<AnnotationValue> Annotations {
+            get {
+                return annotations;
+            }
+        }
+
+        public AnnotationValueBuilder addAnnotation(TypeInfo type, boolean runtimeVisible) {
+            checkCreated();
+            var result = new AnnotationValueBuilder(type, runtimeVisible);
+            annotations.add(result);
+            return result;
+        }
+        
+        public override Iterable<FieldInfo> Fields {
+            get {
+                return fields;
+            }
+        }
+        
+        public FieldBuilder defineField(String name, TypeInfo type) {
+            checkCreated();
+            var field = new FieldBuilder(this, name, type);
+            fields.add(field);
+            return field;
+        }
+
+        public override Iterable<MethodInfo> Methods {
+            get {
+                return methods;
+            }
+        }
+        
+        public MethodBuilder defineMethod(String name) {
+            checkCreated();
+            var method = new MethodBuilder(this, name);
+            methods.add(method);
+            return method;
+        }
+        
+        public void defineMethod(MethodBuilder method) {
+            checkCreated();
+            method.declaringType = this;
+        	methods.add(method);
+        }
+        
+        public void undefineMethod(MethodBuilder method) {
+            checkCreated();
+            methods.remove(method);
+        }
+        
+        public override Iterable<TypeInfo> NestedTypes {
+            get {
+                return nestedTypes;
+            }
+        }
+
+        public TypeBuilder defineNestedType(String name) {
+            checkCreated();
+            var nestedType = new TypeBuilder(this.Library, this, this.FullName + "$" + name);
+            this.Library.defineNestedType(nestedType);
+            nestedTypes.add(nestedType);
+            return nestedType;
+        }
+
+		public void undefineNestedType(TypeBuilder nestedType) {
+            checkCreated();
+			nestedTypes.remove(nestedType);
+            this.Library.undefineNestedType(nestedType);
+		}
+
+        public boolean IsCreated {
+            get {
+                return created;
+            }
+        }
+
+        public byte[] createType(Library typeSystem) {
+            checkCreated();
+            this.created = true;
+            var classWriter = new ClassWriterNoReflection(typeSystem, ClassWriter.COMPUTE_FRAMES);
+            classWriter.visit(Opcodes.V1_6, modifiers, getFullName(), ReflectionHelper.getClassSignature(this),
+                baseType.getFullName(), getTypeNames(interfaces));
+            if (sourceFile != null || sourceDebugExtension != null) {
+                classWriter.visitSource(sourceFile, sourceDebugExtension);
+            }
+            foreach (var a in annotations) {
+                a.accept(classWriter.visitAnnotation(a.Type.Descriptor, a.IsRuntimeVisible));
+            }
+
+            if (declaringType != null) {
+                classWriter.visitInnerClass(FullName, declaringType.FullName, FullName.substring(FullName.lastIndexOf('$') + 1), modifiers);
+            }
+            
+            foreach (var t in nestedTypes) {
+                classWriter.visitInnerClass(t.FullName, FullName, t.FullName.substring(t.FullName.lastIndexOf('$') + 1), t.NestedModifiers);
+            }
+            
+            foreach (var f in fields) {
+                ((FieldBuilder)f).accept(classWriter.visitField(f.modifiers, f.Name, f.Descriptor, f.Signature, f.Value));
+            }
+            
+            foreach (var m in methods) {
+                if (!m.IsExcludedFromCompilation) {
+                    ((MethodBuilder)m).accept(classWriter.visitMethod(m.Modifiers, m.Name, m.Descriptor,
+                            m.Signature, getTypeNames(m.Exceptions)));
+                }
+            }
+            
+            classWriter.visitEnd();
+            return classWriter.toByteArray();
+        }
+
+		public TypeBuilder[] getDependencies() {
+            checkCreated();
+			var dependencies = new HashSet<TypeBuilder>();
+			addType(dependencies, baseType);
+			foreach (var t in interfaces) {
+				addType(dependencies, t);
+			}
+            foreach (var a in annotations) {
+				addType(dependencies, a.Type);
+			}
+            foreach (var nt in nestedTypes) {
+				foreach (var t in ((TypeBuilder)nt).getDependencies()) {
+					dependencies.add((TypeBuilder)t);
+				}
+			}
+			foreach (var f in fields) {
+				foreach (var a in f.Annotations) {
+					addType(dependencies, a.Type);
+				}
+				addType(dependencies, f.Type);
+			}
+            foreach (var m in methods) {
+                if (!m.IsExcludedFromCompilation) {
+					foreach (var a in m.Annotations) {
+						addType(dependencies, a.Type);
+					}
+					addType(dependencies, m.ReturnType);
+					foreach (var p in m.Parameters) {
+						foreach (var a in p.Annotations) {
+							addType(dependencies, a.Type);
+						}
+						addType(dependencies, p.Type);
+					}
+					foreach (var e in m.Exceptions) {
+						addType(dependencies, e);
+					}
+					foreach (var instruction in ((MethodBuilder)m).CodeGenerator.Instructions) {
+						switch (instruction.Opcode) {
+						case Getfield:
+						case Getstatic:
+						case Putfield:
+						case Putstatic:
+							addType(dependencies, instruction.Field.DeclaringType);
+							break;
+							
+						case Invokedynamic:
+						case Invokeinterface:
+						case Invokespecial:
+						case Invokestatic:
+						case Invokevirtual:
+							addType(dependencies, instruction.Method.DeclaringType);
+							break;
+						case Anewarray:
+						case Checkcast:
+						case Instanceof:
+						case New:
+							addType(dependencies, instruction.Type);
+							break;
+						}
+					}
+				}
+			}
+			return dependencies.toArray(new TypeBuilder[dependencies.size()]);
+		}
+
+		private void addType(HashSet<TypeBuilder> types, TypeInfo type) {
+			if (type instanceof TypeBuilder) {
+				types.add((TypeBuilder)type);
+			} else if (type.TypeKind == TypeKind.Array) {
+				addType(types, type.ElementType);
+			} else {
+				foreach (var t in type.GenericArguments) {
+					addType(types, t);
+				}
+			}
+		}
+        
+        private static String[] getTypeNames(Iterable<TypeInfo> types) {
+            if (types.any()) {
+                String[] result = new String[types.count()];
+                int i = 0;
+                foreach (var t in types) {
+                    result[i++] = t.FullName;
+                }
+                return result;
+            } else {
+                return null;
+            }
+        }
+
+        public void setAbstract(boolean value) {
+            setModifier(Opcodes.ACC_ABSTRACT, value);
+        }
+        
+        public void setAnnotation(boolean value) {
+            setModifier(Opcodes.ACC_ANNOTATION, value);
+        }
+
+        public void setEnum(boolean value) {
+            setModifier(Opcodes.ACC_ENUM, value);
+        }
+
+        public void setFinal(boolean value) {
+            setModifier(Opcodes.ACC_FINAL, value);
+        }
+
+        public void setInterface(boolean value) {
+            setModifier(Opcodes.ACC_INTERFACE, value);
+        }
+
+        public void setPublic(boolean value) {
+            setModifier(Opcodes.ACC_PUBLIC, value);
+        }
+
+        public void setSuper(boolean value) {
+            setModifier(Opcodes.ACC_SUPER, value);
+        }
+
+        public void setSynthetic(boolean value) {
+            setModifier(Opcodes.ACC_SYNTHETIC, value);
+        }
+        
+        public void setNestedAbstract(boolean value) {
+            setNestedModifier(Opcodes.ACC_ABSTRACT, value);
+        }
+        
+        public void setNestedAnnotation(boolean value) {
+            setNestedModifier(Opcodes.ACC_ANNOTATION, value);
+        }
+
+        public void setNestedEnum(boolean value) {
+            setNestedModifier(Opcodes.ACC_ENUM, value);
+        }
+
+        public void setNestedFinal(boolean value) {
+            setNestedModifier(Opcodes.ACC_FINAL, value);
+        }
+
+        public void setNestedInterface(boolean value) {
+            setNestedModifier(Opcodes.ACC_INTERFACE, value);
+        }
+
+        public void setNestedPrivate(boolean value) {
+            setNestedModifier(Opcodes.ACC_PRIVATE, value);
+        }
+
+        public void setNestedProtected(boolean value) {
+            setNestedModifier(Opcodes.ACC_PROTECTED, value);
+        }
+
+        public void setNestedPublic(boolean value) {
+            setNestedModifier(Opcodes.ACC_PUBLIC, value);
+        }
+
+        public void setNestedStatic(boolean value) {
+            setNestedModifier(Opcodes.ACC_STATIC, value);
+        }
+
+        public void setNestedSynthetic(boolean value) {
+            setNestedModifier(Opcodes.ACC_SYNTHETIC, value);
+        }
+
+        protected override int Modifiers {
+            get {
+                return modifiers;
+            }
+        }
+        
+        protected override int NestedModifiers {
+            get {
+                return nestedModifiers;
+            }
+        }
+        
+        private void setModifier(int modifier, boolean value) {
+            checkCreated();
+            if (value) {
+                modifiers |= modifier;
+            } else {
+                modifiers &= ~modifier;
+            }
+        }
+
+        private void setNestedModifier(int modifier, boolean value) {
+            checkCreated();
+            if (value) {
+                nestedModifiers |= modifier;
+            } else {
+                nestedModifiers &= ~modifier;
+            }
+        }
+
+        void checkCreated() {
+            if (this.created) {
+                throw new IllegalStateException(this.FullName + " already created");
+            }
+        }
+        
+
+        // ASM ClassWriter class has to be subclassed in order to avoid the use of Java reflection
+        private class ClassWriterNoReflection : ClassWriter {
+            private Library typeSystem;
+            
+            public ClassWriterNoReflection(Library typeSystem, int flags)
+                : super(flags) {
+                this.typeSystem = typeSystem;
+            }
+            
+            protected override String getCommonSuperClass(String type1, String type2) {
+                var t1 = getTypeInfo(type1);
+                var t2 = getTypeInfo(type2);
+                if (t1.isAssignableFrom(t2)) {
+                    return type1;
+                }
+                if (t2.isAssignableFrom(t1)) {
+                    return type2;
+                }
+                if (t1.IsInterface || t2.IsInterface) {
+                    return "java/lang/Object";
+                } else {
+                    do {
+                        t1 = t1.BaseType;
+                    } while (!t1.isAssignableFrom(t2));
+                    return t1.FullName;
+                }
+            }
+            
+            private TypeInfo getTypeInfo(String name) {
+                int idx = name.indexOf('$');
+                if (idx == -1) {
+                    return typeSystem.getType(name);
+                }
+                var type = typeSystem.getType(name.substring(0, idx));
+                name = name.substring(idx + 1);
+                while ((idx = name.indexOf('$')) != -1) {
+                    type = type.getNestedType(name.substring(0, idx));
+                    name = name.substring(idx + 1);
+                }
+                return type;
+            }
+        }
+    }
+}

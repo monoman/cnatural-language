@@ -1,0 +1,9 @@
+using java.lang;
+using java.util;
+using stab.query;
+
+public class SequenceEqual {
+	public static boolean test() {
+		return new ArrayList<String> { "a", "b", "c" }.sequenceEqual(Query.asIterable(new[] { "a", "b", "c" }));
+	}
+}

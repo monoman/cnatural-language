@@ -1,0 +1,117 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using java.lang.reflect;
+ 
+package stab.tree {
+
+    public enum ExpressionKind {
+        Binary,
+        Conditional,
+        Field,
+        Instanceof,
+        Invocation,
+        Lambda,
+        Local,
+        MethodCall,
+        NewArray,
+        NewObject,
+        Parameter,
+        Unary,
+        Value
+    }
+
+    public abstract class Expression {
+        protected Expression(ExpressionKind expressionKind, Class<?> type) {
+            this.ExpressionKind = expressionKind;
+            this.Type = type;
+        }
+    
+        public ExpressionKind ExpressionKind {
+            get;
+            private set;
+        }
+        
+        public Class<?> Type {
+            get;
+            private set;
+        }
+        
+        public static BinaryExpression binary(Class<?> type, Expression left, BinaryOperator operator, Expression right) {
+            return new BinaryExpression(type, operator, left, right);
+        }
+
+        public static ConditionalExpression conditional(Class<?> type, Expression condition, Expression ifTrue, Expression ifFalse) {
+            return new ConditionalExpression(type, condition, ifTrue, ifFalse);
+        }
+
+        public static MethodCallExpression call(Expression target, Method method, params Expression[] arguments) {
+            return new MethodCallExpression(method, target, arguments);
+        }
+
+        public static FieldExpression field(Expression target, Field field) {
+            return new FieldExpression(field, target);
+        }
+        
+        public static InstanceofExpression makeInstanceof(Expression operand, Class<?> typeOperand) {
+        	return new InstanceofExpression(operand, typeOperand);
+        }
+
+        public static InvocationExpression invoke(Expression target, params Expression[] arguments) {
+            return new InvocationExpression(target, arguments);
+        }
+        
+        public static LambdaExpression lambda(Class<?> type, VariableExpression[] parameters, Statement body) {
+            return new LambdaExpression(type, parameters, body);
+        }
+        
+        public static VariableExpression local(Class<?> type, String name) {
+            return new VariableExpression(ExpressionKind.Local, type, name);
+        }
+        
+        public static NewArrayExpression newArray(Class<?> type, Expression[] dimensions, int uninitializedDimensions,
+                params Expression[] elements) {
+            return new NewArrayExpression(type, dimensions, uninitializedDimensions, elements);
+        }
+
+        public static NewObjectExpression newObject(Constructor<?> constructor, Expression[] arguments, MemberInitializer[] initializers) {
+            return new NewObjectExpression(constructor, arguments, initializers);
+        }
+        
+        public static VariableExpression parameter(Class<?> type, String name) {
+            return new VariableExpression(ExpressionKind.Parameter, type, name);
+        }
+        
+        public static ExpressionTree<T> tree<T>(Class<T> type, VariableExpression[] parameters, Statement body) {
+            return new ExpressionTree<T>(type, parameters, body);
+        }
+        
+        public static UnaryExpression unary(Class<?> type, UnaryOperator operator, Expression operand) {
+            return new UnaryExpression(type, operator, operand);
+        }
+        
+        public static ValueExpression value(Class<?> type, Object value) {
+            return new ValueExpression(type, value);
+        }
+    }
+    
+    public class ExpressionTree<T> : LambdaExpression {
+        ExpressionTree(Class<T> type, VariableExpression[] parameters, Statement body)
+            : super(type, parameters, body) {
+        }
+    }
+}

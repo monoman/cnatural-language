@@ -1,0 +1,7 @@
+Lambda( => {
+using (var s = new FileStream(Literal(VerbatimString, [@"c:\file.txt"]));
+) {
+(Name(s)).Read();
+}
+}
+)

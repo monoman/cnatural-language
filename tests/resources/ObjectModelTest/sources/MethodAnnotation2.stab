@@ -1,0 +1,17 @@
+using java.lang;
+using java.lang.reflect;
+using javax.xml.bind.annotation;
+
+public class MethodAnnotation2 {
+	[XmlAttribute(name = "ptest")]
+	public int getTest() {
+		return 0;
+	}
+
+	public static boolean test() {
+		Class<?> c = typeof(MethodAnnotation2);
+		Method m = c.getMethod("getTest");
+		XmlAttribute attr = m.getAnnotation(typeof(XmlAttribute));
+		return attr.name().equals("ptest");
+	}
+}

@@ -1,0 +1,225 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using java.util;
+using stab.tools.helpers;
+
+package stab.tools.compiler {
+
+    enum CompileErrorId {
+        AbstractMethodNotImplemented,
+        AbstractTypeCreation,
+        AlreadyDefinedConstructor,
+        AlreadyDefinedDestructor,
+        AlreadyDefinedField,
+        AlreadyDefinedMethod,
+        AlreadyDefinedProperty,
+        AlreadyDefinedStaticInitializer,
+        AlreadyDefinedType,
+        AmbiguousMembers,
+        AnnotationTypeExpected,
+        ArrayExpressionExpected,
+        ArrayTypeExpected,
+        BaseMissingDefaultConstructor,
+        BinaryOperatorNotApplicable,
+        BreakOutsideLoop,
+        CaseFallThrough,
+        CastFromNullToPrimitiveType,
+        CircularBaseTypeDependency,
+        ClassInInterfaceList,
+        ConditionalExpressionTypeInference,
+        ConstantValueExpected,
+        ConstraintNotInterfaceOrFinal,
+        ContinueOutsideLoop,
+        DelegateCreationInitializer,
+        DeriveFromTypeVariable,
+        DifferentPartialBaseClass,
+        DimensionsAndInitializer,
+        DivisionByZero,
+        DuplicateCase,
+        EnumCaseNotIdentifier,
+        FinalAbstractStaticClass,
+        FinalAbstractStaticMethod,
+        FinalBaseClass,
+        FinalFieldModification,
+        FinalIndexerOverride,
+        FinalizeMethodOverride,
+        FinalPropertyOverride,
+        FinalVolatile,
+        GenericStaticAccess,
+        IllegalGetOrSetBody,
+        IllegalGetOrSetModifiers,
+        IllegalLeftValue,
+        IllegalOverrideMethod,
+        IllegalVirtualMethod,
+        ImplicitlyTypedArrayTypeNotFound,
+        IncompatibleLambdaInterface,
+        IncompatibleOverridingReturnType,
+        IncompatibleParameterList,
+        InconsistentAccessibility,
+        IntegerStringOrEnumExpected,
+        InvalidCast,
+        InvalidGotoCase,
+        InvalidLambdaTarget,
+        IntegralConstantTooLarge,
+        InvalidDestructorName,
+        MalformedCollectionInitializer,
+        MethodNameExpected,
+        MethodWithoutBody,
+        MethodWithoutReturnType,
+        MissingImplicitVariableInitializer,
+        MissingOverride,
+        MissingOverrideIndexer,
+        MissingOverrideProperty,
+        MissingReturn,
+        MultipleImplicitVariableDeclarators,
+        MultiplePartialDefiningDeclarations,
+        MultiplePartialImplementingDeclarations,
+        MultipleUsingDirective,
+        NoAccessibleConstructors,
+        NoAccessibleMembers,
+        NoAddOrPutMethod,
+        NoEligibleOverload,
+        NoImplicitConversion,
+        NoIndexerInType,
+        NoIndexerToOverride,
+        NoInvocationTargetFound,
+        NoLambdaReturnTypeInference,
+        NoMethodToOverride,
+        NoOverridableGetAccessor,
+        NoOverridableSetAccessor,
+        NoPartialImplementingDeclaration,
+        NoPropertyToOverride,
+        NullImplicitVariableInitializer,
+        ParamsNotArray,
+        ParamsNotLast,
+        PartialMethodNotVoid,
+        PartialMethodWithinPartialClass,
+        PartialTypeArgumentsMismatch,
+        PrimitiveGenericArgument,
+        PublicProtectedPrivate,
+        RawTypeUsage,
+        ReadonlyIndexerModification,
+        ReadonlyPropertyModification,
+        ReduceMethodVisibility,
+        ReferenceTypeExpected,
+        ReferenceTypeValueExpected,
+        ReturnInsideIterator,
+        ReturnNotVoid,
+        ReturnVoid,
+        StaticSuperAccess,
+        StaticThisAccess,
+        ThisNotFirst,
+        ThisParameterNotStatic,
+        TypeArgumentsNonGeneric,
+        TypeofGenericType,
+        TypeofTypeVariable,
+        UnaryOperatorNotApplicable,
+        UnassignedVariableUsage,
+        UncheckedCast,
+        UnknownEnumMember,
+        UnknownGotoLabel,
+        UnresolvedLabel,
+        UnexpectedModifier,
+        UnexpectedNull,
+        UnresolvedName,
+        UnresolvedNestedTypeName,
+        UnresolvedTypeName,
+        ValueParameterConflict,
+        VariableNeverRead,
+        VariableNeverUsed,
+        VariableRedefinition,
+        VariableUninitialized,
+        WrongTypeArgumentNumber,
+        YieldOutsideIterator,
+        NotGeneratedMethodUsage,
+        MultipleBaseClass,
+        AmbiguousTypeName,
+        UnreachableStatement,
+        UnexpectedMethodReference,
+        ConditionalMethodNotVoid,
+        MalformedXmlComment,
+        InvalidParamElement,
+        InvalidParamNameAttribute,
+        InvalidTypeparamElement,
+        InvalidTypeparamNameAttribute,
+        MissingDocAttribute,
+        UnresolvedCref,
+        ExpectedExceptionInCref,
+        IncludeFileNotFound,
+        IncludeFileInvalid,
+        IncludePathInvalid,
+        NoDisposeMethod,
+        UsingVariableUninitialized,
+        PackageAnnotatedExternally,
+        ImplicitVariableWithArrayInitializer,
+        InvalidTargetForMemberAccess,
+        UnexpectedArrayArgument,
+        TypeExpressionNotAllowed,
+        InvalidExpressionTreeArgument,
+        NestedMethodSuperAccess,
+        ExternalLocalAssignment,
+        GenericArrayCreation,
+        TypeNotFound,
+        StaticClassConstructor,
+        StaticClassInstanceMember,
+        OverridingDeprecated,
+        DeprecatedMethod,
+        DeprecatedField,
+        DeprecatedType,
+        DeprecatedProperty,
+		NullMemberAccess,
+		BaseClassBeforeInterfaces,
+		WildcardTypeCreation,
+		BaseMissingConstructor,
+		GenericParameterInCatch,
+		UnresolvedStaticName,
+		ArrayInitializerTypeMismatch,
+		CannotApplyInvocation,
+		NoMatchingNumberOfArguments,
+		InconsistentCollectionInitializerTypes,
+		LambdaOutsideMethod,
+		AbstractMemberInClass,
+        InconsistentBaseTypeAccessibility,
+	}
+
+    class Resources {
+        private static ResourceManager resourceManager;
+        static Resources() {
+            ResourceLocale = Locale.getDefault();
+        }
+
+        static ResourceManager ResourceManager {
+            get {
+                if (resourceManager == null) {
+                    resourceManager = new ResourceManager(typeof(Resources), "messages");
+                }
+                return resourceManager;
+            }
+        }
+        
+        static Locale ResourceLocale {
+            get;
+            set;
+        }
+        
+        static String getMessage(CompileErrorId id, params Object[] arguments) {
+            return ResourceManager.getMessage(ResourceLocale, id.toString(), arguments);
+        }
+    }
+
+}

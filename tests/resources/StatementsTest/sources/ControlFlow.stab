@@ -1,0 +1,21 @@
+using java.lang;
+
+public class ControlFlow {
+	public static int test() {
+		return test(2, true);
+	}
+	
+	private static int test(int i, boolean b) {
+		for (;;) {
+			switch (i) {
+			case 1:
+				throw new RuntimeException();
+			case 2:
+				if (b) {
+					return 2;
+				}
+				break;
+			}
+		}
+	}
+}

@@ -1,0 +1,5 @@
+Lambda( => {
+int i = Literal(DecimalInteger, [1]);
+return(Name(i));
+}
+)

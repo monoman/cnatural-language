@@ -1,0 +1,9 @@
+using stab.query;
+
+public class IntList3 {
+	public static boolean test() {
+		var list = Query.range(0, 5).toList();
+		list.add(2, 5);
+		return list.sequenceEqual(Query.asIterable(new int[] { 0, 1, 5, 2, 3, 4 }));
+	}
+}

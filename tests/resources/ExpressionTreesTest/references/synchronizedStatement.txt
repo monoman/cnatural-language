@@ -1,0 +1,9 @@
+stab.tree.ExpressionTree<interface stab.query.FunctionInt> tree =
+	() =>
+    {
+        synchronized (#Value#class java.lang.String#STR#)
+            {
+                return #Value#class java.lang.String#STR#.hashCode();
+            }
+
+    }

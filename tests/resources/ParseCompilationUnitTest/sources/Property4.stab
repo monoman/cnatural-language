@@ -1,0 +1,11 @@
+class C {
+    private int prop;
+    public int Prop {
+        get {
+            return prop;
+        }
+        private set {
+            prop = value;
+        }
+    }
+}

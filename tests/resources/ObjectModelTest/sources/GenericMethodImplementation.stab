@@ -1,0 +1,16 @@
+using java.lang;
+
+public class GenericMethodImplementation : GenericMethodImplementationAux {
+	public static boolean test() {
+		var obj = new GenericMethodImplementation();
+		return obj.call("STR").equals("STR");
+	}
+	
+	public T call<T>(T t) {
+		return t;
+	}
+}
+
+public interface GenericMethodImplementationAux {
+	T call<T>(T arg);
+}

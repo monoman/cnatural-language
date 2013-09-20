@@ -1,0 +1,11 @@
+stab.tree.ExpressionTree<interface stab.query.FunctionIntInt> tree =
+	(#Parameter0#int#p#) =>
+    {
+        if (#Parameter0#int#p# >= #Value#int#0#)
+            {
+                return #Parameter0#int#p#;
+            }
+        else
+            return -#Parameter0#int#p#;
+
+    }

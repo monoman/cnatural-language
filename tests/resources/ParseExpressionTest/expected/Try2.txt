@@ -1,0 +1,8 @@
+Lambda( => {
+try {
+}
+finally {
+return(Literal(Null, [null]));
+}
+}
+)

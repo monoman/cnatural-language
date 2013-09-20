@@ -1,0 +1,25 @@
+public class PropertyInterface : PropertyInterfaceAux {
+	public int Property {
+		get;
+		set;
+	}
+	
+	public int method() {
+		PropertyInterfaceAux it = this;
+		it.Property = 3;
+		return it.Property;
+	}
+	
+	public static int test() {
+		var obj = new PropertyInterface();
+		return obj.method();
+	}
+}
+
+public interface PropertyInterfaceAux {
+	int Property {
+		get;
+		set;
+	}
+}
+

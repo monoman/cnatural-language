@@ -1,0 +1,8 @@
+// Lstab/bytecode/test/classes/SimpleField; / Lstab/bytecode/test/classes/SimpleField;
+public class stab/bytecode/test/classes/SimpleField : java/lang/Object {
+    // I / null
+    public I field;
+    // ()V / ()V
+    public V <init>() {
+    }
+}

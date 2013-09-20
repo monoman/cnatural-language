@@ -1,0 +1,3 @@
+Assign(Name(query) Assign from n in Name(names)
+join p in Name(people) on Name(n) equals (Name(p)).Name into matching
+select new{Name=Name(n), Count=(Name(matching)).Count()})

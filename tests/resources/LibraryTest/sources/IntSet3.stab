@@ -1,0 +1,10 @@
+using stab.query;
+
+public class IntSet3 {
+	public static boolean test() {
+		var set = Query.asIterable(new[] { 1, 2, 3, 2, 1 }).toSet();
+		var list = Query.asIterable(new[] { 1, 2, 1 }).toList();
+		set.retainAll(list);
+		return set.count() == 2 && !set.contains(3);
+	}
+}

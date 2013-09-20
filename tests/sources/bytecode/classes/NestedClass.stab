@@ -1,0 +1,6 @@
+package stab.bytecode.test.classes {
+	public class NestedClass {
+		public class InnerClass {
+		}
+	}
+}

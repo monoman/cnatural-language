@@ -1,0 +1,5 @@
+static class C {
+    static void m<T>(this B p1, T p2)
+        where T : A {
+    }
+}

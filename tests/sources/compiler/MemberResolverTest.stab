@@ -1,0 +1,75 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using java.util;
+using org.junit;
+using stab.query;
+using stab.reflection;
+using stab.tools.helpers;
+
+package stab.tools.compiler.test {
+
+	public class MemberResolverTest {
+		
+		[Test]
+		public void testResolveTypeName() {
+			var userDir = System.getProperty("user.dir");
+			var alPath = PathHelper.combine(userDir, "bin/stabal.jar");
+			var rtPath = PathHelper.combine(userDir, "bin/stabrt.jar");
+			var typeSystem = new Library(new String[] { rtPath });
+			var annotatedTypeSystem = new Library(new String[] { alPath }, typeSystem);
+		
+			var memberResolver = new MemberResolver(typeSystem, annotatedTypeSystem);
+			memberResolver.initialize();
+
+			memberResolver.usingDirective(
+				new HashMap<String, MemberInfo>(),
+				new ArrayList<String> { "java/lang" },
+				new HashMap<String, Iterable<String>>());
+			
+			var stringType = memberResolver.resolveTypeName(typeSystem.getType("java/lang/Object").PackageName, "String");
+			Assert.assertNotNull(stringType);
+			Assert.assertEquals("java/lang/String", stringType.Name);
+			
+			memberResolver.dispose();
+		}
+		
+		[Test]
+		public void testResolveTypeName2() {
+			var userDir = System.getProperty("user.dir");
+			var alPath = PathHelper.combine(userDir, "bin/stabal.jar");
+			var rtPath = PathHelper.combine(userDir, "bin/stabrt.jar");
+			var typeSystem = new Library(new String[] { rtPath });
+			var annotatedTypeSystem = new Library(new String[] { alPath }, typeSystem);
+		
+			var memberResolver = new MemberResolver(typeSystem, annotatedTypeSystem);
+			memberResolver.initialize();
+
+			memberResolver.usingDirective(
+				new HashMap<String, MemberInfo>(),
+				new ArrayList<String> { "java/awt", "java/util" },
+				new HashMap<String, Iterable<String>>());
+			
+			var listType = memberResolver.resolveTypeName(typeSystem.getType("java/lang/Object").PackageName, "List");
+			Assert.assertNull(listType);
+			Assert.assertTrue(memberResolver.isAmbiguousTypeName("List"));
+			
+			memberResolver.dispose();
+		}
+
+	}
+}

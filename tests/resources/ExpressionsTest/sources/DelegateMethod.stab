@@ -1,0 +1,13 @@
+public class DelegateMethod {
+	delegate boolean D();
+
+	public boolean method() {
+		D d = method;
+		return d.Method.equals(this.getClass().getMethod("method"));
+	}
+	
+	public static boolean test() {
+		var obj = new DelegateMethod();
+		return obj.method();
+	}
+}

@@ -1,0 +1,74 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+package stab.query {
+
+	abstract class Sorter {
+		protected abstract int compare(int item1, int item2);
+
+		static int[] createMap(int size) {
+			int[] map = new int[size];
+			for (int i = 0; i < size; i++) {
+				map[i] = i;
+			}
+			return map;
+		}
+
+		void sort(int[] array, int start, int end) {
+			do {
+				// Take the pivot value at the middle of the range
+				int pivot = array[start + ((end - start) >> 1)];
+				int index1 = start;
+				int index2 = end;
+				// Swap the values starting from each extremities of the range.
+				do {
+					while (index1 <= end && compare(array[index1], pivot) < 0) {
+						++index1;
+					}
+					while (index2 >= start && compare(pivot, array[index2]) < 0) {
+						--index2;
+					}
+					if (index1 < index2) {
+						int tmp = array[index1];
+						array[index1] = array[index2];
+						array[index2] = tmp;
+						++index1;
+						--index2;
+					}
+				} while (index1 < index2);
+				// Advance while the items at indexes have the same value as the pivot
+				while (index1 <= end && compare(array[index1], pivot) == 0) {
+					++index1;
+				}
+				while (index2 >= start && compare(array[index2], pivot) == 0) {
+					--index2;
+				}
+				// To reduce space complexity, sort recursively the smallest partition, iterate over the largest.
+				if ((index2 - start) <= (end - index1)) {
+					if (start < index2) {
+						sort(array, start, index2);
+					}
+					start = index1;
+				} else {
+					if (index1 < end) {
+						sort(array, index1, end);
+					}
+					end = index2;
+				}
+			} while (start < end);
+		}
+	}
+}

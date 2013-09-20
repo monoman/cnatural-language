@@ -1,0 +1,51 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using org.junit;
+using stab.tools.helpers;
+
+package stab.tools.parser.test {
+	public class SourceCodeScannerTest {
+		[Test]
+		public void keywordTest() {
+			var errorManager = new CodeErrorManager();
+			var scanner = new SourceCodeScanner(errorManager, "class".toCharArray());
+			Assert.assertEquals(LexicalUnit.Keyword, scanner.nextLexicalUnit());
+			Assert.assertEquals(Keyword.Class, scanner.Keyword);
+		}
+		
+		[Test]
+		public void integerTest() {
+			var errorManager = new CodeErrorManager();
+			var scanner = new SourceCodeScanner(errorManager, "123".toCharArray());
+			Assert.assertEquals(LexicalUnit.DecimalIntegerLiteral, scanner.nextLexicalUnit());
+			Assert.assertEquals(3, scanner.EndPosition);
+		}
+
+		[Test]
+		public void integersTest() {
+			var errorManager = new CodeErrorManager();
+			var scanner = new SourceCodeScanner(errorManager, "1 3".toCharArray());
+			Assert.assertEquals(LexicalUnit.DecimalIntegerLiteral, scanner.nextLexicalUnit());
+			Assert.assertEquals(1, scanner.EndPosition);
+			Assert.assertEquals(LexicalUnit.Whitespace, scanner.nextLexicalUnit());
+			Assert.assertEquals(2, scanner.EndPosition);
+			Assert.assertEquals(LexicalUnit.DecimalIntegerLiteral, scanner.nextLexicalUnit());
+			Assert.assertEquals(3, scanner.EndPosition);
+		}
+
+	}
+}

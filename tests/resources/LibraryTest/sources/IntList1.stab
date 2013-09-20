@@ -1,0 +1,9 @@
+using stab.query;
+
+public class IntList1 {
+	public static boolean test() {
+		var list = Query.range(0, 5).toList();
+		list.add(5);
+		return list.sequenceEqual(Query.range(0, 6));
+	}
+}

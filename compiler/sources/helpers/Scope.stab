@@ -1,0 +1,103 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using java.util;
+
+package stab.tools.helpers {
+	
+	public class Scope<T, U> {
+		private ArrayList<HashMap<T, U>> bindingStack;
+		
+		public Scope() {
+			this.bindingStack = new ArrayList<HashMap<T, U>>();
+		}
+		
+		public void enterScope() {
+			this.bindingStack.add(new HashMap<T, U>());
+		}
+		
+		public void leaveScope() {
+			this.bindingStack.remove(this.bindingStack.size() - 1);
+		}
+		
+		public void declareBinding(T key, U value) {
+			this.bindingStack[this.bindingStack.size() - 1][key] = value;
+		}
+		
+		public U getBindingValue(T key) {
+			for (int i = this.bindingStack.size() - 1; i >= 0; --i) {
+				if (this.bindingStack[i].containsKey(key)) {
+					return this.bindingStack[i][key];
+				}
+			}
+			throw new IllegalArgumentException(key.toString());
+		}
+		
+		public boolean hasBinding(T key) {
+			for (int i = this.bindingStack.size() - 1; i >= 0; --i) {
+				if (this.bindingStack[i].containsKey(key)) {
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		public Iterable<Entry<T, U>> getBindings() {
+			var result = new HashSet<Entry<T, U>>();
+			foreach (var m in bindingStack) {
+				foreach (var e in m.entrySet()) {
+					result.add(new Entry<T, U>(e.getKey(), e.getValue()));
+				}
+			}
+			return result;
+		}
+
+		public void clear() {
+			this.bindingStack.clear();
+		}
+		
+		public class Entry<K, V> {
+			Entry(K key, V value) {
+				this.Key = key;
+				this.Value = value;
+			}
+			
+			public K Key {
+				get;
+				private set;
+			}
+			
+			public V Value {
+				get;
+				private set;
+			}
+			
+			public override boolean equals(Object obj) {
+				if (obj instanceof Entry<?, ?>) {
+					var e = (Entry<?, ?>)obj;
+					return this.Key.equals(e.Key);
+				} else {
+					return false;
+				}
+			}
+			
+			public override int hashCode() {
+				return this.Key.hashCode();
+			}
+		}
+	}
+}

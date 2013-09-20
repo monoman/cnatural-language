@@ -1,0 +1,8 @@
+public class ControlFlow2 {
+	public static boolean test() {
+		for (;;) {
+			break;
+		}
+		return true;
+	}
+}

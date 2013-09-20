@@ -1,0 +1,7 @@
+// Lstab/bytecode/test/classes/GenericClass; / Lstab/bytecode/test/classes/GenericClass<TT;>;
+public class stab/bytecode/test/classes/GenericClass<T> : java/lang/Object 
+        where T: java/lang/Object {
+    // ()V / ()V
+    public V <init>() {
+    }
+}

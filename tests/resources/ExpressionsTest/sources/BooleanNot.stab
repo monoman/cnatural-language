@@ -1,0 +1,9 @@
+public class BooleanNot {
+	public static boolean test() {
+		var b = true;
+		if ((b = !b) == false) {
+			return true;
+		}
+		return false;
+	}
+}

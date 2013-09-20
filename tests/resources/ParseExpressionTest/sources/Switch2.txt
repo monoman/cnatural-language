@@ -1,0 +1,6 @@
+() => {
+	switch ('c') {
+	case 'x':
+		break;
+	}
+}

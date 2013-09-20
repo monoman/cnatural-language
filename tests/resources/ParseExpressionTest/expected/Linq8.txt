@@ -1,0 +1,40 @@
+Assign(Name(pixelsQuery) Assign from y in (Name(Enumerable)).Range(Literal(DecimalInteger, [0]), Name(screenHeight))
+let recenterY = ((Minus (Name(y) Subtract (Name(screenHeight) Divide Literal(Real, [2.0])))) Divide (Literal(Real, [2.0]) Multiply Name(screenHeight)))
+select from x in (Name(Enumerable)).Range(Literal(DecimalInteger, [0]), Name(screenWidth))
+let recenterX = ((Name(x) Subtract (Name(screenWidth) Divide Literal(Real, [2.0]))) Divide (Literal(Real, [2.0]) Multiply Name(screenWidth)))
+let point = (Name(Vector)).Norm((Name(Vector)).Plus(((Name(scene)).Camera).Forward, (Name(Vector)).Plus((Name(Vector)).Times(Name(recenterX), ((Name(scene)).Camera).Right), (Name(Vector)).Times(Name(recenterY), ((Name(scene)).Camera).Up))))
+let ray = new Ray{Start=((Name(scene)).Camera).Pos, Dir=Name(point)}
+let computeTraceRay = Cast<Func<Func<TraceRayArgs, Color>, Func<TraceRayArgs, Color>>>(Lambda(f => Lambda(traceRayArgs => ((from isect in from thing in ((Name(traceRayArgs)).Scene).Things
+select (Name(thing)).Intersect((Name(traceRayArgs)).Ray)
+where (Name(isect) NotEqual Literal(Null, [null]))
+orderby (Name(isect)).Dist
+let d = ((Name(isect)).Ray).Dir
+let pos = (Name(Vector)).Plus((Name(Vector)).Times((Name(isect)).Dist, ((Name(isect)).Ray).Dir), ((Name(isect)).Ray).Start)
+let normal = ((Name(isect)).Thing).Normal(Name(pos))
+let reflectDir = (Name(Vector)).Minus(Name(d), (Name(Vector)).Times((Literal(DecimalInteger, [2]) Multiply (Name(Vector)).Dot(Name(normal), Name(d))), Name(normal)))
+let naturalColors = from light in ((Name(traceRayArgs)).Scene).Lights
+let ldis = (Name(Vector)).Minus((Name(light)).Pos, Name(pos))
+let livec = (Name(Vector)).Norm(Name(ldis))
+let testRay = new Ray{Start=Name(pos), Dir=Name(livec)}
+let testIsects = from inter in from thing in ((Name(traceRayArgs)).Scene).Things
+select (Name(thing)).Intersect(Name(testRay))
+where (Name(inter) NotEqual Literal(Null, [null]))
+orderby (Name(inter)).Dist
+select Name(inter)
+let testIsect = (Name(testIsects)).FirstOrDefault()
+let neatIsect = (Name(testIsect) Equal Literal(Null, [null]))?Literal(DecimalInteger, [0]):(Name(testIsect)).Dist
+let isInShadow = (Not ((Name(neatIsect) GreaterThan (Name(Vector)).Mag(Name(ldis))) LogicalOr (Name(neatIsect) Equal Literal(DecimalInteger, [0]))))
+where (Not Name(isInShadow))
+let illum = (Name(Vector)).Dot(Name(livec), Name(normal))
+let lcolor = (Name(illum) GreaterThan Literal(DecimalInteger, [0]))?(Name(Color)).Times(Name(illum), (Name(light)).Color):(Name(Color)).Make(Literal(DecimalInteger, [0]), Literal(DecimalInteger, [0]), Literal(DecimalInteger, [0]))
+let specular = (Name(Vector)).Dot(Name(livec), (Name(Vector)).Norm(Name(reflectDir)))
+let scolor = (Name(specular) GreaterThan Literal(DecimalInteger, [0]))?(Name(Color)).Times((Name(Math)).Pow(Name(specular), (((Name(isect)).Thing).Surface).Roughness), (Name(light)).Color):(Name(Color)).Make(Literal(DecimalInteger, [0]), Literal(DecimalInteger, [0]), Literal(DecimalInteger, [0]))
+select (Name(Color)).Plus((Name(Color)).Times((((Name(isect)).Thing).Surface).Diffuse(Name(pos)), Name(lcolor)), (Name(Color)).Times((((Name(isect)).Thing).Surface).Specular(Name(pos)), Name(scolor)))
+let reflectPos = (Name(Vector)).Plus(Name(pos), (Name(Vector)).Times(Literal(Real, [.001]), Name(reflectDir)))
+let reflectColor = ((Name(traceRayArgs)).Depth GreaterThanOrEqual Name(MaxDepth))?(Name(Color)).Make(Literal(Real, [.5]), Literal(Real, [.5]), Literal(Real, [.5])):(Name(Color)).Times((((Name(isect)).Thing).Surface).Reflect(Name(reflectPos)), Name(f)(new TraceRayArgs(new Ray{Start=Name(reflectPos), Dir=Name(reflectDir)}, (Name(traceRayArgs)).Scene, ((Name(traceRayArgs)).Depth Add Literal(DecimalInteger, [1])))))
+select (Name(naturalColors)).Aggregate(Name(reflectColor), Lambda(color, natColor => (Name(Color)).Plus(Name(color), Name(natColor));
+))).DefaultIfEmpty((Name(Color)).Background)).First();
+);
+))
+let traceRay = Name(Y)(Name(computeTraceRay))
+select new{X=Name(x), Y=Name(y), Color=Name(traceRay)(new TraceRayArgs(Name(ray), Name(scene), Literal(DecimalInteger, [0])))})

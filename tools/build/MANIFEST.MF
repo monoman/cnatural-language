@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+Class-Path: stabrt.jar asm-3.3.jar stabc.jar
+Main-Class: stab.tools.build.Application

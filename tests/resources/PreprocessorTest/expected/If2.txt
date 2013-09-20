@@ -1,0 +1,10 @@
+#if expression: false, skipped: true
+....----
+..../*
+....----
+#end
+#else skipped: false
+....----
+....// region 2
+....----
+#end

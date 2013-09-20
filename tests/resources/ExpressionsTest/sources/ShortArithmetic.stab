@@ -1,0 +1,6 @@
+public class ShortArithmetic {
+	public static boolean test() {
+		short v = (short)0xffff;
+		return ++v == 0;
+	}
+}

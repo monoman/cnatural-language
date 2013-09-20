@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+Class-Path: ../runtime/stabrt.jar asm-3.3.jar ../compiler/stabc.jar junit-4.8.1.jar ../tests/tests.jar
+Main-Class: stab.tools.tests.Application

@@ -1,0 +1,1 @@
+Assign(Name(x) Assign ((Name(y) Instanceof Type(C<T>)) Add Name(z)))

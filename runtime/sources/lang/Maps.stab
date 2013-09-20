@@ -1,0 +1,93 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using java.util;
+ 
+package stab.lang {
+
+	public interface IntTMap<V> : Map<Integer, V> {
+		boolean containsKey(int key);
+		V get(int key);
+		IntSet keySet();
+		V put(int key, V value);
+		void putAll(IntTMap<? : V> m);
+		V remove(int key);
+	}
+	
+	public interface TIntMap<K> : Map<K, Integer> {
+		boolean containsValue(int value);
+		int getValue(K key);
+		int put(K key, int value);
+		void putAll(TIntMap<? : K> m);
+		int removeKey(K key);
+		IntCollection values();
+	}
+	
+	public interface LongTMap<V> : Map<Long, V> {
+		boolean containsKey(long key);
+		V get(long key);
+		LongSet keySet();
+		V put(long key, V value);
+		void putAll(LongTMap<? : V> m);
+		V remove(long key);
+	}
+	
+	public interface TLongMap<K> : Map<K, Long> {
+		boolean containsValue(long value);
+		long getValue(K key);
+		long put(K key, long value);
+		void putAll(TLongMap<? : K> m);
+		long removeKey(K key);
+		LongCollection values();
+	}
+	
+	public interface FloatTMap<V> : Map<Float, V> {
+		boolean containsKey(float key);
+		V get(float key);
+		FloatSet keySet();
+		V put(float key, V value);
+		void putAll(FloatTMap<? : V> m);
+		V remove(float key);
+	}
+	
+	public interface TFloatMap<K> : Map<K, Float> {
+		boolean containsValue(float value);
+		float getValue(K key);
+		float put(K key, float value);
+		void putAll(TFloatMap<? : K> m);
+		float removeKey(K key);
+		FloatCollection values();
+	}
+	
+	public interface DoubleTMap<V> : Map<Double, V> {
+		boolean containsKey(double key);
+		V get(double key);
+		DoubleSet keySet();
+		V put(double key, V value);
+		void putAll(DoubleTMap<? : V> m);
+		V remove(double key);
+	}
+	
+	public interface TDoubleMap<K> : Map<K, Double> {
+		boolean containsValue(double value);
+		double getValue(K key);
+		double put(K key, double value);
+		void putAll(TDoubleMap<? : K> m);
+		double removeKey(K key);
+		DoubleCollection values();
+	}
+}

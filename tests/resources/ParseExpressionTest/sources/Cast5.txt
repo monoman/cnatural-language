@@ -1,0 +1,1 @@
+(Foo) ((DictionaryEntry) (baseEnumerator.Current)).Value

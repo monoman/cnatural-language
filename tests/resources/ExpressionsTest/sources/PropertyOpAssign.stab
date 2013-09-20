@@ -1,0 +1,17 @@
+public class PropertyOpAssign {
+	public int Value {
+		get;
+		private set;
+	}
+	
+	public int method(int n) {
+		Value = n;
+		Value += 2;
+		return this.Value -= 1;
+	}
+	
+	public static int test(int n) {
+		var obj = new PropertyOpAssign();
+		return obj.method(n);
+	}
+}

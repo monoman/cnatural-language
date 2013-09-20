@@ -1,0 +1,8 @@
+public class ObjectInitializer2 {
+	public int field;
+	
+	public static int test() {
+		var obj = new ObjectInitializer2 { field = 3 };
+		return obj.field;
+	}
+}

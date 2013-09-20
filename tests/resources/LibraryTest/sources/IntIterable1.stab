@@ -1,0 +1,10 @@
+using java.lang;
+using stab.query;
+
+public class IntIterable1 {
+	public static boolean test() {
+		Iterable<Integer> it1 = Query.range(0, 5);
+		Iterable<Integer> it2 = Query.range(0, 5);
+		return it1.sequenceEqual(it2);
+	}
+}

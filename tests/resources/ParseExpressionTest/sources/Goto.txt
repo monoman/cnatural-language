@@ -1,0 +1,7 @@
+() => {
+	Console.WriteLine("reachable");
+	goto Label;
+	Console.WriteLine("unreachable");
+	Label:
+	Console.WriteLine("reachable");
+}

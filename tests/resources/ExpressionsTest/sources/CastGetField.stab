@@ -1,0 +1,18 @@
+public class CastGetfield {
+	public static int test() {
+		CastGetfieldAux2 value1 = new CastGetfieldAux();
+		if (((CastGetfieldAux)value1).value3 != CastGetfieldAux.CONST)
+			return 2;
+		return 0;
+	}
+}
+
+public class CastGetfieldAux : CastGetfieldAux2 {
+	public static final int CONST = 2;
+	public int value3 = CONST;
+}
+
+public class CastGetfieldAux2 {
+	public float value1;
+	public double value2;
+}

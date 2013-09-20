@@ -1,0 +1,15 @@
+package a {
+    public class A {
+        protected void m() {
+        }
+    }
+}
+package b {
+    class B {
+        void n() {
+            new C().m();
+        }
+        class C : a.A {
+        }
+    }
+}

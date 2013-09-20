@@ -1,0 +1,17 @@
+() => {
+		string[][] table = {
+			{"Red", "Blue", "Green"},
+			{"Monday", "Wednesday", "Friday"}
+		};
+		foreach (string str in args) {
+			int row, colm;
+			for (row = 0; row <= 1; ++row)
+				for (colm = 0; colm <= 2; ++colm)
+					if (str == table[row,colm])
+	 					goto done;
+			Console.WriteLine("{0} not found", str);
+			continue;
+	done:
+			Console.WriteLine("Found {0} at [{1}][{2}]", str, row, colm);
+		}
+}

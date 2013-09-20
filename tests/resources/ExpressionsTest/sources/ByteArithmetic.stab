@@ -1,0 +1,6 @@
+public class ByteArithmetic {
+	public static boolean test() {
+		byte v = (byte)0xff;
+		return ++v == 0;
+	}
+}

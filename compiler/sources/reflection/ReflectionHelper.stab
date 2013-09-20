@@ -1,0 +1,237 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using java.util;
+using stab.query;
+using stab.tools.helpers;
+
+package stab.reflection {
+
+	class ReflectionHelper {
+		static String getObjectTypeSignature(TypeInfo type) {
+			if (type.GenericArguments.any()) {
+				var sb = new StringBuilder();
+				sb.append("L").append(type.FullName);
+				sb.append("<");
+				foreach (var t in type.GenericArguments) {
+					sb.append(t.Signature);
+				}
+				sb.append(">").append(";");
+				return sb.toString();
+			} else {
+				return "L" + type.FullName + ";";
+			}
+		}
+
+        static String getClassSignature(TypeInfo type) {
+            var sb = new StringBuilder();
+            appendFormalTypeParametersSignature(sb, type.GenericArguments);
+            appendClassTypeSignature(sb, type.BaseType, type.BaseType.GenericArguments);
+            foreach (var t in type.Interfaces) {
+                appendClassTypeSignature(sb, t, t.GenericArguments);
+            }
+            return sb.toString();
+        }
+        
+        static String getMethodTypeSignature(MethodInfo method) {
+            var sb = new StringBuilder();
+            appendFormalTypeParametersSignature(sb, method.GenericArguments);
+            sb.append("(");
+            foreach (var p in method.Parameters) {
+                sb.append(p.Type.Signature);
+            }
+            sb.append(")").append(method.ReturnType.Signature);
+            foreach (var t in method.Exceptions) {
+                sb.append("^").append(t.Signature);
+            }
+            return sb.toString();
+        }
+        
+        private static void appendFormalTypeParametersSignature(StringBuilder sb, Iterable<TypeInfo> typeArguments) {
+            if (typeArguments.any()) {
+                sb.append("<");
+                foreach (var t in typeArguments) {
+                    sb.append(t.FullName);
+                    var first = true;
+                    if (t.GenericParameterBounds.any()) {
+                        foreach (var bound in t.GenericParameterBounds) {
+                            sb.append(":");
+                            if (first) {
+                                first = false;
+                                if (!bound.IsObject) {
+                                    appendClassTypeSignature(sb, bound, bound.GenericArguments);
+                                } else {
+									sb.append("Ljava/lang/Object;");
+								}
+                            } else {
+                                appendClassTypeSignature(sb, bound, bound.GenericArguments);
+                            }
+                        }
+                    } else {
+                        sb.append(":");
+						sb.append("Ljava/lang/Object;");
+                    }
+                }
+                sb.append(">");
+            }
+        }
+        
+        private static void appendClassTypeSignature(StringBuilder sb, TypeInfo type, Iterable<TypeInfo> typeArguments) {
+            sb.append("L").append(type.FullName);
+            if (typeArguments.any()) {
+                sb.append("<");
+                foreach (var t in typeArguments) {
+                    sb.append(t.Signature);
+                }
+                sb.append(">");
+            }
+            sb.append(";");
+        }
+		
+		static String getObjectTypeDisplayName(TypeInfo type) {
+			if (type.GenericArguments.any()) {
+				var sb = new StringBuilder();
+				sb.append(type.FullName.replace('/', '.').replace('$', '.'));
+				sb.append("<");
+				var first = true;
+				foreach (var t in type.GenericArguments) {
+					if (first) {
+						first = false;
+					} else {
+						sb.append(", ");
+					}
+					sb.append(t.DisplayName);
+				}
+				sb.append(">");
+				return sb.toString();
+			} else {
+				return type.FullName.replace('/', '.').replace('$', '.');
+			}
+		}
+		
+        static void declareEnclosingGenericParameters(Scope<String, TypeInfo> genericsScope, TypeInfo type) {
+            var genericArguments = new ArrayList<Iterable<TypeInfo>>();
+            var declaringType = type.DeclaringType;
+            while (declaringType != null) {
+                genericArguments.add(declaringType.GenericArguments);
+                declaringType = declaringType.DeclaringType;
+            }
+            for (int i = genericArguments.size() - 1; i >= 0; --i) {
+                foreach (var t in genericArguments[i]) {
+                    if (t.IsGenericParameter) {
+                        genericsScope.declareBinding(t.FullName, t);
+                    }
+                }
+            }
+        }
+        static void declareGenericTypeBindings(GenericParameterBindings genericsScope, Iterable<TypeInfo> keys, Iterable<TypeInfo> values) {
+            if (keys.count() != values.count()) {
+                throw new IllegalStateException();
+            }
+            var it1 = keys.iterator();
+            var it2 = values.iterator();
+            while (it1.hasNext()) {
+                var t1 = it1.next();
+                var t2 = it2.next();
+                if (t1.IsGenericParameter) {
+                    genericsScope.declareBinding(t1, t2);
+                }
+            }
+        }
+
+        static Iterable<TypeInfo> bindGenericParameters(Library typeSystem, GenericParameterBindings genericsScope, Iterable<TypeInfo> types) {
+            return types.select(p => bindGenericParameters(typeSystem, genericsScope, p)).toList();
+        }
+        
+        static TypeInfo bindGenericParameters(Library typeSystem, GenericParameterBindings genericsScope, TypeInfo typeInfo) {
+            if (genericsScope.hasBinding(typeInfo)) {
+                return genericsScope.getBindingValue(typeInfo);
+            } else if (typeInfo.IsArray) {
+                return bindGenericParameters(typeSystem, genericsScope, typeInfo.ElementType).ArrayType;
+            } else if (typeInfo.TypeKind == TypeKind.UpperBoundedWildcard) {
+                return bindGenericParameters(typeSystem, genericsScope, typeInfo.WildcardBound).UpperBoundedWildcard;
+            } else if (typeInfo.TypeKind == TypeKind.LowerBoundedWildcard) {
+                return bindGenericParameters(typeSystem, genericsScope, typeInfo.WildcardBound).LowerBoundedWildcard;
+            } else if (!typeInfo.IsClosed && typeInfo.GenericArguments.any()) {
+                return typeSystem.getGenericType(typeInfo, bindGenericParameters(typeSystem, genericsScope, typeInfo.GenericArguments), genericsScope);
+            } else if (typeInfo.IsGenericParameter && typeInfo.GenericParameterBounds.any()) {
+                var param = new GenericParameterType(typeSystem, typeInfo.FullName, typeInfo);
+                genericsScope.declareBinding(typeInfo, param);
+                foreach (var t in typeInfo.GenericParameterBounds) {
+                    param.genericParameterBounds.add(bindGenericParameters(typeSystem, genericsScope, t));
+                }
+                return param;
+            }
+            return typeInfo;
+        }
+        
+        static TypeInfo getRawType(TypeInfo referenceType, TypeInfo type) {
+            switch (type.TypeKind) {
+            case GenericParameter:
+                return type.GenericParameterBounds.firstOrDefault() ?? referenceType.getBaseClasses().lastOrDefault() ?? referenceType;
+                
+            case UnboundedWildcard:
+            case LowerBoundedWildcard:
+                return referenceType.getBaseClasses().lastOrDefault() ?? referenceType;
+                
+            case UpperBoundedWildcard:
+                return type.WildcardBound;
+            
+            case Array:
+            	return getRawType(referenceType, type.ElementType).ArrayType;
+            
+            default:
+                return (type.GenericArguments.any()) ? type.RawType : type;
+            }
+        }
+	}
+
+    class GenericParameterBindings {
+        private HashMap<TypeInfo, TypeInfo> bindings;
+        private GenericParameterBindings next;
+        
+        GenericParameterBindings(GenericParameterBindings next) {
+            this.next = next;
+            this.bindings = new HashMap<TypeInfo, TypeInfo>();
+        }
+        
+        void declareBinding(TypeInfo key, TypeInfo value) {
+            this.bindings[key] = value;
+        }
+        
+        boolean hasBinding(TypeInfo key) {
+            var b = this;
+            do {
+                if (b.bindings[key] != null) {
+                    return true;
+                }
+            } while ((b = b.next) != null);
+            return false;
+        }
+        
+        TypeInfo getBindingValue(TypeInfo key) {
+            var b = this;
+            do {
+                var result = b.bindings[key];
+                if (result != null) {
+                    return result;
+                }
+            } while ((b = b.next) != null);
+            throw new IllegalStateException();
+        }
+    }
+}

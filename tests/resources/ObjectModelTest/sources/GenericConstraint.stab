@@ -1,0 +1,26 @@
+package p {
+	using java.lang;
+
+	public class GenericConstraint<T> where T : Runnable {
+		public T field;
+
+		public void method() {
+			field.run();
+		}
+	
+		public static int test() {
+			GenericConstraint<GenericConstraintAux> gc = new GenericConstraint<GenericConstraintAux>();
+			gc.field = new GenericConstraintAux();
+			gc.method();
+			return gc.field.field;
+		}
+	}
+	
+	public class GenericConstraintAux : Runnable {
+		public int field;
+	
+		public void run() {
+			field = 1;		
+		}
+	}
+}

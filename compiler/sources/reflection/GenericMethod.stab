@@ -1,0 +1,204 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using java.util;
+using stab.query;
+using stab.tools.helpers;
+
+package stab.reflection {
+
+    class ConstructedGenericMethod : MethodInfo {
+        private MethodInfo genericMethodDefinition;
+        private TypeInfo returnType;
+        private ArrayList<ParameterInfo> parameters;
+        private Iterable<TypeInfo> genericArguments;
+        private Iterable<TypeInfo> exceptions;
+        private GenericParameterBindings genericsScope;
+		private Library typeSystem;
+    
+        ConstructedGenericMethod(Library typeSystem, TypeInfo declaringType, MethodInfo genericMethodDefinition, Iterable<TypeInfo> genericArguments,
+                GenericParameterBindings genericsScope)
+            : super(declaringType, genericMethodDefinition.Name) {
+			this.typeSystem = typeSystem;
+            this.genericMethodDefinition = genericMethodDefinition;
+            this.genericArguments = genericArguments;
+            this.genericsScope = new GenericParameterBindings(genericsScope);
+        }
+        
+        public override TypeInfo ReturnType {
+            get {
+                initialize();
+                return returnType;
+            }
+        }
+        
+        public override Iterable<ParameterInfo> Parameters {
+            get {
+                initialize();
+                return parameters;
+            }
+        }
+        
+        public override Iterable<TypeInfo> Exceptions {
+            get {
+                initialize();
+                return exceptions;
+            }
+        }
+
+        public override Iterable<TypeInfo> GenericArguments {
+            get {
+                initialize();
+                return genericArguments;
+            }
+        }
+
+        public override MethodInfo GenericMethodDefinition {
+            get {
+                return genericMethodDefinition;
+            }
+        }
+        
+        public override String Descriptor {
+            get {
+                return genericMethodDefinition.Descriptor;
+            }
+        }
+        
+        public override Iterable<AnnotationValue> Annotations {
+            get {
+                return genericMethodDefinition.Annotations;
+            }
+        }
+        
+        public override AnnotationArgument DefaultValue {
+            get {
+                return genericMethodDefinition.DefaultValue;
+            }
+        }
+        
+        protected override int Modifiers {
+            get {
+                return genericMethodDefinition.Modifiers;
+            }
+        }
+        
+        private void initialize() {
+            if (returnType != null) {
+                return;
+            }
+            
+            if (genericArguments == null) {
+                genericArguments = ReflectionHelper.bindGenericParameters(typeSystem, genericsScope, genericMethodDefinition.GenericArguments);
+            } else {
+                ReflectionHelper.declareGenericTypeBindings(genericsScope, genericMethodDefinition.GenericArguments, genericArguments);
+            }
+            returnType = ReflectionHelper.bindGenericParameters(typeSystem, genericsScope, genericMethodDefinition.ReturnType);
+            parameters = new ArrayList<ParameterInfo>();
+            foreach (var p in genericMethodDefinition.Parameters) {
+                var newp = new ParameterInfo(p.Position, ReflectionHelper.bindGenericParameters(typeSystem, genericsScope, p.Type));
+                newp.name = p.Name;
+                parameters.add(newp);
+            }
+            exceptions = ReflectionHelper.bindGenericParameters(typeSystem, genericsScope, genericMethodDefinition.Exceptions);
+            genericsScope = null;
+        }
+    }
+    
+    class RawGenericMethod : MethodInfo {
+        private MethodInfo genericMethodDefinition;
+        private TypeInfo returnType;
+        private ArrayList<ParameterInfo> parameters;
+        private Iterable<TypeInfo> exceptions;
+
+        RawGenericMethod(TypeInfo declaringType, MethodInfo genericMethodDefinition)
+            : super(declaringType, genericMethodDefinition.Name) {
+            this.genericMethodDefinition = genericMethodDefinition;
+        }
+
+        public override TypeInfo ReturnType {
+            get {
+                initialize();
+                return returnType;
+            }
+        }
+        
+        public override Iterable<ParameterInfo> Parameters {
+            get {
+                initialize();
+                return parameters;
+            }
+        }
+
+        public override Iterable<TypeInfo> Exceptions {
+            get {
+                initialize();
+                return exceptions;
+            }
+        }
+        
+        public override Iterable<TypeInfo> GenericArguments {
+            get {
+                return Query.empty();
+            }
+        }
+        
+        public override Iterable<AnnotationValue> Annotations {
+            get {
+                return genericMethodDefinition.Annotations;
+            }
+        }
+        
+        public override AnnotationArgument DefaultValue {
+            get {
+                return genericMethodDefinition.DefaultValue;
+            }
+        }
+        
+        public override String Descriptor {
+            get {
+                return genericMethodDefinition.Descriptor;
+            }
+        }
+        
+        protected override int Modifiers {
+            get {
+                return genericMethodDefinition.Modifiers;
+            }
+        }
+        
+        private void initialize() {
+            if (returnType != null) {
+                return;
+            }
+            
+            returnType = ReflectionHelper.getRawType(genericMethodDefinition.DeclaringType, genericMethodDefinition.ReturnType);
+            parameters = new ArrayList<ParameterInfo>();
+            foreach (var p in genericMethodDefinition.Parameters) {
+                var newp = new ParameterInfo(p.Position, ReflectionHelper.getRawType(genericMethodDefinition.DeclaringType, p.Type));
+                newp.name = p.Name;
+                parameters.add(newp);
+            }
+            
+            var exceptions = new ArrayList<TypeInfo>();
+            this.exceptions = exceptions;
+            foreach (var t in genericMethodDefinition.Exceptions) {
+                exceptions.add(ReflectionHelper.getRawType(genericMethodDefinition.DeclaringType, t));
+            }
+        }
+    }
+}

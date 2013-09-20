@@ -1,0 +1,155 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using java.io;
+using java.util;
+using org.eclipse.core.resources;
+using org.eclipse.ui;
+using stab.query;
+using stab.reflection;
+using stab.tools.eclipse.helpers;
+using stab.tools.syntaxtree;
+
+package stab.tools.eclipse {
+
+	public interface IProjectBuildListener {
+		void projectBuilt(ProjectBuildEvent event);
+	}
+
+	public class ProjectBuildEvent : EventObject {
+		public ProjectBuildEvent(Object source)
+				: super(source) {
+		}
+	}
+
+	//
+	// Manages the resources associated to a project with the Stab nature.
+	//
+	public class ProjectManager {
+		private Activator activator;
+	
+		ProjectManager(Activator activator, IProject project) {
+			this.activator = activator;
+			this.Project = project;
+			this.Properties = new ProjectProperties();
+			
+			var propertiesFile = project.getFile(".stabproperties");
+			if (!this.Properties.load(propertiesFile)) {
+				try {
+					var libsFolder = project.getFolder("libs");
+					if (!libsFolder.exists()) {
+						libsFolder.create(true, true, null);
+					}
+					var runtimeLib = Environment.getLibraryPath("stabrt.jar");
+					using (var stream = new FileInputStream(runtimeLib)) {
+						var stabrtFile = libsFolder.getFile("stabrt.jar");
+						if (stabrtFile.exists()) {
+							stabrtFile.setContents(stream, IResource.FORCE, null);
+						} else {
+							stabrtFile.create(stream, true, null);
+						}
+						this.Properties.Libraries = Query.singleton(new ProjectLibrary(stabrtFile.getProjectRelativePath().toPortableString()));
+						this.Properties.OutputPath = "bin";
+					}
+				} catch (Exception e) {
+					Environment.logException(e);
+				}
+				this.Properties.save(propertiesFile);
+			}
+		}
+
+		public boolean RequireFullBuild {
+			get {
+				return this.DependencyInfo == null;
+			}
+		}
+
+		public IProject Project {
+			get;
+			private set;
+		}
+		
+		public ProjectProperties Properties {
+			get;
+			private set;
+		}
+
+		public DependencyInfo DependencyInfo {
+			get;
+			set;
+		}
+
+		public String[] ClassPath {
+			get;
+			set;
+		}
+
+		public Library TypeSystem {
+			get;
+			set;
+		}
+
+		public Library AnnotatedTypeSystem {
+			get;
+			set;
+		}
+
+		public Map<String, CompilationUnitNode> CompilationUnits {
+			get;
+			set;
+		}
+
+		public Iterable<String> FilesToCompile {
+			get;
+			set;
+		}
+
+		public Iterable<IFile> getSourceFiles() {
+			var result = new ArrayList<IFile>();
+			try {
+				this.Project.accept(p => {
+					if (p.getType() == IResource.FILE) {
+						if (p.getName().endsWith(".stab")) {
+							result.add((IFile)p.requestResource());
+						}
+						return false;
+					}
+					return true;
+				}, IResource.NONE);
+			} catch (Exception e) {
+				Environment.logException(e);
+			}
+			return result;
+		}
+
+		public void propertiesUpdated() {
+			try {
+				PlatformUI.getWorkbench().getProgressService().run(true, false, monitor => {
+					var propertiesFile = this.Project.getFile(".stabproperties");
+					this.Properties.save(propertiesFile);
+					this.Project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+				});
+			} catch (Exception e) {
+				Environment.logException(e);
+			}
+		}
+		
+		void dispose() {
+		
+		}
+	}
+}

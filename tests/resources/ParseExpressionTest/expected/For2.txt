@@ -1,0 +1,7 @@
+Lambda( => {
+for (var v = Literal(DecimalInteger, [0]);
+Condition();
+)
+(PostIncrement Name(v));
+}
+)

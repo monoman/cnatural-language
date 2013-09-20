@@ -1,0 +1,7 @@
+using java.lang;
+
+public class Instanceof {
+	public static boolean test(Object obj) {
+		return obj instanceof String;
+	}
+}

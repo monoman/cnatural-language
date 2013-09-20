@@ -1,0 +1,11 @@
+using java.lang;
+using stab.lang;
+
+public class ConditionalAux {
+    [Conditional({ "DEBUG" })]
+    public static void assert(boolean test) {
+        if (!test) {
+            throw new Exception("Assertion Failed");
+        }
+    }
+}

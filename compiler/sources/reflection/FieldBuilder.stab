@@ -1,0 +1,98 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using java.util;
+using org.objectweb.asm;
+
+package stab.reflection {
+    
+    public class FieldBuilder : FieldInfo {
+        public FieldBuilder(TypeInfo declaringType, String name, TypeInfo type)
+            : super(declaringType, 0, name, null) {
+            this.annotations = new ArrayList<AnnotationValue>();
+            this.type = type;
+        }
+    
+        public AnnotationValueBuilder addAnnotation(TypeInfo type, boolean runtimeVisible) {
+            checkCreated();
+            var result = new AnnotationValueBuilder(type, runtimeVisible);
+            annotations.add(result);
+            return result;
+        }
+    
+        public void setValue(Object value) {
+            checkCreated();
+            this.value = value;
+        }
+    
+        public void setEnum(boolean value) {
+            setModifiers(Opcodes.ACC_ENUM, value);
+        }
+    
+        public void setFinal(boolean value) {
+            setModifiers(Opcodes.ACC_FINAL, value);
+        }
+    
+        public void setPrivate(boolean value) {
+            setModifiers(Opcodes.ACC_PRIVATE, value);
+        }
+    
+        public void setProtected(boolean value) {
+            setModifiers(Opcodes.ACC_PROTECTED, value);
+        }
+    
+        public void setPublic(boolean value) {
+            setModifiers(Opcodes.ACC_PUBLIC, value);
+        }
+    
+        public void setStatic(boolean value) {
+            setModifiers(Opcodes.ACC_STATIC, value);
+        }
+    
+        public void setSynthetic(boolean value) {
+            setModifiers(Opcodes.ACC_SYNTHETIC, value);
+        }
+    
+        public void setTransient(boolean value) {
+            setModifiers(Opcodes.ACC_TRANSIENT, value);
+        }
+    
+        public void setVolatile(boolean value) {
+            setModifiers(Opcodes.ACC_VOLATILE, value);
+        }
+    
+        private void setModifiers(int modifiers, boolean value) {
+            checkCreated();
+            if (value) {
+                this.modifiers |= modifiers;
+            } else {
+                this.modifiers &= ~modifiers;
+            }
+        }
+
+        void accept(FieldVisitor visitor) {
+            foreach (var a in annotations) {
+                a.accept(visitor.visitAnnotation(a.Type.Descriptor, a.IsRuntimeVisible));
+            }
+            visitor.visitEnd();
+        }
+        
+        void checkCreated() {
+            ((TypeBuilder)this.DeclaringType).checkCreated();
+        }
+    }
+}

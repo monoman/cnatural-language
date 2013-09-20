@@ -1,0 +1,6 @@
+Lambda( => {
+for (Condition((Name(x) LessThan Literal(DecimalInteger, [10])));
+)
+(PreDecrement Name(x));
+}
+)

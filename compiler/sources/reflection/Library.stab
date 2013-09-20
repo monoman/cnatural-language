@@ -1,0 +1,592 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.io;
+using java.lang;
+using java.util;
+using java.util.zip;
+using stab.query;
+
+package stab.reflection {
+
+	public class TypeLoadException : RuntimeException {
+		public TypeLoadException(String message, String typeName) : super(message) {
+			this.TypeName = typeName;
+		}
+	
+		public String TypeName {
+			get;
+			private set;
+		}
+	}
+
+    public class Library {
+        private Library parent;
+        private HashMap<String, File> fileClasses;
+		private HashMap<String, ZipFile> jarClasses;
+        private ArrayList<String> classNames;
+        private HashMap<String, TypeInfo> typeInfos;
+		private HashMap<TypeInfo, ArrayList<TypeInfo>> constructedGenericTypes;
+        private HashMap<MethodInfo, ArrayList<MethodInfo>> constructedGenericMethods;
+		private TypeInfo[] primitiveTypes;
+		private TypeInfo unboundedWildcard;
+        
+        private TypeInfo objectType;
+        private TypeInfo stringType;
+        private TypeInfo classType;
+        private TypeInfo unboundedClassType;
+
+        public Library(String[] classPath)
+        		: this(classPath, null) {
+        }
+        
+        public Library(String[] classPath, Library parent) {
+            this.fileClasses = new HashMap<String, File>(128);
+            int capacity = (parent == null) ? 0x5000 : 128;
+            this.jarClasses = new HashMap<String, ZipFile>(capacity);
+            this.classNames = new ArrayList<String>(capacity);
+            this.typeInfos = new HashMap<String, TypeInfo>();
+			this.constructedGenericTypes = new HashMap<TypeInfo, ArrayList<TypeInfo>>();
+			this.constructedGenericMethods = new HashMap<MethodInfo, ArrayList<MethodInfo>>();
+            this.parent = parent;
+
+			if (parent == null) {
+	            initializeBootClasses();
+			}
+            
+            foreach (var path in classPath) {
+                explorePath(path);
+            }
+        }
+        
+        public Iterable<String> AllClassNames {
+            get {
+                if (parent == null) {
+                    return classNames;
+                } else {
+                    return classNames.concat(parent.AllClassNames);
+                }
+            }
+        }
+        
+		public Iterable<String> ClassNames {
+			get {
+				return classNames;
+			}
+		}
+		
+        public TypeBuilder defineType(String name) {
+            if (typeExists(name)) {
+                throw new IllegalStateException("Type '" + name + "' already defined");
+            }
+            var result = new TypeBuilder(this, null, name);
+            typeInfos[name] = result;
+            classNames.add(name);
+            return result;
+        }
+        
+        void defineNestedType(TypeInfo type) {
+        	var name = type.FullName;
+            if (typeExists(name)) {
+                throw new IllegalStateException("Type '" + name + "' already defined");
+            }
+        	typeInfos[name] = type;
+        	classNames.add(name);
+        }
+        
+        void undefineNestedType(TypeInfo type) {
+        	typeInfos.remove(type.FullName);
+        	classNames.remove(type.FullName);
+        }
+        
+        public boolean typeExists(String name) {
+            return (parent != null && parent.typeExists(name)) || isLocalType(name);
+        }
+		
+		protected boolean isLocalType(String name) {
+			return typeInfos.containsKey(name) || fileClasses.containsKey(name) || jarClasses.containsKey(name);
+		}
+
+		public TypeInfo getPrimitiveType(TypeKind typeKind) {
+			if (parent == null) {
+				if (primitiveTypes == null) {
+					primitiveTypes = new TypeInfo[sizeof(TypeKind.values())];
+				}
+				var result = primitiveTypes[typeKind.ordinal()];
+				if (result == null) {
+					result = new PrimitiveType(this, typeKind);
+					primitiveTypes[typeKind.ordinal()] = result;
+				}
+				return result;
+			} else {
+				return parent.getPrimitiveType(typeKind);
+			}
+		}
+        
+        public TypeInfo getType(String name) {
+            var typeInfo = typeInfos[name];
+            if (typeInfo != null) {
+                return typeInfo;
+            }
+			var zf = jarClasses.remove(name);
+			if (zf != null) {
+				var entry = zf.getEntry(name + ".class");
+				typeInfo = new ClassFileType(this, name, getBytes(zf.getInputStream(entry), (int)entry.getSize()));
+			} else {
+	            var f = fileClasses.remove(name);
+				if (f != null) {
+					typeInfo = new ClassFileType(this, name, getBytes(new FileInputStream(f), (int)f.length()));
+				} else {
+					if (parent == null) {
+						throw new TypeLoadException("Class not found: " + name, name);
+					} else {
+						return parent.getType(name);
+					}
+				}
+			}
+            return typeInfos[name] = typeInfo;
+        }
+        
+        private static byte[] getBytes(InputStream stream, int size) {
+        	var result = new byte[size];
+            try {
+                int read;
+                int offset = 0;
+                while (size > 0 && (read = stream.read(result, offset, size)) != -1) {
+                    offset += read;
+                    size -= read;
+                }
+            } finally {
+                stream.close();
+            }
+        	return result;
+        }
+
+        public TypeInfo getGenericType(TypeInfo type, Iterable<TypeInfo> typeArguments) {
+            return getGenericType(type, typeArguments, null);
+        }
+
+        TypeInfo getGenericType(TypeInfo type, Iterable<TypeInfo> typeArguments, GenericParameterBindings scope) {
+			if (parent == null || isLocalType(type.OriginalTypeDefinition.FullName)) {
+				return getGenericTypeCore(type, typeArguments, scope);
+			}
+			foreach (var t in typeArguments) {
+				if (isLocalType(t)) {
+					return getGenericTypeCore(type, typeArguments, scope);
+				}
+			}
+			return parent.getGenericType(type, typeArguments, scope);
+		}
+		
+		private boolean isLocalType(TypeInfo type) {
+			return type.Library == this;
+		}
+
+        TypeInfo getGenericTypeCore(TypeInfo type, Iterable<TypeInfo> typeArguments, GenericParameterBindings scope) {
+            if (type.IsClosed) {
+                throw new IllegalStateException();
+            }
+            if (typeArguments.sequenceEqual(type.GenericArguments)) {
+                return type;
+            }
+            if (!type.IsGenericTypeDefinition) {
+                return getGenericType(type.OriginalTypeDefinition, typeArguments, scope);
+            }
+			var constructedTypes = constructedGenericTypes[type];
+            if (constructedTypes == null) {
+                constructedTypes = new ArrayList<TypeInfo>();
+				constructedGenericTypes[type] = constructedTypes;
+            } else {
+                foreach (var t in constructedTypes) {
+                    if (typeArguments.sequenceEqual(t.GenericArguments)) {
+                        return t;
+                    }
+                }
+            }
+            var t = new ConstructedGenericType(this, type.DeclaringType, type, typeArguments, scope);
+            constructedTypes.add(t);
+            return t;
+        }
+
+		public MethodInfo getGenericMethod(MethodInfo method, Iterable<TypeInfo> typeArguments) {
+			if (parent == null || isLocalType(method.DeclaringType)) {
+				return getGenericMethodCore(method, typeArguments);
+			}
+			foreach (var t in typeArguments) {
+				if (isLocalType(t)) {
+					return getGenericMethodCore(method, typeArguments);
+				}
+			}
+			return parent.getGenericMethod(method, typeArguments);
+		}
+		
+        private MethodInfo getGenericMethodCore(MethodInfo method, Iterable<TypeInfo> typeArguments) {
+            if (method.IsClosed) {
+                throw new IllegalStateException();
+            }
+            if (typeArguments.sequenceEqual(method.GenericArguments)) {
+                return method;
+            }
+			var constructedMethods = constructedGenericMethods[method];
+            if (constructedMethods == null) {
+                constructedMethods = new ArrayList<MethodInfo>();
+				constructedGenericMethods[method] = constructedMethods;
+            } else {
+                foreach (var m in constructedMethods) {
+                    if (typeArguments.sequenceEqual(m.GenericArguments)) {
+                        return m;
+                    }
+                }
+            }
+            var m = new ConstructedGenericMethod(this, method.DeclaringType, method, typeArguments, null);
+            constructedMethods.add(m);
+            return m;
+        }
+        
+        public TypeInfo VoidType {
+        	get {
+        		return getPrimitiveType(TypeKind.Void);
+        	}
+        }
+
+        public TypeInfo BooleanType {
+        	get {
+        		return getPrimitiveType(TypeKind.Boolean);
+        	}
+        }
+
+        public TypeInfo ByteType {
+        	get {
+        		return getPrimitiveType(TypeKind.Byte);
+        	}
+        }
+
+        public TypeInfo CharType {
+        	get {
+        		return getPrimitiveType(TypeKind.Char);
+        	}
+        }
+
+        public TypeInfo ShortType {
+        	get {
+        		return getPrimitiveType(TypeKind.Short);
+        	}
+        }
+
+        public TypeInfo IntType {
+        	get {
+        		return getPrimitiveType(TypeKind.Int);
+        	}
+        }
+
+        public TypeInfo LongType {
+        	get {
+        		return getPrimitiveType(TypeKind.Long);
+        	}
+        }
+
+        public TypeInfo FloatType {
+        	get {
+        		return getPrimitiveType(TypeKind.Float);
+        	}
+        }
+
+        public TypeInfo DoubleType {
+        	get {
+        		return getPrimitiveType(TypeKind.Double);
+        	}
+        }
+
+		public TypeInfo UnboundedWildcard {
+			get {
+				if (parent != null) {
+					return parent.UnboundedWildcard;
+				}
+				if (unboundedWildcard == null) {
+					unboundedWildcard = new WildcardType(this, TypeKind.UnboundedWildcard, null);
+				}
+				return unboundedWildcard;
+			}
+		}
+		
+        public TypeInfo ObjectType {
+            get {
+                if (parent == null) {
+                    if (objectType == null) {
+                        objectType = getType("java/lang/Object");
+                    }
+                    return objectType;
+                } else {
+                    return parent.ObjectType;
+                }
+            }
+        }
+
+        public TypeInfo StringType {
+            get {
+                if (parent == null) {
+                    if (stringType == null) {
+                        stringType = getType("java/lang/String");
+                    }
+                    return stringType;
+                } else {
+                    return parent.StringType;
+                }
+            }
+        }
+
+        public TypeInfo ClassType {
+            get {
+                if (parent == null) {
+                    if (classType == null) {
+                        classType = getType("java/lang/Class");
+                    }
+                    return classType;
+                } else {
+                    return parent.ClassType;
+                }
+            }
+        }
+
+        public TypeInfo UnboundedClassType {
+            get {
+                if (parent == null) {
+                    if (unboundedClassType == null) {
+                        unboundedClassType = getGenericType(this.ClassType, Query.singleton(this.UnboundedWildcard));
+                    }
+                    return unboundedClassType;
+                } else {
+                    return parent.UnboundedClassType;
+                }
+            }
+        }
+        
+        public MethodInfo getBoxingMethod(TypeInfo type) {
+            ClassFileType ctype = null;
+            boolean isBoolean;
+            if (type.IsPrimitive) {
+                isBoolean = false;
+                switch (type.TypeKind) {
+                case Boolean:
+                    ctype = (ClassFileType)getType("java/lang/Boolean");
+                    isBoolean = true;
+                    break;
+                case Byte:
+                    ctype = (ClassFileType)getType("java/lang/Byte");
+                    break;
+                case Char:
+                    ctype = (ClassFileType)getType("java/lang/Character");
+                    break;
+                case Short:
+                    ctype = (ClassFileType)getType("java/lang/Short");
+                    break;
+                case Int:
+                    ctype = (ClassFileType)getType("java/lang/Integer");
+                    break;
+                case Long:
+                    ctype = (ClassFileType)getType("java/lang/Long");
+                    break;
+                case Float:
+                    ctype = (ClassFileType)getType("java/lang/Float");
+                    break;
+                case Double:
+                    ctype = (ClassFileType)getType("java/lang/Double");
+                    break;
+                }
+            } else if (type instanceof ClassFileType) {
+                isBoolean = type.FullName.equals("java/lang/Boolean");
+                if (type.NumericTypeKind == NumericTypeKind.None && !isBoolean) {
+                    return null;
+                }
+                ctype = (ClassFileType)type;
+            } else {
+                return null;
+            }
+            if (ctype.boxingMethod == null) {
+                if (isBoolean) {
+                    ctype.boxingMethod = ctype.getMethod("valueOf", Collections.singletonList(this.BooleanType));
+                } else {
+                    switch (ctype.NumericTypeKind) {
+                    case Byte:
+                        ctype.boxingMethod = ctype.getMethod("valueOf", Collections.singletonList(this.ByteType));
+                        break;
+                    case Char:
+                        ctype.boxingMethod = ctype.getMethod("valueOf", Collections.singletonList(this.CharType));
+                        break;
+                    case Short:
+                        ctype.boxingMethod = ctype.getMethod("valueOf", Collections.singletonList(this.ShortType));
+                        break;
+                    case Int:
+                        ctype.boxingMethod = ctype.getMethod("valueOf", Collections.singletonList(this.IntType));
+                        break;
+                    case Long:
+                        ctype.boxingMethod = ctype.getMethod("valueOf", Collections.singletonList(this.LongType));
+                        break;
+                    case Float:
+                        ctype.boxingMethod = ctype.getMethod("valueOf", Collections.singletonList(this.FloatType));
+                        break;
+                    case Double:
+                        ctype.boxingMethod = ctype.getMethod("valueOf", Collections.singletonList(this.DoubleType));
+                        break;
+                    }
+                }
+            }
+            return ctype.boxingMethod;
+        }
+
+        public MethodInfo getUnboxingMethod(TypeInfo type) {
+            ClassFileType ctype = null;
+            boolean isBoolean;
+            if (type.IsPrimitive) {
+                isBoolean = false;
+                switch (type.TypeKind) {
+                case Boolean:
+                    ctype = (ClassFileType)getType("java/lang/Boolean");
+                    isBoolean = true;
+                    break;
+                case Byte:
+                    ctype = (ClassFileType)getType("java/lang/Byte");
+                    break;
+                case Char:
+                    ctype = (ClassFileType)getType("java/lang/Character");
+                    break;
+                case Short:
+                    ctype = (ClassFileType)getType("java/lang/Short");
+                    break;
+                case Int:
+                    ctype = (ClassFileType)getType("java/lang/Integer");
+                    break;
+                case Long:
+                    ctype = (ClassFileType)getType("java/lang/Long");
+                    break;
+                case Float:
+                    ctype = (ClassFileType)getType("java/lang/Float");
+                    break;
+                case Double:
+                    ctype = (ClassFileType)getType("java/lang/Double");
+                    break;
+                }
+            } else if (type instanceof ClassFileType) {
+                isBoolean = type.FullName.equals("java/lang/Boolean");
+                if (type.NumericTypeKind == NumericTypeKind.None && !isBoolean) {
+                    return null;
+                }
+                ctype = (ClassFileType)type;
+            } else {
+                return null;
+            }
+            if (ctype.unboxingMethod == null) {
+                if (isBoolean) {
+                    ctype.unboxingMethod = ctype.getMethod("booleanValue", Query.empty<TypeInfo>());
+                } else {
+                    switch (ctype.NumericTypeKind) {
+                    case Byte:
+                        ctype.unboxingMethod = ctype.getMethod("byteValue", Query.empty<TypeInfo>());
+                        break;
+                    case Char:
+                        ctype.unboxingMethod = ctype.getMethod("charValue", Query.empty<TypeInfo>());
+                        break;
+                    case Short:
+                        ctype.unboxingMethod = ctype.getMethod("shortValue", Query.empty<TypeInfo>());
+                        break;
+                    case Int:
+                        ctype.unboxingMethod = ctype.getMethod("intValue", Query.empty<TypeInfo>());
+                        break;
+                    case Long:
+                        ctype.unboxingMethod = ctype.getMethod("longValue", Query.empty<TypeInfo>());
+                        break;
+                    case Float:
+                        ctype.unboxingMethod = ctype.getMethod("floatValue", Query.empty<TypeInfo>());
+                        break;
+                    case Double:
+                        ctype.unboxingMethod = ctype.getMethod("doubleValue", Query.empty<TypeInfo>());
+                        break;
+                    }
+                }
+            }
+            return ctype.unboxingMethod;
+        }
+        
+        private void initializeBootClasses() {
+        	var javaHome = new File(System.getProperty("java.home"));
+            var rtJarFile = new File(javaHome, "lib/rt.jar");
+            if (!rtJarFile.exists()) {
+                // Probably Mac OS
+                rtJarFile = new File(javaHome.getParent(), "Classes/classes.jar");
+            }
+
+			exploreJarFile(new ZipFile(rtJarFile));
+        }
+        
+        private void explorePath(String path) {
+            var file = new File(path);
+            if (file.exists()) {
+                if (file.isDirectory()) {
+                    foreach (var root in file.list()) {
+                        var subFile = new File(file, root);
+                        if (subFile.isDirectory()) {
+                            exploreDirectory("", subFile);
+                        } else {
+                            var name = subFile.getName();
+                            if (name.endsWith(".class")) {
+                                var className = name.substring(0, name.length() - 6);
+                                fileClasses[className] = subFile;
+                                classNames.add(className);
+                            }
+                        }
+                    }
+                } else {
+                    exploreJarFile(new ZipFile(file));
+                }
+            } else {
+                throw new IllegalStateException(path + " not found");
+            }
+        }
+
+        private void exploreDirectory(String root, File directory) {
+            foreach (var content in directory.list()) {
+                var file = new File(directory, content);
+                if (file.isDirectory()) {
+                    exploreDirectory(root + directory.getName() + '/', file);
+                } else {
+                    var name = file.getName();
+                    if (name.endsWith(".class")) {
+                        var className = root + directory.getName() + '/' + name.substring(0, name.length() - 6);
+                        if (!fileClasses.containsKey(className)) {
+                            fileClasses[className] = file;
+                            classNames.add(className);
+                        }
+                    }
+                }
+            }
+        }
+        
+        private void exploreJarFile(ZipFile jarFile) {
+			var e = jarFile.entries();
+			while (e.hasMoreElements()) {
+				var entry = e.nextElement();
+				var name = entry.getName();
+				if (name.endsWith(".class")) {
+					var className = name.substring(0, name.length() - 6);
+					if (!jarClasses.containsKey(className)) {
+						jarClasses[className] = jarFile;
+						classNames.add(className);
+					}
+				}
+			}
+        }
+    }
+}

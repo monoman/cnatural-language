@@ -1,0 +1,5 @@
+query = from item in names
+            orderby item
+            group item by item.Length into lengthGroups
+            orderby lengthGroups.Key descending
+            select lengthGroups

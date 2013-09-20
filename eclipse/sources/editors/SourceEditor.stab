@@ -1,0 +1,244 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using org.eclipse.core.resources;
+using org.eclipse.core.runtime;
+using org.eclipse.jface.text;
+using org.eclipse.jface.text.contentassist;
+using org.eclipse.jface.text.reconciler;
+using org.eclipse.jface.text.source;
+using org.eclipse.swt.widgets;
+using org.eclipse.ui;
+using org.eclipse.ui.editors.text;
+using org.eclipse.ui.texteditor;
+
+package stab.tools.eclipse.editors {
+
+	public class SourceEditorActionContributor : BasicTextEditorActionContributor {
+	
+	}
+
+	//
+	// The editor for Stab source files.
+	//
+	public class SourceEditor : AbstractDecoratedTextEditor {
+		private TextInputListener textInputListener;
+		private BackgroundCompiler backgroundCompiler;
+		private PartListener partListener;
+
+		public SourceEditor() {
+			setSourceViewerConfiguration(new SourceViewerConfiguration(this));
+		}
+
+		public override void createPartControl(Composite parent) {
+			super.createPartControl(parent);
+			
+			textInputListener = new TextInputListener(this);
+			backgroundCompiler = new BackgroundCompiler(this);
+			
+			var window = getSite().getWorkbenchWindow();
+			partListener = new PartListener(this);
+			window.getPartService().addPartListener(partListener);
+		}
+
+		public override void dispose() {
+			if (partListener != null) {
+				var window = getSite().getWorkbenchWindow();
+				window.getPartService().removePartListener(partListener);
+				partListener = null;
+			}
+			if (backgroundCompiler != null) {
+				backgroundCompiler.dispose();
+				backgroundCompiler = null;
+			}
+			if (textInputListener != null) {
+				textInputListener.dispose();
+				textInputListener = null;
+			}
+			super.dispose();
+		}
+	
+		boolean IsActive {
+			get;
+			private set;
+		}
+	
+		Highlighter Highlighter {
+			get;
+			private set;
+		}
+	
+		IFile getFile() {
+			var editorInput = getEditorInput() as IFileEditorInput;
+			return (editorInput == null) ? null : editorInput.getFile();
+		}
+
+		private class SourceViewerConfiguration : org.eclipse.jface.text.source.SourceViewerConfiguration {
+			private SourceEditor editor;
+			
+			SourceViewerConfiguration(SourceEditor editor) {
+				this.editor = editor;
+			}
+
+			// Enables the tooltips on the markers in the margin.
+			public override IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer) {
+				return new AnnotationHover(editor);
+			}
+		
+			public override IReconciler getReconciler(ISourceViewer sourceViewer) {
+				return new MonoReconciler(new ReconcilingStrategy(editor), false);
+			}
+			
+			public override IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
+				ContentAssistant contentAssistant = new ContentAssistant();
+				contentAssistant.enableAutoActivation(true);
+				//contentAssistant.enableAutoInsert(true);
+				contentAssistant.enablePrefixCompletion(true);
+				contentAssistant.setContentAssistProcessor(new ContentAssistProcessor(editor, sourceViewer), IDocument.DEFAULT_CONTENT_TYPE);
+				return contentAssistant;
+			}
+		}
+		
+		private class AnnotationHover : DefaultAnnotationHover {
+			private SourceEditor editor;
+		
+			AnnotationHover(SourceEditor editor) {
+				this.editor = editor;
+			}
+		
+			protected override boolean isIncluded(Annotation annotation) {
+				if (annotation == null) {
+					return true;
+				}
+				var preferenceStore = editor.getPreferenceStore();
+				if (preferenceStore == null) {
+					return true;
+				}
+				var preference = EditorsUI.getAnnotationPreferenceLookup().getAnnotationPreference(annotation);
+				if (preference == null) {
+					return true;
+				}
+				var key = preference.getVerticalRulerPreferenceKey();
+				if (key != null && !preferenceStore.getBoolean(key)) {
+					return false;
+				}
+				return true;
+			}
+		}
+		
+		private class ReconcilingStrategy : IReconcilingStrategy, IReconcilingStrategyExtension {
+			private SourceEditor editor;
+			private IProgressMonitor monitor;
+			
+			ReconcilingStrategy(SourceEditor editor) {
+				this.editor = editor;
+			}
+			
+			public void setProgressMonitor(IProgressMonitor monitor) {
+				this.monitor = monitor;
+			}
+	
+			public void initialReconcile() {
+				editor.backgroundCompiler.compile(monitor);
+			}
+	
+			public void setDocument(IDocument document) {
+			}
+	
+			public void reconcile(DirtyRegion dirtyRegion, IRegion subRegion) {
+				// Incremental mode: never called
+				throw new UnsupportedOperationException();
+			}
+	
+			public void reconcile(IRegion partition) {
+				editor.backgroundCompiler.compile(monitor);
+			}
+		}
+	
+		private class TextInputListener : ITextInputListener {
+			private SourceEditor editor;
+			
+			TextInputListener(SourceEditor editor) {
+				this.editor = editor;
+				var sourceViewer = editor.getSourceViewer();
+				sourceViewer.addTextInputListener(this);
+				var documentProvider = editor.getDocumentProvider();
+				if (documentProvider != null) {
+					var document = documentProvider.getDocument(editor.getEditorInput());
+					if (document != null) {
+						editor.Highlighter = new Highlighter(sourceViewer, document, editor.getFile(), editor.getSharedColors());
+					}
+				}
+			}
+			
+			void dispose() {
+				if (editor.Highlighter != null) {
+					editor.Highlighter.dispose();
+					editor.Highlighter = null;
+				}
+				if (editor != null) {
+					editor.getSourceViewer().removeTextInputListener(this);
+					editor = null;
+				}
+			}
+		
+			public void inputDocumentAboutToBeChanged(IDocument oldInput, IDocument newInput) {
+				if (editor.Highlighter != null) {
+					editor.Highlighter.dispose();
+					editor.Highlighter = null;
+				}
+			}
+			
+			public void inputDocumentChanged(IDocument oldInput, IDocument newInput) {
+				if (newInput != null) {
+					editor.Highlighter = new Highlighter(editor.getSourceViewer(), newInput, editor.getFile(), editor.getSharedColors());
+				}
+			}
+		}
+		
+		private class PartListener : IPartListener {
+			private SourceEditor editor;
+			
+			PartListener(SourceEditor editor) {
+				this.editor = editor;
+			}
+		
+			public void partActivated(IWorkbenchPart part) {
+				if (part == editor) {
+					editor.IsActive = true;
+					editor.backgroundCompiler.compileAsync();
+				}
+			}
+	
+			public void partDeactivated(IWorkbenchPart part) {
+				if (part == editor) {
+					editor.IsActive = false;
+				}
+			}
+	
+			public void partBroughtToTop(IWorkbenchPart part) {
+			}
+	
+			public void partClosed(IWorkbenchPart part) {
+			}
+	
+			public void partOpened(IWorkbenchPart part) {
+			}
+		}
+		
+	}
+}

@@ -1,0 +1,22 @@
+using java.lang;
+
+public class Wildcard4 {
+	public static boolean test() {
+		var w1 = new Wildcard4Aux<Object>(new Integer(1));
+		var w2 = new Wildcard4Aux<Number>(new Double(1));
+		var o1 = test(w1);
+		var o2 = test(w2);
+		return o1 instanceof Integer && o2 instanceof Double;
+	}
+	
+	public static Object test(Wildcard4Aux<Number : ?> w) {
+		return w.value;	
+	}
+}
+
+public class Wildcard4Aux<T> {
+	public Wildcard4Aux(T value) {
+		this.value = value;	
+	}
+	public T value;
+}

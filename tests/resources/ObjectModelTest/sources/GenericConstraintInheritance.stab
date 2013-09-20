@@ -1,0 +1,25 @@
+using java.util;
+
+public class GenericConstraintInheritance {
+	public static boolean test() {
+		// Just test that it compiles
+		method1(new ArrayList<GenericConstraintInheritanceAux2>());
+		method2(new ArrayList<GenericConstraintInheritanceAux2>());
+		return true;
+	}
+	
+	static void method1<T>(List<T> list) where T : GenericConstraintInheritanceAux {
+	}
+	
+	static void method2<T>(List<T> list) where T : GenericConstraintInheritanceAux2 {
+		method1(list);
+	}
+}
+
+public class GenericConstraintInheritanceAux {
+
+}
+
+public class GenericConstraintInheritanceAux2 : GenericConstraintInheritanceAux {
+
+}

@@ -1,0 +1,11 @@
+// Lstab/bytecode/test/classes/StaticInitializer; / Lstab/bytecode/test/classes/StaticInitializer;
+public class stab/bytecode/test/classes/StaticInitializer : java/lang/Object {
+    // Ljava/util/HashMap; / Ljava/util/HashMap<Ljava/lang/String;Ljava/lang/String;>;
+    static java/util/HashMap<java/lang/String, java/lang/String> map;
+    // ()V / ()V
+    static V <clinit>() {
+    }
+    // ()V / ()V
+    public V <init>() {
+    }
+}

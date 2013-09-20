@@ -1,0 +1,8 @@
+using java.lang;
+using stab.query;
+
+public class Empty {
+	public static boolean test() {
+		return !Query.empty<String>().any();
+	}
+}

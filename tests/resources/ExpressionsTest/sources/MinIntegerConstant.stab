@@ -1,0 +1,6 @@
+public class MinIntegerConstant {
+	public static boolean test() {
+		int i = -2147483648;
+		return i == -2147483647 - 1;
+	}
+}

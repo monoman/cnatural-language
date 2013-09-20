@@ -1,0 +1,5 @@
+public class LogicalOr5 {
+	public static boolean test(boolean a, boolean b, boolean c) {
+		return a || b || c;
+	}
+}

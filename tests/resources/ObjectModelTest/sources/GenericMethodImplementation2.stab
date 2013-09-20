@@ -1,0 +1,17 @@
+using java.lang;
+
+public class GenericMethodImplementation2 : GenericMethodImplementation2Aux {
+	public static boolean test() {
+		var obj = new GenericMethodImplementation2();
+		var t = new[] { "STR" };
+		return obj.call(t).equals(t);
+	}
+	
+	public T[] call<T>(T[] t) {
+		return t;
+	}
+}
+
+public interface GenericMethodImplementation2Aux {
+	T[] call<T>(T[] arg);
+}

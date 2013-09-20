@@ -1,0 +1,2754 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using java.util;
+using stab.lang;
+ 
+package stab.query {
+
+	// ========================================================================
+	// Generic map
+	// ========================================================================
+
+	class InternalMap<K, V> : Map<K, V> {
+		private HashSet<K> keys;
+		private V[] values;
+	
+		InternalMap(EqualityTester<K> tester) {
+			keys = new HashSet<K>(tester, 7);
+            #pragma warning disable 313
+			values = new V[7];
+            #pragma warning restore
+		}
+	
+		public void clear() {
+			keys = new HashSet<K>(keys.equalityTester(), 7);
+            #pragma warning disable 313
+			values = new V[7];
+            #pragma warning restore
+		}
+	
+		public boolean containsKey(Object o) {
+			#pragma warning disable 270
+			return keys.contains((K)o);
+            #pragma warning restore
+		}
+
+		public boolean containsValue(Object o) {
+			foreach (var i in keys.slots()) {
+				var value = values[i];
+				if (value == null) {
+					if (o == null) {
+						return true;
+					}
+				} else if (value.equals(o)) {
+					return true;
+				}
+			}
+			return false;
+		}
+	
+		public Set<Map.Entry<K, V>> entrySet() {
+			return new MapEntrySet<K, V>(this, this.keys.equalityTester());
+		}
+	
+		public V get(Object key) {
+			#pragma warning disable 270
+			int index = keys.find((K)key);
+            #pragma warning restore
+			if (index == -1) {
+				throw new NoSuchElementException(key.toString());
+			} else {
+				return values[index];
+			}
+		}
+	
+		public boolean isEmpty() {
+			return keys.count() == 0;
+		}
+		
+		public Set<K> keySet() {
+			return new MapKeySet<K, V>(this, keys, keys.equalityTester());
+		}
+	
+		public V put(K key, V value) {
+			int index = keys.find(key);
+			if (index != -1) {
+				V result = values[index];
+				values[index] = value;
+				return result;
+			} else {
+				index = keys.addCore(key);
+				if (index == sizeof(values)) {
+		            #pragma warning disable 313
+					V[] nvalues = new V[keys.capacity()];
+		            #pragma warning restore
+					System.arraycopy(values, 0, nvalues, 0, sizeof(values));
+					values = nvalues;
+				}
+				values[index] = value;
+				return null;
+			}
+		}
+
+	    public void putAll(Map<? : K, ? : V> m) {
+	    	foreach (var k in m.keySet()) {
+	    		put(k, m[k]);
+	    	}
+	    }
+
+		public V remove(Object key) {
+			#pragma warning disable 270
+			int index = keys.find((K)key);
+			if (index == -1) {
+				return null;
+			}
+			var value = values[index];
+			values[index] = null;
+			keys.remove((K)key);
+			return value;
+            #pragma warning restore
+		}
+	
+		public int size() {
+			return keys.count();
+		}
+		
+		public Collection<V> values() {
+			return new ValueCollection<K, V>(this);
+		}
+
+		// ValueCollection
+		// --------------------------------------------------------------------
+		
+		private class ValueCollection<T, U> : CollectionBase<U> {
+			private InternalMap<T, U> map;
+			
+			ValueCollection(InternalMap<T, U> map) {
+				this.map = map;
+			}
+		
+			public boolean add(U u) {
+				throw new UnsupportedOperationException();
+			}
+			
+			public void clear() {
+				map.clear();
+			}
+			
+			public boolean contains(Object o) {
+				return map.containsValue(o);
+			}
+			
+			public boolean isEmpty() {
+				return map.isEmpty();
+			}
+			
+			public Iterator<U> iterator() {
+				foreach (var i in map.keys.slots()) {
+					yield return map.values[i];
+				}
+			}
+			
+			public boolean remove(Object o) {
+				foreach (var i in map.keys.slots()) {
+					var value = map.values[i];
+					if (value == null) {
+						if (o == null) {
+							map.remove(map.keys.elementAt(i));
+							return true;
+						}
+					} else if (value.equals(o)) {
+						map.remove(map.keys.elementAt(i));
+						return true;
+					}
+				}
+				return false;
+			}
+			
+			public boolean retainAll(Collection<?> c) {
+				var result = false;
+				var set = c.toSet<?>();
+				foreach (var v in this.toList()) {
+					if (!set.contains(v)) {
+						while (remove(v)) {
+						}
+						result = true;
+					}
+				}
+				return result;
+			}
+			
+			public int size() {
+				return map.size();
+			}
+		}
+	}
+
+	// ========================================================================
+	// KeySet
+	// ========================================================================
+	
+	class MapKeySet<T, U> : CollectionBase<T>, Set<T> {
+		private Map<T, U> map;
+		private Iterable<T> keys;
+		private EqualityTester<T> tester;
+		
+		MapKeySet(Map<T, U> map, Iterable<T> keys, EqualityTester<T> tester) {
+			this.map = map;
+			this.keys = keys;
+			this.tester = tester;
+		}
+		
+		public boolean add(T t) {
+			throw new UnsupportedOperationException();
+		}
+		
+		public void clear() {
+			map.clear();
+		}
+		
+		public boolean contains(Object o) {
+			return map.containsKey(o);
+		}
+		
+		public boolean isEmpty() {
+			return map.isEmpty();
+		}
+		
+		public Iterator<T> iterator() {
+			foreach (var k in keys) {
+				yield return k;
+			}
+		}
+		
+		public boolean remove(Object o) {
+			int size = map.size();
+			map.remove(o);
+			return size != map.size();
+		}
+		
+		public boolean retainAll(Collection<?> c) {
+			var result = false;
+			var set = c.toSet<?>(tester);
+			foreach (var k in keys.toList()) {
+				if (!set.contains(k)) {
+					map.remove(k);
+					result = true;
+				}
+			}
+			return result;
+		}
+		
+		public int size() {
+			return map.size();
+		}
+	}
+
+	// ========================================================================
+	// MapEntrySet
+	// ========================================================================
+
+	class MapEntrySet<T, U> : CollectionBase<Map.Entry<T, U>>, Set<Map.Entry<T, U>> {
+		private Map<T, U> map;
+		private EqualityTester<T> tester;
+		
+		MapEntrySet(Map<T, U> map, EqualityTester<T> tester) {
+			this.map = map;
+			this.tester = tester;
+		}
+		
+		public boolean add(Map.Entry<T, U> e) {
+			int size = map.size();
+			var value = map.put(e.Key, e.Value);
+			if (size != map.size()) {
+				return true;
+			}
+			if (value == null) {
+				return e.Value == null;
+			} else {
+				return value.equals(e.Value);
+			}
+		}
+		
+		public void clear() {
+			map.clear();
+		}
+		
+		public boolean contains(Object o) {
+			if (o instanceof Map.Entry<?, ?>) {
+				var e = (Map.Entry<T, U>)o;
+				return map.containsKey(e.Key) && map.containsValue(e.Value);
+			}
+			return false;
+		}
+		
+		public boolean isEmpty() {
+			return map.size() == 0;
+		}
+		
+		public Iterator<Map.Entry<T, U>> iterator() {
+			foreach (var k in map.keySet()) {
+				yield return new MapEntry<T, U>(map, tester, k);
+			}
+		}
+		
+		public boolean remove(Object o) {
+			if (o instanceof Map.Entry<?, ?>) {
+				var e = (Map.Entry<T, U>)o;
+				var value = map[e.Key];
+				if (value == null) {
+					if (e.Value == null) {
+						map.remove(e.Key);
+						return true;
+					}
+				} else {
+					if (value.equals(e.Value)) {
+						map.remove(e.Key);
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+		
+		public boolean retainAll(Collection<?> c) {
+			var result = false;
+			var set = c.toSet<?>();
+			foreach (var e in this.toList()) {
+				if (!set.contains(e)) {
+					map.remove(e.Key);
+					result = true;
+				}
+			}
+			return result;
+		}
+		
+		public int size() {
+			return map.size();
+		}
+		
+		// MapEntry
+		// --------------------------------------------------------------------
+	
+		private class MapEntry<T, U> : Map.Entry<T, U> {
+			private Map<T, U> map;
+			private EqualityTester<T> tester;
+			private T key;
+		
+			MapEntry(Map<T, U> map, EqualityTester<T> tester, T key) {
+				this.map = map;
+				this.tester = tester;
+				this.key = key;
+			}
+			
+			public T getKey() {
+				return key;
+			}
+			
+			public U getValue() {
+				return map[key];
+			}
+			
+			public U setValue(U value) {
+				return map.put(key, value);
+			}
+			
+			public override boolean equals(Object o) {
+				if (o instanceof Map.Entry<?, ?>) {
+					var e = (Map.Entry<T, U>)o;
+					var value = getValue();
+					if (value == null) {
+						if (e.Value != null) {
+							return false;
+						}
+					} else if (!value.equals(e.Value)) {
+						return false;
+					}
+					return tester.equals(key, e.Key);
+				}
+				return false;
+			}
+			
+			public override int hashCode() {
+				var k = key;
+				var v = map[k];
+				return ((k == null) ? 0 : k.hashCode()) ^ ((v == null) ? 0 : v.hashCode());
+			}
+		}
+	}
+
+	// ========================================================================
+	// Map<K, Integer>
+	// ========================================================================
+
+	class InternalTIntMap<K> : TIntMap<K> {
+		private HashSet<K> keys;
+		private int[] values;
+
+		InternalTIntMap(EqualityTester<K> tester) {
+			keys = new HashSet<K>(tester, 7);
+			values = new int[7];
+		}
+
+		public void clear() {
+			keys = new HashSet<K>(keys.equalityTester(), 7);
+			values = new int[7];
+		}
+
+		public boolean containsKey(Object o) {
+			#pragma warning disable 270
+			return keys.contains((K)o);
+            #pragma warning restore
+		}
+
+		public boolean containsValue(Object o) {
+			var v = o as Integer;
+			if (v != null) {
+				return containsValue(v.intValue());
+			}
+			return false;
+		}
+		
+		public Set<Map.Entry<K, Integer>> entrySet() {
+			return new MapEntrySet<K, Integer>(this, this.keys.equalityTester());
+		}
+		
+		public Integer get(Object key) {
+			#pragma warning disable 270
+			return getValue((K)key);
+            #pragma warning restore
+		}
+		
+		public boolean isEmpty() {
+			return keys.count() == 0;
+		}
+
+		public Set<K> keySet() {
+			return new MapKeySet<K, Integer>(this, keys, keys.equalityTester());
+		}
+		
+		public Integer put(K key, Integer value) {
+			return put(key, value.intValue());
+		}
+		
+	    public void putAll(Map<? : K, Integer> m) {
+	    	foreach (var k in m.keySet()) {
+	    		put(k, m[k]);
+	    	}
+	    }
+	    
+		public Integer remove(Object key) {
+			#pragma warning disable 270
+			return removeKey((K)key);
+            #pragma warning restore
+		}
+		
+		public int size() {
+			return keys.count();
+		}
+		
+		// TIntMap
+
+		public boolean containsValue(int value) {
+			foreach (var i in keys.slots()) {
+				if (values[i] == value) {
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		public int getValue(K key) {
+			#pragma warning disable 270
+			int index = keys.find((K)key);
+            #pragma warning restore
+			if (index == -1) {
+				throw new NoSuchElementException(key.toString());
+			} else {
+				return values[index];
+			}
+		}
+		
+		public int put(K key, int value) {
+			int index = keys.find(key);
+			if (index != -1) {
+				var result = values[index];
+				values[index] = value;
+				return result;
+			} else {
+				index = keys.addCore(key);
+				if (index == sizeof(values)) {
+					int[] nvalues = new int[keys.capacity()];
+					System.arraycopy(values, 0, nvalues, 0, sizeof(values));
+					values = nvalues;
+				}
+				values[index] = value;
+				return 0;
+			}
+		}
+		
+		public void putAll(TIntMap<? : K> m) {
+			foreach (var k in m.keySet()) {
+				put(k, m.getValue(k));
+			}
+		}
+		
+		public int removeKey(K key) {
+			int index = keys.find(key);
+			if (index == -1) {
+				return 0;
+			}
+			var value = values[index];
+			keys.remove(key);
+			return value;
+		}
+		
+		public IntCollection values() {
+			return new ValueCollection<K>(this);
+		}
+		
+		// ValueCollection
+		
+		private class ValueCollection<T> : CollectionBase<Integer>, IntCollection {
+			private InternalTIntMap<T> map;
+			
+			ValueCollection(InternalTIntMap<T> map) {
+				this.map = map;
+			}
+			
+			public boolean add(Integer u) {
+				throw new UnsupportedOperationException();
+			}
+			
+			public void clear() {
+				map.clear();
+			}
+			
+			public boolean contains(Object o) {
+				return map.containsValue(o);
+			}
+			
+			public boolean isEmpty() {
+				return map.isEmpty();
+			}
+			
+			public boolean remove(Object o) {
+				var l = o as Integer;
+				if (l != null) {
+					return removeItem(l.intValue());
+				}
+				return false;
+			}
+			
+			public boolean retainAll(Collection<?> c) {
+				var result = false;
+				var set = c.toSet<?>();
+				foreach (var v in this.toList()) {
+					if (!set.contains(v)) {
+						while (remove(v)) {
+						}
+						result = true;
+					}
+				}
+				return result;
+			}
+			
+			public int size() {
+				return map.size();
+			}
+			
+			// IntCollection
+		
+			public boolean add(int v) {
+				throw new UnsupportedOperationException();
+			}
+			
+			public boolean addAll(IntCollection c) {
+				throw new UnsupportedOperationException();
+			}
+			
+			public boolean contains(int v) {
+				return map.containsValue(v);
+			}
+			
+			public boolean containsAll(IntCollection c) {
+				foreach (var v in c) {
+					if (!contains(v)) {
+						return false;
+					}
+				}
+				return true;
+			}
+			
+			public IntIterator iterator() {
+				foreach (var i in map.keys.slots()) {
+					yield return map.values[i];
+				}
+			}
+			
+			public boolean removeItem(int v) {
+				foreach (var i in map.keys.slots()) {
+					var value = map.values[i];
+					if (value == v) {
+						map.remove(map.keys.elementAt(i));
+						return true;
+					}
+				}
+				return false;
+			}
+			
+			public boolean removeAll(IntCollection c) {
+				var result = false;
+				foreach (var v in c) {
+					if (removeItem(v)) {
+						result = true;
+					}
+				}
+				return result;
+			}
+			
+			public boolean retainAll(IntCollection c) {
+				var result = false;
+				var set = c.toSet();
+				foreach (var v in this.toList()) {
+					if (!set.contains(v)) {
+						while (removeItem(v)) {
+						}
+						result = true;
+					}
+				}
+				return result;
+			}
+			
+			public int[] toArray(int[] a) {
+				int len = size();
+				int[] result = (sizeof(a) < len) ? new int[len] : a;
+				int index = 0;
+				foreach (var i in this) {
+					result[index++] = i;
+				}
+				return result;
+			}
+		}
+	}
+
+	// ========================================================================
+	// Map<Integer, V>
+	// ========================================================================
+
+	class InternalIntTMap<V> : IntTMap<V> {
+		private IntHashSet keys;
+		private V[] values;
+		
+		InternalIntTMap() {
+			keys = new IntHashSet(7);
+            #pragma warning disable 313
+			values = new V[7];
+            #pragma warning restore
+		}
+		
+		public void clear() {
+			keys = new IntHashSet(7);
+            #pragma warning disable 313
+			values = new V[7];
+            #pragma warning restore
+		}
+		
+		public boolean containsKey(Object o) {
+			var k = o as Integer;
+			if (k != null) {
+				return containsKey(k.intValue());
+			}
+			return false;
+		}
+		
+		public boolean containsValue(Object o) {
+			foreach (var i in keys.slots()) {
+				var value = values[i];
+				if (value == null) {
+					if (o == null) {
+						return true;
+					}
+				} else if (value.equals(o)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		public Set<Map.Entry<Integer, V>> entrySet() {
+			return new MapEntrySet<Integer, V>(this, Query.getDefaultEqualityTester<Integer>());
+		}
+
+		public V get(Object key) {
+			var k = key as Integer;
+			if (k != null) {
+				return get(k.intValue());
+			}
+			return null;
+		}
+		
+		public boolean isEmpty() {
+			return keys.count() == 0;
+		}
+
+		public V put(Integer key, V value) {
+			if (key == null) {
+				throw new NullPointerException("key");
+			}
+			return put(key.intValue(), value);
+		}
+
+	    public void putAll(Map<Integer, ? : V> m) {
+	    	foreach (var k in m.keySet()) {
+	    		put(k, m[k]);
+	    	}
+	    }
+
+		public V remove(Object key) {
+			var k = key as Integer;
+			if (k != null) {
+				return remove(k.intValue());
+			}
+			return null;
+		}
+
+		public int size() {
+			return keys.count();
+		}
+
+		public Collection<V> values() {
+			return new ValueCollection<V>(this);
+		}
+		
+		// IntTMap
+
+		public boolean containsKey(int key) {
+			return keys.contains(key);
+		}
+		
+		public V get(int key) {
+			int index = keys.find(key);
+			if (index == -1) {
+				throw new NoSuchElementException("key = " + key);
+			} else {
+				return values[index];
+			}
+		}
+
+		public IntSet keySet() {
+			return new KeySet<V>(this);
+		}
+
+		public V put(int key, V value) {
+			int index = keys.find(key);
+			if (index != -1) {
+				V result = values[index];
+				values[index] = value;
+				return result;
+			} else {
+				index = keys.addCore(key);
+				if (index == sizeof(values)) {
+		            #pragma warning disable 313
+					V[] nvalues = new V[keys.capacity()];
+		            #pragma warning restore
+					System.arraycopy(values, 0, nvalues, 0, sizeof(values));
+					values = nvalues;
+				}
+				values[index] = value;
+				return null;
+			}
+		}
+		
+		public void putAll(IntTMap<? : V> m) {
+	    	foreach (var k in m.keySet()) {
+	    		put(k, m.get(k));
+	    	}
+		}
+		
+		public V remove(int key) {
+			int index = keys.find(key);
+			if (index == -1) {
+				return null;
+			}
+			var value = values[index];
+			values[index] = null;
+			keys.remove(key);
+			return value;
+		}
+
+		// KeySet
+		// --------------------------------------------------------------------
+
+		private class KeySet<U> : CollectionBase<Integer>, IntSet {
+			private InternalIntTMap<U> map;
+			
+			KeySet(InternalIntTMap<U> map) {
+				this.map = map;
+			}
+			
+			// Collection<Int>
+			
+			public boolean add(Integer t) {
+				throw new UnsupportedOperationException();
+			}
+			
+			public void clear() {
+				map.clear();
+			}
+			
+			public boolean contains(Object o) {
+				return map.containsKey(o);
+			}
+			
+			public boolean isEmpty() {
+				return map.isEmpty();
+			}
+			
+			public boolean remove(Object o) {
+				int size = map.size();
+				map.remove(o);
+				return size != map.size();
+			}
+			
+			public boolean retainAll(Collection<?> c) {
+				var result = false;
+				var set = c.toSet<?>();
+				foreach (var k in map.keys.toList()) {
+					if (!set.contains(k)) {
+						map.remove(k);
+						result = true;
+					}
+				}
+				return result;
+			}
+			
+			public int size() {
+				return map.size();
+			}
+			
+			// IntSet
+			
+			public boolean add(int l) {
+				throw new UnsupportedOperationException();
+			}
+			
+			public boolean addAll(IntCollection c) {
+				var result = false;
+				foreach (var i in c) {
+					result = true;
+					add(i);
+				}
+				return result;
+			}
+			
+			public boolean contains(int l) {
+				return map.keys.contains(l);
+			}
+			
+			public boolean containsAll(IntCollection c) {
+				foreach (var l in c) {
+					if (!contains(l)) {
+						return false;
+					}
+				}
+				return true;
+			}
+			
+			public IntIterator iterator() {
+				foreach (var k in map.keys) {
+					yield return k;
+				}
+			}
+			
+			public boolean removeItem(int l) {
+				var size = map.size();
+				map.remove(l);
+				return size != map.size();
+			}
+			
+			public boolean removeAll(IntCollection c) {
+				var result = false;
+				foreach (var l in c) {
+					if (removeItem(l)) {
+						result = true;
+					}
+				}
+				return result;
+			}
+			
+			public boolean retainAll(IntCollection c) {
+				var result = false;
+				var set = c.toSet<?>();
+				foreach (var k in map.keys.toList()) {
+					if (!set.contains(k)) {
+						map.remove(k);
+						result = true;
+					}
+				}
+				return result;
+			}
+			
+			public int[] toArray(int[] a) {
+				int len = size();
+				int[] result = (sizeof(a) < len) ? new int[len] : a;
+				int index = 0;
+				foreach (var i in this) {
+					result[index++] = i;
+				}
+				return result;
+			}
+		}
+		
+		// ValueCollection
+		// --------------------------------------------------------------------
+
+		private class ValueCollection<U> : CollectionBase<U> {
+			private InternalIntTMap<U> map;
+			
+			ValueCollection(InternalIntTMap<U> map) {
+				this.map = map;
+			}
+		
+			public boolean add(U u) {
+				throw new UnsupportedOperationException();
+			}
+			
+			public void clear() {
+				map.clear();
+			}
+			
+			public boolean contains(Object o) {
+				return map.containsValue(o);
+			}
+			
+			public boolean isEmpty() {
+				return map.isEmpty();
+			}
+			
+			public Iterator<U> iterator() {
+				foreach (var i in map.keys.slots()) {
+					yield return map.values[i];
+				}
+			}
+			
+			public boolean remove(Object o) {
+				foreach (var i in map.keys.slots()) {
+					var value = map.values[i];
+					if (value == null) {
+						if (o == null) {
+							map.remove(map.keys.elementAt(i));
+							return true;
+						}
+					} else if (value.equals(o)) {
+						map.remove(map.keys.elementAt(i));
+						return true;
+					}
+				}
+				return false;
+			}
+			
+			public boolean retainAll(Collection<?> c) {
+				var result = false;
+				var set = c.toSet<?>();
+				foreach (var v in this.toList()) {
+					if (!set.contains(v)) {
+						while (remove(v)) {
+						}
+						result = true;
+					}
+				}
+				return result;
+			}
+			
+			public int size() {
+				return map.size();
+			}
+		}
+	}
+
+	// ========================================================================
+	// Map<K, Long>
+	// ========================================================================
+
+	class InternalTLongMap<K> : TLongMap<K> {
+		private HashSet<K> keys;
+		private long[] values;
+
+		InternalTLongMap(EqualityTester<K> tester) {
+			keys = new HashSet<K>(tester, 7);
+			values = new long[7];
+		}
+
+		public void clear() {
+			keys = new HashSet<K>(keys.equalityTester(), 7);
+			values = new long[7];
+		}
+
+		public boolean containsKey(Object o) {
+			#pragma warning disable 270
+			return keys.contains((K)o);
+            #pragma warning restore
+		}
+
+		public boolean containsValue(Object o) {
+			var v = o as Long;
+			if (v != null) {
+				return containsValue(v.longValue());
+			}
+			return false;
+		}
+		
+		public Set<Map.Entry<K, Long>> entrySet() {
+			return new MapEntrySet<K, Long>(this, this.keys.equalityTester());
+		}
+		
+		public Long get(Object key) {
+			#pragma warning disable 270
+			return getValue((K)key);
+            #pragma warning restore
+		}
+		
+		public boolean isEmpty() {
+			return keys.count() == 0;
+		}
+
+		public Set<K> keySet() {
+			return new MapKeySet<K, Long>(this, keys, keys.equalityTester());
+		}
+		
+		public Long put(K key, Long value) {
+			return put(key, value.longValue());
+		}
+		
+	    public void putAll(Map<? : K, Long> m) {
+	    	foreach (var k in m.keySet()) {
+	    		put(k, m[k]);
+	    	}
+	    }
+	    
+		public Long remove(Object key) {
+			#pragma warning disable 270
+			return removeKey((K)key);
+            #pragma warning restore
+		}
+		
+		public int size() {
+			return keys.count();
+		}
+		
+		// TLongMap
+
+		public boolean containsValue(long value) {
+			foreach (var i in keys.slots()) {
+				if (values[i] == value) {
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		public long getValue(K key) {
+			#pragma warning disable 270
+			int index = keys.find((K)key);
+            #pragma warning restore
+			if (index == -1) {
+				throw new NoSuchElementException(key.toString());
+			} else {
+				return values[index];
+			}
+		}
+		
+		public long put(K key, long value) {
+			int index = keys.find(key);
+			if (index != -1) {
+				var result = values[index];
+				values[index] = value;
+				return result;
+			} else {
+				index = keys.addCore(key);
+				if (index == sizeof(values)) {
+					long[] nvalues = new long[keys.capacity()];
+					System.arraycopy(values, 0, nvalues, 0, sizeof(values));
+					values = nvalues;
+				}
+				values[index] = value;
+				return 0L;
+			}
+		}
+		
+		public void putAll(TLongMap<? : K> m) {
+			foreach (var k in m.keySet()) {
+				put(k, m.getValue(k));
+			}
+		}
+		
+		public long removeKey(K key) {
+			int index = keys.find(key);
+			if (index == -1) {
+				return 0L;
+			}
+			var value = values[index];
+			keys.remove(key);
+			return value;
+		}
+		
+		public LongCollection values() {
+			return new ValueCollection<K>(this);
+		}
+		
+		// ValueCollection
+		
+		private class ValueCollection<T> : CollectionBase<Long>, LongCollection {
+			private InternalTLongMap<T> map;
+			
+			ValueCollection(InternalTLongMap<T> map) {
+				this.map = map;
+			}
+			
+			public boolean add(Long u) {
+				throw new UnsupportedOperationException();
+			}
+			
+			public void clear() {
+				map.clear();
+			}
+			
+			public boolean contains(Object o) {
+				return map.containsValue(o);
+			}
+			
+			public boolean isEmpty() {
+				return map.isEmpty();
+			}
+			
+			public boolean remove(Object o) {
+				var l = o as Long;
+				if (l != null) {
+					return removeItem(l.longValue());
+				}
+				return false;
+			}
+			
+			public boolean retainAll(Collection<?> c) {
+				var result = false;
+				var set = c.toSet<?>();
+				foreach (var v in this.toList()) {
+					if (!set.contains(v)) {
+						while (remove(v)) {
+						}
+						result = true;
+					}
+				}
+				return result;
+			}
+			
+			public int size() {
+				return map.size();
+			}
+			
+			// LongCollection
+		
+			public boolean add(long v) {
+				throw new UnsupportedOperationException();
+			}
+			
+			public boolean addAll(LongCollection c) {
+				throw new UnsupportedOperationException();
+			}
+			
+			public boolean contains(long v) {
+				return map.containsValue(v);
+			}
+			
+			public boolean containsAll(LongCollection c) {
+				foreach (var v in c) {
+					if (!contains(v)) {
+						return false;
+					}
+				}
+				return true;
+			}
+			
+			public LongIterator iterator() {
+				foreach (var i in map.keys.slots()) {
+					yield return map.values[i];
+				}
+			}
+			
+			public boolean removeItem(long v) {
+				foreach (var i in map.keys.slots()) {
+					var value = map.values[i];
+					if (value == v) {
+						map.remove(map.keys.elementAt(i));
+						return true;
+					}
+				}
+				return false;
+			}
+			
+			public boolean removeAll(LongCollection c) {
+				var result = false;
+				foreach (var v in c) {
+					if (removeItem(v)) {
+						result = true;
+					}
+				}
+				return result;
+			}
+			
+			public boolean retainAll(LongCollection c) {
+				var result = false;
+				var set = c.toSet();
+				foreach (var v in this.toList()) {
+					if (!set.contains(v)) {
+						while (removeItem(v)) {
+						}
+						result = true;
+					}
+				}
+				return result;
+			}
+			
+			public long[] toArray(long[] a) {
+				int len = size();
+				long[] result = (sizeof(a) < len) ? new long[len] : a;
+				int index = 0;
+				foreach (var i in this) {
+					result[index++] = i;
+				}
+				return result;
+			}
+		}
+	}
+
+	// ========================================================================
+	// Map<Long, V>
+	// ========================================================================
+
+	class InternalLongTMap<V> : LongTMap<V> {
+		private LongHashSet keys;
+		private V[] values;
+		
+		InternalLongTMap() {
+			keys = new LongHashSet(7);
+            #pragma warning disable 313
+			values = new V[7];
+            #pragma warning restore
+		}
+		
+		public void clear() {
+			keys = new LongHashSet(7);
+            #pragma warning disable 313
+			values = new V[7];
+            #pragma warning restore
+		}
+		
+		public boolean containsKey(Object o) {
+			var k = o as Long;
+			if (k != null) {
+				return containsKey(k.longValue());
+			}
+			return false;
+		}
+		
+		public boolean containsValue(Object o) {
+			foreach (var i in keys.slots()) {
+				var value = values[i];
+				if (value == null) {
+					if (o == null) {
+						return true;
+					}
+				} else if (value.equals(o)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		public Set<Map.Entry<Long, V>> entrySet() {
+			return new MapEntrySet<Long, V>(this, Query.getDefaultEqualityTester<Long>());
+		}
+
+		public V get(Object key) {
+			var k = key as Long;
+			if (k != null) {
+				return get(k.longValue());
+			}
+			return null;
+		}
+		
+		public boolean isEmpty() {
+			return keys.count() == 0;
+		}
+
+		public V put(Long key, V value) {
+			if (key == null) {
+				throw new NullPointerException("key");
+			}
+			return put(key.longValue(), value);
+		}
+
+	    public void putAll(Map<Long, ? : V> m) {
+	    	foreach (var k in m.keySet()) {
+	    		put(k, m[k]);
+	    	}
+	    }
+
+		public V remove(Object key) {
+			var k = key as Long;
+			if (k != null) {
+				return remove(k.longValue());
+			}
+			return null;
+		}
+
+		public int size() {
+			return keys.count();
+		}
+
+		public Collection<V> values() {
+			return new ValueCollection<V>(this);
+		}
+		
+		// LongTMap
+
+		public boolean containsKey(long key) {
+			return keys.contains(key);
+		}
+		
+		public V get(long key) {
+			int index = keys.find(key);
+			if (index == -1) {
+				throw new NoSuchElementException("key = " + key);
+			} else {
+				return values[index];
+			}
+		}
+
+		public LongSet keySet() {
+			return new KeySet<V>(this);
+		}
+
+		public V put(long key, V value) {
+			int index = keys.find(key);
+			if (index != -1) {
+				V result = values[index];
+				values[index] = value;
+				return result;
+			} else {
+				index = keys.addCore(key);
+				if (index == sizeof(values)) {
+		            #pragma warning disable 313
+					V[] nvalues = new V[keys.capacity()];
+		            #pragma warning restore
+					System.arraycopy(values, 0, nvalues, 0, sizeof(values));
+					values = nvalues;
+				}
+				values[index] = value;
+				return null;
+			}
+		}
+		
+		public void putAll(LongTMap<? : V> m) {
+	    	foreach (var k in m.keySet()) {
+	    		put(k, m.get(k));
+	    	}
+		}
+		
+		public V remove(long key) {
+			int index = keys.find(key);
+			if (index == -1) {
+				return null;
+			}
+			var value = values[index];
+			values[index] = null;
+			keys.remove(key);
+			return value;
+		}
+
+		// KeySet
+		// --------------------------------------------------------------------
+
+		private class KeySet<U> : CollectionBase<Long>, LongSet {
+			private InternalLongTMap<U> map;
+			
+			KeySet(InternalLongTMap<U> map) {
+				this.map = map;
+			}
+			
+			// Collection<Long>
+			
+			public boolean add(Long t) {
+				throw new UnsupportedOperationException();
+			}
+			
+			public void clear() {
+				map.clear();
+			}
+			
+			public boolean contains(Object o) {
+				return map.containsKey(o);
+			}
+			
+			public boolean isEmpty() {
+				return map.isEmpty();
+			}
+			
+			public boolean remove(Object o) {
+				int size = map.size();
+				map.remove(o);
+				return size != map.size();
+			}
+			
+			public boolean retainAll(Collection<?> c) {
+				var result = false;
+				var set = c.toSet<?>();
+				foreach (var k in map.keys.toList()) {
+					if (!set.contains(k)) {
+						map.remove(k);
+						result = true;
+					}
+				}
+				return result;
+			}
+			
+			public int size() {
+				return map.size();
+			}
+			
+			// LongSet
+			
+			public boolean add(long l) {
+				throw new UnsupportedOperationException();
+			}
+			
+			public boolean addAll(LongCollection c) {
+				var result = false;
+				foreach (var i in c) {
+					result = true;
+					add(i);
+				}
+				return result;
+			}
+			
+			public boolean contains(long l) {
+				return map.keys.contains(l);
+			}
+			
+			public boolean containsAll(LongCollection c) {
+				foreach (var l in c) {
+					if (!contains(l)) {
+						return false;
+					}
+				}
+				return true;
+			}
+			
+			public LongIterator iterator() {
+				foreach (var k in map.keys) {
+					yield return k;
+				}
+			}
+			
+			public boolean removeItem(long l) {
+				var size = map.size();
+				map.remove(l);
+				return size != map.size();
+			}
+			
+			public boolean removeAll(LongCollection c) {
+				var result = false;
+				foreach (var l in c) {
+					if (removeItem(l)) {
+						result = true;
+					}
+				}
+				return result;
+			}
+			
+			public boolean retainAll(LongCollection c) {
+				var result = false;
+				var set = c.toSet<?>();
+				foreach (var k in map.keys.toList()) {
+					if (!set.contains(k)) {
+						map.remove(k);
+						result = true;
+					}
+				}
+				return result;
+			}
+			
+			public long[] toArray(long[] a) {
+				int len = size();
+				long[] result = (sizeof(a) < len) ? new long[len] : a;
+				int index = 0;
+				foreach (var i in this) {
+					result[index++] = i;
+				}
+				return result;
+			}
+		}
+		
+		// ValueCollection
+		// --------------------------------------------------------------------
+
+		private class ValueCollection<U> : CollectionBase<U> {
+			private InternalLongTMap<U> map;
+			
+			ValueCollection(InternalLongTMap<U> map) {
+				this.map = map;
+			}
+		
+			public boolean add(U u) {
+				throw new UnsupportedOperationException();
+			}
+			
+			public void clear() {
+				map.clear();
+			}
+			
+			public boolean contains(Object o) {
+				return map.containsValue(o);
+			}
+			
+			public boolean isEmpty() {
+				return map.isEmpty();
+			}
+			
+			public Iterator<U> iterator() {
+				foreach (var i in map.keys.slots()) {
+					yield return map.values[i];
+				}
+			}
+			
+			public boolean remove(Object o) {
+				foreach (var i in map.keys.slots()) {
+					var value = map.values[i];
+					if (value == null) {
+						if (o == null) {
+							map.remove(map.keys.elementAt(i));
+							return true;
+						}
+					} else if (value.equals(o)) {
+						map.remove(map.keys.elementAt(i));
+						return true;
+					}
+				}
+				return false;
+			}
+			
+			public boolean retainAll(Collection<?> c) {
+				var result = false;
+				var set = c.toSet<?>();
+				foreach (var v in this.toList()) {
+					if (!set.contains(v)) {
+						while (remove(v)) {
+						}
+						result = true;
+					}
+				}
+				return result;
+			}
+			
+			public int size() {
+				return map.size();
+			}
+		}
+	}
+	
+	// ========================================================================
+	// Map<K, Float>
+	// ========================================================================
+
+	class InternalTFloatMap<K> : TFloatMap<K> {
+		private HashSet<K> keys;
+		private float[] values;
+
+		InternalTFloatMap(EqualityTester<K> tester) {
+			keys = new HashSet<K>(tester, 7);
+			values = new float[7];
+		}
+
+		public void clear() {
+			keys = new HashSet<K>(keys.equalityTester(), 7);
+			values = new float[7];
+		}
+
+		public boolean containsKey(Object o) {
+			#pragma warning disable 270
+			return keys.contains((K)o);
+            #pragma warning restore
+		}
+
+		public boolean containsValue(Object o) {
+			var v = o as Float;
+			if (v != null) {
+				return containsValue(v.floatValue());
+			}
+			return false;
+		}
+		
+		public Set<Map.Entry<K, Float>> entrySet() {
+			return new MapEntrySet<K, Float>(this, this.keys.equalityTester());
+		}
+		
+		public Float get(Object key) {
+			#pragma warning disable 270
+			return getValue((K)key);
+            #pragma warning restore
+		}
+		
+		public boolean isEmpty() {
+			return keys.count() == 0;
+		}
+
+		public Set<K> keySet() {
+			return new MapKeySet<K, Float>(this, keys, keys.equalityTester());
+		}
+		
+		public Float put(K key, Float value) {
+			return put(key, value.floatValue());
+		}
+		
+	    public void putAll(Map<? : K, Float> m) {
+	    	foreach (var k in m.keySet()) {
+	    		put(k, m[k]);
+	    	}
+	    }
+	    
+		public Float remove(Object key) {
+			#pragma warning disable 270
+			return removeKey((K)key);
+            #pragma warning restore
+		}
+		
+		public int size() {
+			return keys.count();
+		}
+		
+		// TFloatMap
+
+		public boolean containsValue(float value) {
+			foreach (var i in keys.slots()) {
+				if (values[i] == value) {
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		public float getValue(K key) {
+			#pragma warning disable 270
+			int index = keys.find((K)key);
+            #pragma warning restore
+			if (index == -1) {
+				throw new NoSuchElementException(key.toString());
+			} else {
+				return values[index];
+			}
+		}
+		
+		public float put(K key, float value) {
+			int index = keys.find(key);
+			if (index != -1) {
+				var result = values[index];
+				values[index] = value;
+				return result;
+			} else {
+				index = keys.addCore(key);
+				if (index == sizeof(values)) {
+					float[] nvalues = new float[keys.capacity()];
+					System.arraycopy(values, 0, nvalues, 0, sizeof(values));
+					values = nvalues;
+				}
+				values[index] = value;
+				return 0f;
+			}
+		}
+		
+		public void putAll(TFloatMap<? : K> m) {
+			foreach (var k in m.keySet()) {
+				put(k, m.getValue(k));
+			}
+		}
+		
+		public float removeKey(K key) {
+			int index = keys.find(key);
+			if (index == -1) {
+				return 0f;
+			}
+			var value = values[index];
+			keys.remove(key);
+			return value;
+		}
+		
+		public FloatCollection values() {
+			return new ValueCollection<K>(this);
+		}
+		
+		// ValueCollection
+		
+		private class ValueCollection<T> : CollectionBase<Float>, FloatCollection {
+			private InternalTFloatMap<T> map;
+			
+			ValueCollection(InternalTFloatMap<T> map) {
+				this.map = map;
+			}
+			
+			public boolean add(Float u) {
+				throw new UnsupportedOperationException();
+			}
+			
+			public void clear() {
+				map.clear();
+			}
+			
+			public boolean contains(Object o) {
+				return map.containsValue(o);
+			}
+			
+			public boolean isEmpty() {
+				return map.isEmpty();
+			}
+			
+			public boolean remove(Object o) {
+				var l = o as Float;
+				if (l != null) {
+					return removeItem(l.floatValue());
+				}
+				return false;
+			}
+			
+			public boolean retainAll(Collection<?> c) {
+				var result = false;
+				var set = c.toSet<?>();
+				foreach (var v in this.toList()) {
+					if (!set.contains(v)) {
+						while (remove(v)) {
+						}
+						result = true;
+					}
+				}
+				return result;
+			}
+			
+			public int size() {
+				return map.size();
+			}
+			
+			// FloatCollection
+		
+			public boolean add(float v) {
+				throw new UnsupportedOperationException();
+			}
+			
+			public boolean addAll(FloatCollection c) {
+				throw new UnsupportedOperationException();
+			}
+			
+			public boolean contains(float v) {
+				return map.containsValue(v);
+			}
+			
+			public boolean containsAll(FloatCollection c) {
+				foreach (var v in c) {
+					if (!contains(v)) {
+						return false;
+					}
+				}
+				return true;
+			}
+			
+			public FloatIterator iterator() {
+				foreach (var i in map.keys.slots()) {
+					yield return map.values[i];
+				}
+			}
+			
+			public boolean removeItem(float v) {
+				foreach (var i in map.keys.slots()) {
+					var value = map.values[i];
+					if (value == v) {
+						map.remove(map.keys.elementAt(i));
+						return true;
+					}
+				}
+				return false;
+			}
+			
+			public boolean removeAll(FloatCollection c) {
+				var result = false;
+				foreach (var v in c) {
+					if (removeItem(v)) {
+						result = true;
+					}
+				}
+				return result;
+			}
+			
+			public boolean retainAll(FloatCollection c) {
+				var result = false;
+				var set = c.toSet();
+				foreach (var v in this.toList()) {
+					if (!set.contains(v)) {
+						while (removeItem(v)) {
+						}
+						result = true;
+					}
+				}
+				return result;
+			}
+			
+			public float[] toArray(float[] a) {
+				int len = size();
+				float[] result = (sizeof(a) < len) ? new float[len] : a;
+				int index = 0;
+				foreach (var i in this) {
+					result[index++] = i;
+				}
+				return result;
+			}
+		}
+	}
+
+	// ========================================================================
+	// Map<Float, V>
+	// ========================================================================
+
+	class InternalFloatTMap<V> : FloatTMap<V> {
+		private FloatHashSet keys;
+		private V[] values;
+		
+		InternalFloatTMap() {
+			keys = new FloatHashSet(7);
+            #pragma warning disable 313
+			values = new V[7];
+            #pragma warning restore
+		}
+		
+		public void clear() {
+			keys = new FloatHashSet(7);
+            #pragma warning disable 313
+			values = new V[7];
+            #pragma warning restore
+		}
+		
+		public boolean containsKey(Object o) {
+			var k = o as Float;
+			if (k != null) {
+				return containsKey(k.floatValue());
+			}
+			return false;
+		}
+		
+		public boolean containsValue(Object o) {
+			foreach (var i in keys.slots()) {
+				var value = values[i];
+				if (value == null) {
+					if (o == null) {
+						return true;
+					}
+				} else if (value.equals(o)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		public Set<Map.Entry<Float, V>> entrySet() {
+			return new MapEntrySet<Float, V>(this, Query.getDefaultEqualityTester<Float>());
+		}
+
+		public V get(Object key) {
+			var k = key as Float;
+			if (k != null) {
+				return get(k.floatValue());
+			}
+			return null;
+		}
+		
+		public boolean isEmpty() {
+			return keys.count() == 0;
+		}
+
+		public V put(Float key, V value) {
+			if (key == null) {
+				throw new NullPointerException("key");
+			}
+			return put(key.floatValue(), value);
+		}
+
+	    public void putAll(Map<Float, ? : V> m) {
+	    	foreach (var k in m.keySet()) {
+	    		put(k, m[k]);
+	    	}
+	    }
+
+		public V remove(Object key) {
+			var k = key as Float;
+			if (k != null) {
+				return remove(k.floatValue());
+			}
+			return null;
+		}
+
+		public int size() {
+			return keys.count();
+		}
+
+		public Collection<V> values() {
+			return new ValueCollection<V>(this);
+		}
+		
+		// FloatTMap
+
+		public boolean containsKey(float key) {
+			return keys.contains(key);
+		}
+		
+		public V get(float key) {
+			int index = keys.find(key);
+			if (index == -1) {
+				throw new NoSuchElementException("key = " + key);
+			} else {
+				return values[index];
+			}
+		}
+
+		public FloatSet keySet() {
+			return new KeySet<V>(this);
+		}
+
+		public V put(float key, V value) {
+			int index = keys.find(key);
+			if (index != -1) {
+				V result = values[index];
+				values[index] = value;
+				return result;
+			} else {
+				index = keys.addCore(key);
+				if (index == sizeof(values)) {
+		            #pragma warning disable 313
+					V[] nvalues = new V[keys.capacity()];
+		            #pragma warning restore
+					System.arraycopy(values, 0, nvalues, 0, sizeof(values));
+					values = nvalues;
+				}
+				values[index] = value;
+				return null;
+			}
+		}
+		
+		public void putAll(FloatTMap<? : V> m) {
+	    	foreach (var k in m.keySet()) {
+	    		put(k, m.get(k));
+	    	}
+		}
+		
+		public V remove(float key) {
+			int index = keys.find(key);
+			if (index == -1) {
+				return null;
+			}
+			var value = values[index];
+			values[index] = null;
+			keys.remove(key);
+			return value;
+		}
+
+		// KeySet
+		// --------------------------------------------------------------------
+
+		private class KeySet<U> : CollectionBase<Float>, FloatSet {
+			private InternalFloatTMap<U> map;
+			
+			KeySet(InternalFloatTMap<U> map) {
+				this.map = map;
+			}
+			
+			// Collection<Float>
+			
+			public boolean add(Float t) {
+				throw new UnsupportedOperationException();
+			}
+			
+			public void clear() {
+				map.clear();
+			}
+			
+			public boolean contains(Object o) {
+				return map.containsKey(o);
+			}
+			
+			public boolean isEmpty() {
+				return map.isEmpty();
+			}
+			
+			public boolean remove(Object o) {
+				int size = map.size();
+				map.remove(o);
+				return size != map.size();
+			}
+			
+			public boolean retainAll(Collection<?> c) {
+				var result = false;
+				var set = c.toSet<?>();
+				foreach (var k in map.keys.toList()) {
+					if (!set.contains(k)) {
+						map.remove(k);
+						result = true;
+					}
+				}
+				return result;
+			}
+			
+			public int size() {
+				return map.size();
+			}
+			
+			// FloatSet
+			
+			public boolean add(float l) {
+				throw new UnsupportedOperationException();
+			}
+			
+			public boolean addAll(FloatCollection c) {
+				var result = false;
+				foreach (var i in c) {
+					result = true;
+					add(i);
+				}
+				return result;
+			}
+			
+			public boolean contains(float l) {
+				return map.keys.contains(l);
+			}
+			
+			public boolean containsAll(FloatCollection c) {
+				foreach (var l in c) {
+					if (!contains(l)) {
+						return false;
+					}
+				}
+				return true;
+			}
+			
+			public FloatIterator iterator() {
+				foreach (var k in map.keys) {
+					yield return k;
+				}
+			}
+			
+			public boolean removeItem(float l) {
+				var size = map.size();
+				map.remove(l);
+				return size != map.size();
+			}
+			
+			public boolean removeAll(FloatCollection c) {
+				var result = false;
+				foreach (var l in c) {
+					if (removeItem(l)) {
+						result = true;
+					}
+				}
+				return result;
+			}
+			
+			public boolean retainAll(FloatCollection c) {
+				var result = false;
+				var set = c.toSet<?>();
+				foreach (var k in map.keys.toList()) {
+					if (!set.contains(k)) {
+						map.remove(k);
+						result = true;
+					}
+				}
+				return result;
+			}
+			
+			public float[] toArray(float[] a) {
+				int len = size();
+				float[] result = (sizeof(a) < len) ? new float[len] : a;
+				int index = 0;
+				foreach (var i in this) {
+					result[index++] = i;
+				}
+				return result;
+			}
+		}
+		
+		// ValueCollection
+		// --------------------------------------------------------------------
+
+		private class ValueCollection<U> : CollectionBase<U> {
+			private InternalFloatTMap<U> map;
+			
+			ValueCollection(InternalFloatTMap<U> map) {
+				this.map = map;
+			}
+		
+			public boolean add(U u) {
+				throw new UnsupportedOperationException();
+			}
+			
+			public void clear() {
+				map.clear();
+			}
+			
+			public boolean contains(Object o) {
+				return map.containsValue(o);
+			}
+			
+			public boolean isEmpty() {
+				return map.isEmpty();
+			}
+			
+			public Iterator<U> iterator() {
+				foreach (var i in map.keys.slots()) {
+					yield return map.values[i];
+				}
+			}
+			
+			public boolean remove(Object o) {
+				foreach (var i in map.keys.slots()) {
+					var value = map.values[i];
+					if (value == null) {
+						if (o == null) {
+							map.remove(map.keys.elementAt(i));
+							return true;
+						}
+					} else if (value.equals(o)) {
+						map.remove(map.keys.elementAt(i));
+						return true;
+					}
+				}
+				return false;
+			}
+			
+			public boolean retainAll(Collection<?> c) {
+				var result = false;
+				var set = c.toSet<?>();
+				foreach (var v in this.toList()) {
+					if (!set.contains(v)) {
+						while (remove(v)) {
+						}
+						result = true;
+					}
+				}
+				return result;
+			}
+			
+			public int size() {
+				return map.size();
+			}
+		}
+	}
+
+	// ========================================================================
+	// Map<K, Double>
+	// ========================================================================
+
+	class InternalTDoubleMap<K> : TDoubleMap<K> {
+		private HashSet<K> keys;
+		private double[] values;
+
+		InternalTDoubleMap(EqualityTester<K> tester) {
+			keys = new HashSet<K>(tester, 7);
+			values = new double[7];
+		}
+
+		public void clear() {
+			keys = new HashSet<K>(keys.equalityTester(), 7);
+			values = new double[7];
+		}
+
+		public boolean containsKey(Object o) {
+			#pragma warning disable 270
+			return keys.contains((K)o);
+            #pragma warning restore
+		}
+
+		public boolean containsValue(Object o) {
+			var v = o as Double;
+			if (v != null) {
+				return containsValue(v.doubleValue());
+			}
+			return false;
+		}
+		
+		public Set<Map.Entry<K, Double>> entrySet() {
+			return new MapEntrySet<K, Double>(this, this.keys.equalityTester());
+		}
+		
+		public Double get(Object key) {
+			#pragma warning disable 270
+			return getValue((K)key);
+            #pragma warning restore
+		}
+		
+		public boolean isEmpty() {
+			return keys.count() == 0;
+		}
+
+		public Set<K> keySet() {
+			return new MapKeySet<K, Double>(this, keys, keys.equalityTester());
+		}
+		
+		public Double put(K key, Double value) {
+			return put(key, value.doubleValue());
+		}
+		
+	    public void putAll(Map<? : K, Double> m) {
+	    	foreach (var k in m.keySet()) {
+	    		put(k, m[k]);
+	    	}
+	    }
+	    
+		public Double remove(Object key) {
+			#pragma warning disable 270
+			return removeKey((K)key);
+            #pragma warning restore
+		}
+		
+		public int size() {
+			return keys.count();
+		}
+		
+		// TDoubleMap
+
+		public boolean containsValue(double value) {
+			foreach (var i in keys.slots()) {
+				if (values[i] == value) {
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		public double getValue(K key) {
+			#pragma warning disable 270
+			int index = keys.find((K)key);
+            #pragma warning restore
+			if (index == -1) {
+				throw new NoSuchElementException(key.toString());
+			} else {
+				return values[index];
+			}
+		}
+		
+		public double put(K key, double value) {
+			int index = keys.find(key);
+			if (index != -1) {
+				var result = values[index];
+				values[index] = value;
+				return result;
+			} else {
+				index = keys.addCore(key);
+				if (index == sizeof(values)) {
+					double[] nvalues = new double[keys.capacity()];
+					System.arraycopy(values, 0, nvalues, 0, sizeof(values));
+					values = nvalues;
+				}
+				values[index] = value;
+				return 0d;
+			}
+		}
+		
+		public void putAll(TDoubleMap<? : K> m) {
+			foreach (var k in m.keySet()) {
+				put(k, m.getValue(k));
+			}
+		}
+		
+		public double removeKey(K key) {
+			int index = keys.find(key);
+			if (index == -1) {
+				return 0d;
+			}
+			var value = values[index];
+			keys.remove(key);
+			return value;
+		}
+		
+		public DoubleCollection values() {
+			return new ValueCollection<K>(this);
+		}
+		
+		// ValueCollection
+		
+		private class ValueCollection<T> : CollectionBase<Double>, DoubleCollection {
+			private InternalTDoubleMap<T> map;
+			
+			ValueCollection(InternalTDoubleMap<T> map) {
+				this.map = map;
+			}
+			
+			public boolean add(Double u) {
+				throw new UnsupportedOperationException();
+			}
+			
+			public void clear() {
+				map.clear();
+			}
+			
+			public boolean contains(Object o) {
+				return map.containsValue(o);
+			}
+			
+			public boolean isEmpty() {
+				return map.isEmpty();
+			}
+			
+			public boolean remove(Object o) {
+				var l = o as Double;
+				if (l != null) {
+					return removeItem(l.doubleValue());
+				}
+				return false;
+			}
+			
+			public boolean retainAll(Collection<?> c) {
+				var result = false;
+				var set = c.toSet<?>();
+				foreach (var v in this.toList()) {
+					if (!set.contains(v)) {
+						while (remove(v)) {
+						}
+						result = true;
+					}
+				}
+				return result;
+			}
+			
+			public int size() {
+				return map.size();
+			}
+			
+			// DoubleCollection
+		
+			public boolean add(double v) {
+				throw new UnsupportedOperationException();
+			}
+			
+			public boolean addAll(DoubleCollection c) {
+				throw new UnsupportedOperationException();
+			}
+			
+			public boolean contains(double v) {
+				return map.containsValue(v);
+			}
+			
+			public boolean containsAll(DoubleCollection c) {
+				foreach (var v in c) {
+					if (!contains(v)) {
+						return false;
+					}
+				}
+				return true;
+			}
+			
+			public DoubleIterator iterator() {
+				foreach (var i in map.keys.slots()) {
+					yield return map.values[i];
+				}
+			}
+			
+			public boolean removeItem(double v) {
+				foreach (var i in map.keys.slots()) {
+					var value = map.values[i];
+					if (value == v) {
+						map.remove(map.keys.elementAt(i));
+						return true;
+					}
+				}
+				return false;
+			}
+			
+			public boolean removeAll(DoubleCollection c) {
+				var result = false;
+				foreach (var v in c) {
+					if (removeItem(v)) {
+						result = true;
+					}
+				}
+				return result;
+			}
+			
+			public boolean retainAll(DoubleCollection c) {
+				var result = false;
+				var set = c.toSet();
+				foreach (var v in this.toList()) {
+					if (!set.contains(v)) {
+						while (removeItem(v)) {
+						}
+						result = true;
+					}
+				}
+				return result;
+			}
+			
+			public double[] toArray(double[] a) {
+				int len = size();
+				double[] result = (sizeof(a) < len) ? new double[len] : a;
+				int index = 0;
+				foreach (var i in this) {
+					result[index++] = i;
+				}
+				return result;
+			}
+		}
+	}
+
+	// ========================================================================
+	// Map<Double, V>
+	// ========================================================================
+
+	class InternalDoubleTMap<V> : DoubleTMap<V> {
+		private DoubleHashSet keys;
+		private V[] values;
+		
+		InternalDoubleTMap() {
+			keys = new DoubleHashSet(7);
+            #pragma warning disable 313
+			values = new V[7];
+            #pragma warning restore
+		}
+		
+		public void clear() {
+			keys = new DoubleHashSet(7);
+            #pragma warning disable 313
+			values = new V[7];
+            #pragma warning restore
+		}
+		
+		public boolean containsKey(Object o) {
+			var k = o as Double;
+			if (k != null) {
+				return containsKey(k.doubleValue());
+			}
+			return false;
+		}
+		
+		public boolean containsValue(Object o) {
+			foreach (var i in keys.slots()) {
+				var value = values[i];
+				if (value == null) {
+					if (o == null) {
+						return true;
+					}
+				} else if (value.equals(o)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		public Set<Map.Entry<Double, V>> entrySet() {
+			return new MapEntrySet<Double, V>(this, Query.getDefaultEqualityTester<Double>());
+		}
+
+		public V get(Object key) {
+			var k = key as Double;
+			if (k != null) {
+				return get(k.doubleValue());
+			}
+			return null;
+		}
+		
+		public boolean isEmpty() {
+			return keys.count() == 0;
+		}
+
+		public V put(Double key, V value) {
+			if (key == null) {
+				throw new NullPointerException("key");
+			}
+			return put(key.doubleValue(), value);
+		}
+
+	    public void putAll(Map<Double, ? : V> m) {
+	    	foreach (var k in m.keySet()) {
+	    		put(k, m[k]);
+	    	}
+	    }
+
+		public V remove(Object key) {
+			var k = key as Double;
+			if (k != null) {
+				return remove(k.doubleValue());
+			}
+			return null;
+		}
+
+		public int size() {
+			return keys.count();
+		}
+
+		public Collection<V> values() {
+			return new ValueCollection<V>(this);
+		}
+		
+		// DoubleTMap
+
+		public boolean containsKey(double key) {
+			return keys.contains(key);
+		}
+		
+		public V get(double key) {
+			int index = keys.find(key);
+			if (index == -1) {
+				throw new NoSuchElementException("key = " + key);
+			} else {
+				return values[index];
+			}
+		}
+
+		public DoubleSet keySet() {
+			return new KeySet<V>(this);
+		}
+
+		public V put(double key, V value) {
+			int index = keys.find(key);
+			if (index != -1) {
+				V result = values[index];
+				values[index] = value;
+				return result;
+			} else {
+				index = keys.addCore(key);
+				if (index == sizeof(values)) {
+		            #pragma warning disable 313
+					V[] nvalues = new V[keys.capacity()];
+		            #pragma warning restore
+					System.arraycopy(values, 0, nvalues, 0, sizeof(values));
+					values = nvalues;
+				}
+				values[index] = value;
+				return null;
+			}
+		}
+		
+		public void putAll(DoubleTMap<? : V> m) {
+	    	foreach (var k in m.keySet()) {
+	    		put(k, m.get(k));
+	    	}
+		}
+		
+		public V remove(double key) {
+			int index = keys.find(key);
+			if (index == -1) {
+				return null;
+			}
+			var value = values[index];
+			values[index] = null;
+			keys.remove(key);
+			return value;
+		}
+
+		// KeySet
+		// --------------------------------------------------------------------
+
+		private class KeySet<U> : CollectionBase<Double>, DoubleSet {
+			private InternalDoubleTMap<U> map;
+			
+			KeySet(InternalDoubleTMap<U> map) {
+				this.map = map;
+			}
+			
+			// Collection<Double>
+			
+			public boolean add(Double t) {
+				throw new UnsupportedOperationException();
+			}
+			
+			public void clear() {
+				map.clear();
+			}
+			
+			public boolean contains(Object o) {
+				return map.containsKey(o);
+			}
+			
+			public boolean isEmpty() {
+				return map.isEmpty();
+			}
+			
+			public boolean remove(Object o) {
+				int size = map.size();
+				map.remove(o);
+				return size != map.size();
+			}
+			
+			public boolean retainAll(Collection<?> c) {
+				var result = false;
+				var set = c.toSet<?>();
+				foreach (var k in map.keys.toList()) {
+					if (!set.contains(k)) {
+						map.remove(k);
+						result = true;
+					}
+				}
+				return result;
+			}
+			
+			public int size() {
+				return map.size();
+			}
+			
+			// DoubleSet
+			
+			public boolean add(double l) {
+				throw new UnsupportedOperationException();
+			}
+			
+			public boolean addAll(DoubleCollection c) {
+				var result = false;
+				foreach (var i in c) {
+					result = true;
+					add(i);
+				}
+				return result;
+			}
+			
+			public boolean contains(double l) {
+				return map.keys.contains(l);
+			}
+			
+			public boolean containsAll(DoubleCollection c) {
+				foreach (var l in c) {
+					if (!contains(l)) {
+						return false;
+					}
+				}
+				return true;
+			}
+			
+			public DoubleIterator iterator() {
+				foreach (var k in map.keys) {
+					yield return k;
+				}
+			}
+			
+			public boolean removeItem(double l) {
+				var size = map.size();
+				map.remove(l);
+				return size != map.size();
+			}
+			
+			public boolean removeAll(DoubleCollection c) {
+				var result = false;
+				foreach (var l in c) {
+					if (removeItem(l)) {
+						result = true;
+					}
+				}
+				return result;
+			}
+			
+			public boolean retainAll(DoubleCollection c) {
+				var result = false;
+				var set = c.toSet<?>();
+				foreach (var k in map.keys.toList()) {
+					if (!set.contains(k)) {
+						map.remove(k);
+						result = true;
+					}
+				}
+				return result;
+			}
+			
+			public double[] toArray(double[] a) {
+				int len = size();
+				double[] result = (sizeof(a) < len) ? new double[len] : a;
+				int index = 0;
+				foreach (var i in this) {
+					result[index++] = i;
+				}
+				return result;
+			}
+		}
+		
+		// ValueCollection
+		// --------------------------------------------------------------------
+
+		private class ValueCollection<U> : CollectionBase<U> {
+			private InternalDoubleTMap<U> map;
+			
+			ValueCollection(InternalDoubleTMap<U> map) {
+				this.map = map;
+			}
+		
+			public boolean add(U u) {
+				throw new UnsupportedOperationException();
+			}
+			
+			public void clear() {
+				map.clear();
+			}
+			
+			public boolean contains(Object o) {
+				return map.containsValue(o);
+			}
+			
+			public boolean isEmpty() {
+				return map.isEmpty();
+			}
+			
+			public Iterator<U> iterator() {
+				foreach (var i in map.keys.slots()) {
+					yield return map.values[i];
+				}
+			}
+			
+			public boolean remove(Object o) {
+				foreach (var i in map.keys.slots()) {
+					var value = map.values[i];
+					if (value == null) {
+						if (o == null) {
+							map.remove(map.keys.elementAt(i));
+							return true;
+						}
+					} else if (value.equals(o)) {
+						map.remove(map.keys.elementAt(i));
+						return true;
+					}
+				}
+				return false;
+			}
+			
+			public boolean retainAll(Collection<?> c) {
+				var result = false;
+				var set = c.toSet<?>();
+				foreach (var v in this.toList()) {
+					if (!set.contains(v)) {
+						while (remove(v)) {
+						}
+						result = true;
+					}
+				}
+				return result;
+			}
+			
+			public int size() {
+				return map.size();
+			}
+		}
+	}
+}

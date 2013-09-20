@@ -1,0 +1,9 @@
+using java.lang;
+
+[Deprecated]
+public class ClassAnnotation {
+	public static boolean test() {
+		Class<?> c = typeof(ClassAnnotation);
+		return c.getAnnotation(typeof(Deprecated)) != null;
+	}
+}

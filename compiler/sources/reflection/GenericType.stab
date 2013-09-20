@@ -1,0 +1,207 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using java.util;
+using stab.query;
+
+package stab.reflection {
+
+    class ConstructedGenericType : ClassType {
+        private TypeInfo genericTypeDefinition;
+        private GenericParameterBindings genericsScope;
+		private Library typeSystem;
+    
+        ConstructedGenericType(Library typeSystem, TypeInfo declaringType, TypeInfo genericTypeDefinition, Iterable<TypeInfo> genericArguments,
+            GenericParameterBindings genericsScope)
+                : super(typeSystem, genericTypeDefinition.FullName) {
+			this.typeSystem = typeSystem;
+            this.declaringType = declaringType;
+            this.genericTypeDefinition = genericTypeDefinition;
+            this.genericArguments = genericArguments;
+            this.genericsScope = new GenericParameterBindings(genericsScope);
+        }
+        
+        public override TypeInfo GenericTypeDefinition {
+            get {
+                return genericTypeDefinition;
+            }
+        }
+
+        public override String Descriptor {
+            get {
+                return genericTypeDefinition.Descriptor;
+            }
+        }
+
+        public override Iterable<AnnotationValue> Annotations {
+            get {
+                return genericTypeDefinition.Annotations;
+            }
+        }
+
+        protected override int Modifiers {
+            get {
+                return genericTypeDefinition.Modifiers;
+            }
+        }
+        
+        protected override int NestedModifiers {
+            get {
+                return genericTypeDefinition.NestedModifiers;
+            }
+        }
+        
+        protected override void initializeBaseTypes() {
+            if (baseType != null) {
+                return;
+            }
+            
+            if (genericArguments == null) {
+                genericArguments = ReflectionHelper.bindGenericParameters(typeSystem, genericsScope, genericTypeDefinition.GenericArguments);
+            } else {
+                ReflectionHelper.declareGenericTypeBindings(genericsScope, genericTypeDefinition.GenericArguments, genericArguments);
+            }
+            baseType = ReflectionHelper.bindGenericParameters(typeSystem, genericsScope, genericTypeDefinition.BaseType);
+            interfaces = ReflectionHelper.bindGenericParameters(typeSystem, genericsScope, genericTypeDefinition.Interfaces);
+        }
+        
+        protected override void initializeFields() {
+            if (genericTypeDefinition.Fields.count() == fields.size()) {
+                return;
+            }
+            initializeBaseTypes();
+            
+            foreach (var f in genericTypeDefinition.Fields.skip(fields.size())) {
+                var t = ReflectionHelper.bindGenericParameters(typeSystem, genericsScope, f.Type);
+                var newf = new FieldInfo(this, f.modifiers, f.Name, f.Value);
+                newf.type = t;
+                fields.add(newf);
+            }
+        }
+        
+        protected override void initializeMethods() {
+            if (genericTypeDefinition.Methods.count() == methods.size()) {
+                return;
+            }
+            initializeBaseTypes();
+
+			foreach (var m in genericTypeDefinition.Methods.skip(methods.size())) {
+                methods.add(new ConstructedGenericMethod(typeSystem, this, m, null, genericsScope));
+			}
+        }
+        
+        protected override void initializeNestedTypes() {
+            if (genericTypeDefinition.NestedTypes.count() == nestedTypes.size()) {
+                return;
+            }
+            initializeBaseTypes();
+            
+            foreach (var nt in genericTypeDefinition.NestedTypes.skip(nestedTypes.size())) {
+                nestedTypes.add(new ConstructedGenericType(typeSystem, this, nt, null, genericsScope));
+            }
+        }
+    }
+    
+    class RawTypeInfo : ClassType {
+        private TypeInfo genericTypeDefinition;
+
+        RawTypeInfo(TypeInfo declaringType, TypeInfo genericTypeDefinition)
+            : super(genericTypeDefinition.Library, genericTypeDefinition.FullName) {
+            this.declaringType = declaringType;
+            this.genericTypeDefinition = genericTypeDefinition;
+            this.genericArguments = Query.empty();
+        }
+
+        public override TypeInfo GenericTypeDefinition {
+            get {
+                return genericTypeDefinition;
+            }
+        }
+
+        public override String Descriptor {
+            get {
+                return genericTypeDefinition.Descriptor;
+            }
+        }
+
+        public override Iterable<AnnotationValue> Annotations {
+            get {
+                return genericTypeDefinition.Annotations;
+            }
+        }
+        
+        protected override int Modifiers {
+            get {
+                return genericTypeDefinition.Modifiers;
+            }
+        }
+        
+        protected override int NestedModifiers {
+            get {
+                return genericTypeDefinition.NestedModifiers;
+            }
+        }
+
+        protected override void initializeBaseTypes() {
+            if (baseType != null) {
+                return;
+            }
+            baseType = ReflectionHelper.getRawType(genericTypeDefinition, genericTypeDefinition.BaseType);
+            var interfaces = new ArrayList<TypeInfo>();
+            this.interfaces = interfaces;
+            foreach (var t in genericTypeDefinition.Interfaces) {
+                interfaces.add(ReflectionHelper.getRawType(genericTypeDefinition, t));
+            }
+        }
+        
+        protected override void initializeFields() {
+            if (genericTypeDefinition.Fields.count() == fields.size()) {
+                return;
+            }
+            initializeBaseTypes();
+            
+            foreach (var f in genericTypeDefinition.Fields.skip(fields.size())) {
+                var t = ReflectionHelper.getRawType(genericTypeDefinition, f.Type);
+                var newf = new FieldInfo(this, f.modifiers, f.Name, f.Value);
+                newf.type = t;
+                fields.add(newf);
+            }
+        }
+        
+        protected override void initializeMethods() {
+            if (genericTypeDefinition.Methods.count() == methods.size()) {
+                return;
+            }
+            initializeBaseTypes();
+            
+			foreach (var m in genericTypeDefinition.Methods.skip(methods.size())) {
+                methods.add(new RawGenericMethod(this, m));
+            }
+        }
+        
+        protected override void initializeNestedTypes() {
+            if (genericTypeDefinition.NestedTypes.count() == nestedTypes.size()) {
+                return;
+            }
+            initializeBaseTypes();
+            
+            foreach (var nt in genericTypeDefinition.NestedTypes.skip(nestedTypes.size())) {
+                nestedTypes.add(nt);
+            }
+        }
+    }
+}

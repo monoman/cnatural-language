@@ -1,0 +1,19 @@
+public class IndexerIncrement {
+	private double[] t = new double[10];
+
+	public double this[int index] {
+		get {
+			return t[index];
+		}
+		set {
+			t[index] = value;
+		}
+	}
+	
+	public static boolean test() {
+		var obj = new IndexerIncrement();
+		var d = obj[5]++;
+		++obj[5];
+		return d + 3 == ++obj[5] && obj[5] == 3;
+	}
+}

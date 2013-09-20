@@ -1,0 +1,432 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.awt;
+using java.awt.event;
+using java.awt.image;
+using java.io;
+using java.lang;
+using java.util;
+using javax.imageio;
+
+package stab.samples {
+    public class Daleks : Frame {
+        public static void main(String[] args) {
+            var daleks = new Daleks();
+            daleks.setVisible(true);
+        }
+
+        private static final int WIDTH = 25;
+        private static final int HEIGHT = 18;
+        private static final int MAX_DALEKS = 50;
+        private static final Font FONT = new Font(Font.SANS_SERIF, Font.BOLD, 100);
+        private static final Color LIGHT_GRAY2 = new Color(200, 200, 200);
+        
+        private BufferedImage doctorWho;
+        private BufferedImage dalek;
+        private BufferedImage wreckage;
+        private Image buffer;
+        private Label status;
+        private KeyHandler keyHandler;
+        private Timer timer;
+        private boolean taskPending;
+        
+        private int whoX = -1;
+        private int whoY = -1;
+        private int turn;
+        private int score;
+        private int energy;
+        private int ammo;
+        private Dalek[][] board = new Dalek[WIDTH][HEIGHT];
+        
+        private enum State {
+            NextTurn,
+            GameOver,
+            Continue
+        }
+        
+        private State state;
+        
+        public Daleks() : super("Daleks") {
+            setSize(1020, 820);
+            setResizable(false);
+            this.addWindowListener(new FrameListener());
+            var menuBar = new MenuBar();
+            this.setMenuBar(menuBar);
+            var menu = new Menu("File");
+            menuBar.add(menu);
+            
+            var menuItem = new MenuItem("New Game");
+            menu.add(menuItem);
+            menuItem.addActionListener(p => newGame());
+            
+            menuItem = new MenuItem("-");
+            menu.add(menuItem);
+            
+            menuItem = new MenuItem("Exit");
+            menu.add(menuItem);
+            menuItem.addActionListener(p => dispose());
+            
+            this.setLayout(new BorderLayout());
+            this.add(status = new Label("To start: File > New Game"), BorderLayout.SOUTH);
+            this.keyHandler = new KeyHandler(this);
+            this.addKeyListener(keyHandler);
+            
+            this.timer = new Timer(true);
+        }
+
+        public override void paint(Graphics g) {
+            var insets = getInsets();
+            var bounds = getBounds();
+            var width = (int)(bounds.getWidth() - insets.left - insets.right);
+            var height = (int)(bounds.getHeight() - insets.top - insets.bottom - status.getBounds().getHeight());
+            var cellWidth = width / WIDTH;
+            var cellHeight = height / HEIGHT;
+            var hmargin = (cellWidth % WIDTH) / 2 + insets.left;
+            var vmargin = (cellHeight % HEIGHT) / 2 + insets.top;
+            if (buffer == null) {
+                buffer = createImage((int)bounds.getWidth(), (int)bounds.getHeight());
+            }
+            var bg = buffer.getGraphics();
+            bg.clearRect(0, 0, (int)bounds.getWidth(), (int)bounds.getHeight());
+            for (int i = 0; i < WIDTH; i++) {
+                for (int j = 0; j < HEIGHT; j++) {
+                    if ((i % 2 == 0) == (j % 2 == 0)) {
+                        bg.setColor(LIGHT_GRAY2);
+                    } else {
+                        bg.setColor(Color.LIGHT_GRAY);
+                    }
+                    bg.fillRect(i * cellWidth + hmargin, j * cellHeight + vmargin, cellWidth, cellHeight);
+                }                
+            }
+            for (int i = 0; i < WIDTH; i++) {
+                for (int j = 0; j < HEIGHT; j++) {
+                    var dalek = board[i][j];
+                    if (dalek != null) {
+                        bg.drawImage((dalek.Broken) ? this.Wreckage : this.Dalek, i * cellWidth + hmargin, j * cellHeight + vmargin, null);
+                    }
+                }
+            }
+            if (whoX >= 0) {
+                bg.drawImage(this.DoctorWho, whoX * cellWidth + hmargin, whoY * cellHeight + vmargin, null);
+            }
+            if (state == State.GameOver) {
+                bg.setFont(FONT);
+                bg.setColor(Color.DARK_GRAY);
+                bg.drawString("Game Over", 205, 305);
+                bg.setColor(Color.BLACK);
+                bg.drawString("Game Over", 200, 300);
+            }
+            g.drawImage(buffer, 0, 0, this);
+        }
+
+        public override void update(Graphics g) {
+            paint(g);
+        }
+        
+        private void newGame() {
+            turn = 0;
+            score = 0;
+            energy = 4;
+            ammo = 0;
+            initializeTurn();
+        }
+
+        private void initializeTurn() {
+            state = State.Continue;
+            turn++;
+            energy++;
+            ammo++;
+            clearBoard();
+            for (int i = Math.min(turn * 5, MAX_DALEKS); i > 0; i--) {
+                for (;;) {
+                    int x = (int)(Math.random() * WIDTH);
+                    int y = (int)(Math.random() * HEIGHT);
+                    if (board[x][y] != null) {
+                        continue;
+                    }
+                    board[x][y] = new Dalek { X = x, Y = y };
+                    break;
+                }
+            }
+            for (;;) {
+                whoX = (int)(Math.random() * WIDTH);
+                whoY = (int)(Math.random() * HEIGHT);
+                if (board[whoX][whoY] == null) {
+                    break;
+                }
+            }
+            updateStatus();
+        }
+
+        private void moveDaleks() {
+            var daleks = new ArrayList<Dalek>();
+            for (int i = 0; i < WIDTH; i++) {
+                for (int j = 0; j < HEIGHT; j++) {
+                    var dalek = board[i][j];
+                    if (dalek != null && !dalek.Broken) {
+                        daleks.add(dalek);
+                        board[i][j] = null;
+                    }
+                }
+            }
+            int ndaleks = 0;
+            foreach (var dalek in daleks) {
+                if (state == State.GameOver) {
+                    board[dalek.X][dalek.Y] = dalek;
+                    continue;
+                }
+                if (dalek.Broken) {
+                    continue;
+                }
+                if (dalek.X < whoX) {
+                    dalek.X++;
+                } else if (whoX < dalek.X) {
+                    dalek.X--;
+                }
+                if (dalek.Y < whoY) {
+                    dalek.Y++;
+                } else if (whoY < dalek.Y) {
+                    dalek.Y--;
+                }
+                if (whoX == dalek.X && whoY == dalek.Y) {
+                    state = State.GameOver;
+                } else {
+                    var other = board[dalek.X][dalek.Y];
+                    if (other != null) {
+                        if (other.Broken) {
+                            score++;
+                        } else {
+                            score += 2;
+                            ndaleks--;
+                            other.Broken = true;
+                        }
+                    } else {
+                        ndaleks++;
+                        board[dalek.X][dalek.Y] = dalek;
+                    }
+                }
+            }
+            if (state != State.GameOver && ndaleks == 0) {
+                state = State.NextTurn;
+            }
+            updateStatus();
+        }
+
+        private void moveWho(int xdirection, int ydirection) {
+            if (whoX + xdirection < 0 || whoX + xdirection >= WIDTH) {
+                return;
+            }
+            if (whoY + ydirection < 0 || whoY + ydirection >= HEIGHT) {
+                return;
+            }
+            var dalek = board[whoX + xdirection][whoY + ydirection];
+            if (dalek != null) {
+                if (dalek.Broken) {
+                    return;
+                } else {
+                    state = State.GameOver;
+                }
+            }
+            whoX += xdirection;
+            whoY += ydirection;
+            if (state != State.GameOver) {
+                moveDaleks();
+            } else {
+                updateStatus();
+            }
+        }
+        
+        private void clearBoard() {
+            for (int i = 0; i < WIDTH; i++) {
+                for (int j = 0; j < HEIGHT; j++) {
+                    board[i][j] = null;
+                }
+            }
+        }
+        
+        private void sonicScrewdriver() {
+            if (ammo > 0) {
+                ammo--;
+                for (int i = -1; i < 2; i++) {
+                    if (whoX + i < 0 || whoX + i >= WIDTH) {
+                        continue;
+                    }
+                    for (int j = -1; j < 2; j++) {
+                        if (whoY + j < 0 || whoY + j >= HEIGHT) {
+                            continue;
+                        }
+                        var dalek = board[whoX + i][whoY + j];
+                        if (dalek != null && !dalek.Broken) {
+                            score++;
+                            board[whoX + i][whoY + j] = null;
+                        }
+                    }
+                }
+                taskPending = true;
+                timer.schedule(new MoveDaleksTask(this), 800);
+                repaint();
+            }
+        }
+        
+        private void teleport() {
+            if (energy > 0) {
+                energy--;
+                for (;;) {
+                    var x = (int)(Math.random() * WIDTH);
+                    var y = (int)(Math.random() * HEIGHT);
+                    if (board[x][y] == null && (x != whoX || y != whoY)) {
+                        whoX = x;
+                        whoY = y;
+                        break;
+                    }
+                }
+                taskPending = true;
+                timer.schedule(new MoveDaleksTask(this), 800);
+                repaint();
+            }
+        }
+        
+        private void updateStatus() {
+            if (state == State.NextTurn) {
+                initializeTurn();
+            } else {
+                status.setText("[1-9] to move, [T] to teleport, [S] to use the sonic screwdriver | Score: " +
+                        score + " | Energy: " + energy + " | Ammo: " + ammo);
+                repaint();
+            }
+        }
+        
+        private BufferedImage DoctorWho {
+            get {
+                if (doctorWho == null) {
+                    doctorWho = ImageIO.read(new File(@"images\otra-icon.png"));
+                }
+                return doctorWho;
+            }
+        }
+        
+        private BufferedImage Dalek {
+            get {
+                if (dalek == null) {
+                    dalek = ImageIO.read(new File(@"images\wall-e-icon.png"));
+                }
+                return dalek;
+            }
+        }
+        
+        private BufferedImage Wreckage {
+            get {
+                if (wreckage == null) {
+                    wreckage = ImageIO.read(new File(@"images\rims-icon.png"));
+                }
+                return wreckage;
+            }
+        }
+
+        private class Dalek {
+            
+            public int X {
+                get;
+                set;
+            }
+            
+            public int Y {
+                get;
+                set;
+            }
+            
+            public boolean Broken {
+                get;
+                set;
+            }
+        }
+        
+        private class FrameListener : WindowAdapter {
+            public override void windowClosing(WindowEvent e) {
+                e.getWindow().dispose();
+            }
+        }
+        
+        private class MoveDaleksTask : TimerTask {
+            private Daleks frame;
+        
+            MoveDaleksTask(Daleks frame) {
+                this.frame = frame;
+            }
+        
+            public override void run() {
+                EventQueue.invokeLater(() => {
+                    frame.moveDaleks();
+                    frame.repaint();
+                    frame.taskPending = false;
+                });
+            }
+        }
+        
+        private class KeyHandler : KeyAdapter {
+            private Daleks frame;
+
+            KeyHandler(Daleks frame) {
+                this.frame = frame;
+            }
+            
+            public override void keyTyped(KeyEvent e) {
+                if (frame.whoX == -1 || frame.taskPending) {
+                    return;
+                }
+                switch (e.getKeyChar()) {
+                case '1':
+                    frame.moveWho(-1, 1);
+                    break;
+                case '2':
+                    frame.moveWho(0, 1);
+                    break;
+                case '3':
+                    frame.moveWho(1, 1);
+                    break;
+                case '4':
+                    frame.moveWho(-1, 0);
+                    break;
+                case '5':
+                    frame.moveDaleks();
+                    break;
+                case '6':
+                    frame.moveWho(1, 0);
+                    break;
+                case '7':
+                    frame.moveWho(-1, -1);
+                    break;
+                case '8':
+                    frame.moveWho(0, -1);
+                    break;
+                case '9':
+                    frame.moveWho(1, -1);
+                    break;
+                case 's':
+                case 'S':
+                    frame.sonicScrewdriver();
+                    break;
+                case 't':
+                case 'T':
+                    frame.teleport();
+                    break;
+                }
+                frame.updateStatus();
+            }
+        }
+    }
+}

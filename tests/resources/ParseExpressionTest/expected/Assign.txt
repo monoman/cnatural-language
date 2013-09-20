@@ -1,0 +1,1 @@
+Assign((Name(p)).x Assign Assign((Name(p)).y Assign Literal(DecimalInteger, [0])))

@@ -1,0 +1,5 @@
+stab.tree.ExpressionTree<interface stab.query.FunctionInt> tree =
+	() =>
+    {
+        throw new class java.lang.IllegalStateException();
+    }

@@ -1,0 +1,280 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using java.util;
+using org.objectweb.asm;
+
+package stab.reflection {
+
+    public class ParameterBuilder : ParameterInfo {
+        private MethodBuilder method;
+        
+        ParameterBuilder(MethodBuilder method, int position, TypeInfo type)
+            : super(position, type) {
+            this.method = method;
+            this.annotations = new ArrayList<AnnotationValue>();
+        }
+        
+        public void setName(String name) {
+            method.checkCreated();
+            this.name = name;
+        }
+        
+        public AnnotationValueBuilder addAnnotation(TypeInfo type, boolean runtimeVisible) {
+            method.checkCreated();
+            var result = new AnnotationValueBuilder(type, runtimeVisible);
+            annotations.add(result);
+            return result;
+        }
+    }
+
+    public class MethodBuilder : MethodInfo {
+        private int modifiers;
+        private TypeInfo returnType;
+        private ArrayList<ParameterInfo> parameters;
+        private ArrayList<TypeInfo> exceptions;
+        private ArrayList<TypeInfo> genericArguments;
+        private String descriptor;
+        private ArrayList<AnnotationValue> annotations;
+        private CodeGenerator codeGenerator;
+        private AnnotationValue defaultValue;
+        
+        MethodBuilder(TypeInfo declaringType, String name)
+            : super(declaringType, name) {
+            parameters = new ArrayList<ParameterInfo>();
+            exceptions = new ArrayList<TypeInfo>();
+            genericArguments = new ArrayList<TypeInfo>();
+            annotations = new ArrayList<AnnotationValue>();
+            codeGenerator = new CodeGenerator(this);
+        }
+
+        public CodeGenerator CodeGenerator {
+            get {
+                checkCreated();
+                return codeGenerator;
+            }
+        }
+        
+        public override TypeInfo ReturnType {
+            get {
+                return returnType;
+            }
+        }
+
+        public void setReturnType(TypeInfo returnType) {
+            checkCreated();
+            this.returnType = returnType;
+        }
+        
+        public override Iterable<TypeInfo> GenericArguments {
+            get {
+                return genericArguments;
+            }
+        }
+        
+        public TypeInfo addGenericArgument(String name) {
+            checkCreated();
+            var type = new GenericParameterType(this.DeclaringType.Library, name, null);
+            genericArguments.add(type);
+            return type;
+        }
+        
+        public void addGenericConstraint(String name, TypeInfo bound) {
+            checkCreated();
+            foreach (var arg in genericArguments) {
+                if (arg.FullName.equals(name)) {
+                    ((GenericParameterType)arg).genericParameterBounds.add(bound);
+					return;
+                }
+            }
+            throw new IllegalStateException("name = " + name);
+        }
+        
+        public override Iterable<ParameterInfo> Parameters {
+            get {
+                return parameters;
+            }
+        }
+        
+        public ParameterBuilder addParameter(TypeInfo type) {
+            checkCreated();
+            var p = new ParameterBuilder(this, parameters.size(), type);
+            parameters.add(p);
+            return p;
+        }
+        
+        public override Iterable<TypeInfo> Exceptions {
+            get {
+                return exceptions;
+            }
+        }
+        
+        public void addException(TypeInfo exception) {
+            checkCreated();
+            exceptions.add(exception);
+        }
+        
+        public override Iterable<AnnotationValue> Annotations {
+            get {
+                return annotations;
+            }
+        }
+        
+        public AnnotationValueBuilder addAnnotation(TypeInfo type, boolean runtimeVisible) {
+            checkCreated();
+            var result = new AnnotationValueBuilder(type, runtimeVisible);
+            annotations.add(result);
+            return result;
+        }
+        
+        public override AnnotationArgument DefaultValue {
+            get {
+                return defaultValue;
+            }
+        }
+        
+        public void setDefaultValue(AnnotationValue defaultValue) {
+            checkCreated();
+            this.defaultValue = defaultValue;
+        }
+        
+        public override String Descriptor {
+            get {
+                var result = descriptor;
+                if (this.IsCreated || descriptor == null) {
+                    var sb = new StringBuilder();
+                    sb.append("(");
+                    foreach (var p in this.Parameters) {
+                        sb.append(p.Type.Descriptor);
+                    }
+                    sb.append(")");
+                    sb.append(returnType.Descriptor);
+                    result = sb.toString();
+                }
+                if (this.IsCreated && descriptor == null) {
+                    descriptor = result;
+                }
+                return result;
+            }
+        }
+        
+        public override String Signature {
+            get {
+                var result = signature;
+                if (this.IsCreated || signature == null) {
+                    result = ReflectionHelper.getMethodTypeSignature(this);
+                }
+                if (this.IsCreated && signature == null) {
+                    signature = result;
+                }
+                return result;
+            }
+        }
+        
+        public void setAbstract(boolean value) {
+            setModifiers(Opcodes.ACC_ABSTRACT, value);
+        }
+    
+        public void setBridge(boolean value) {
+            setModifiers(Opcodes.ACC_BRIDGE, value);
+        }
+    
+        public void setFinal(boolean value) {
+            setModifiers(Opcodes.ACC_FINAL, value);
+        }
+        
+        public void setNative(boolean value) {
+            setModifiers(Opcodes.ACC_NATIVE, value);
+        }
+    
+        public void setPrivate(boolean value) {
+            setModifiers(Opcodes.ACC_PRIVATE, value);
+        }
+    
+        public void setProtected(boolean value) {
+            setModifiers(Opcodes.ACC_PROTECTED, value);
+        }
+    
+        public void setPublic(boolean value) {
+            setModifiers(Opcodes.ACC_PUBLIC, value);
+        }
+    
+        public void setStatic(boolean value) {
+            setModifiers(Opcodes.ACC_STATIC, value);
+        }
+    
+        public void setStrict(boolean value) {
+            setModifiers(Opcodes.ACC_STRICT, value);
+        }
+    
+        public void setSynchronized(boolean value) {
+            setModifiers(Opcodes.ACC_SYNCHRONIZED, value);
+        }
+    
+        public void setSynthetic(boolean value) {
+            setModifiers(Opcodes.ACC_SYNTHETIC, value);
+        }
+    
+        public void setVarargs(boolean value) {
+            setModifiers(Opcodes.ACC_VARARGS, value);
+        }
+
+        protected override int Modifiers {
+            get {
+                return modifiers;
+            }
+        }
+
+        private void setModifiers(int modifiers, boolean value) {
+            checkCreated();
+            if (value) {
+                this.modifiers |= modifiers;
+            } else {
+                this.modifiers &= ~modifiers;
+            }
+        }
+        
+        void accept(MethodVisitor visitor) {
+            if (defaultValue != null) {
+                var v = visitor.visitAnnotationDefault();
+                defaultValue.accept(v);
+                v.visitEnd();
+            }
+            foreach (var p in parameters) {
+                foreach (var a in p.Annotations) {
+                    a.accept(visitor.visitParameterAnnotation(p.Position, a.Type.Descriptor, a.IsRuntimeVisible));
+                }
+            }
+            foreach (var a in annotations) {
+                a.accept(visitor.visitAnnotation(a.Type.Descriptor, a.IsRuntimeVisible));
+            }
+            codeGenerator.accept(visitor);
+            visitor.visitEnd();
+            codeGenerator = null;
+        }
+        
+        void checkCreated() {
+            ((TypeBuilder)this.DeclaringType).checkCreated();
+        }
+        
+        boolean IsCreated {
+            get {
+                return ((TypeBuilder)this.DeclaringType).created;
+            }
+        }
+    }
+}

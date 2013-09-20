@@ -1,0 +1,20 @@
+from car in root.Elements("car")
+let profiles =
+  from profile in car.Elements("profile")
+  select new {
+    Name = profile.Attribute("name").Value,
+    Value = profile.Attribute("value").Value
+  }
+let supports =
+  from support in car.Elements("support")
+  select new {
+    Name = support.Attribute("name").Value,
+    Value = support.Attribute("value").Value
+  }
+select new Car {
+  Name = car.Attribute("name").Value,
+  Vendor = profiles.Single(prof => prof.Name == "Vendor").Value,
+  Model = profiles.Single(prof => prof.Name == "Model").Value,
+  Doors = int.Parse(profiles.Single(prof => prof.Name == "Doors").Value),
+  RacingSupport = supports.Single(sup => sup.Name == "Racing").Value == "yes"
+}

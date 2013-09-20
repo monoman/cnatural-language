@@ -1,0 +1,14 @@
+(i) => {
+switch (i) {
+case 0:
+	CaseZero();
+	goto case 1;
+case 1:
+	CaseZeroOrOne();
+	goto default;
+case 2:
+default:
+	CaseAny();
+	break;
+}
+}

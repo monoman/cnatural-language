@@ -1,0 +1,10 @@
+Lambda( => {
+if ((Name(a) GreaterThan Name(b)))
+{
+Assign(Name(b) Add Literal(DecimalInteger, [1]));
+return(Name(b));
+}
+else
+return(Name(a));
+}
+)

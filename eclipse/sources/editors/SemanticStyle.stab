@@ -1,0 +1,238 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using java.util;
+using org.eclipse.jface.preference;
+using org.eclipse.jface.util;
+using org.eclipse.swt;
+using org.eclipse.swt.graphics;
+
+package stab.tools.eclipse.editors {
+
+	public enum TextStyle {
+		Bold,
+		Italic,
+		Strikethrough,
+		Underline
+	}
+
+	public enum SemanticStyle {
+		Preprocessor(new RGB(20, 170, 240), null),
+		SkippedSource(new RGB(180, 180, 180), null),
+		SingleLineComment(new RGB(155, 155, 155), null),
+		DelimitedComment(new RGB(128, 128, 128), null),
+		Keyword(new RGB(75, 0, 150), null, TextStyle.Bold),
+		NumberLiteral(new RGB(208, 66, 0), null),
+		CharacterLiteral(new RGB(210, 105, 0), null),
+		StringLiteral(new RGB(210, 105, 0), null),
+		Label(new RGB(0, 0, 0), null, TextStyle.Bold),
+		Class(new RGB(0, 0, 255), null, TextStyle.Bold),
+		Interface(new RGB(128, 0, 128), null, TextStyle.Bold),
+		Enum(new RGB(128, 128, 255), null, TextStyle.Bold),
+		GenericParameter(new RGB(0, 128, 255), null, TextStyle.Bold),
+		ConstantField(new RGB(170, 55, 0), null),
+		StaticField(new RGB(75, 150, 150), null, TextStyle.Italic),
+		Field(new RGB(75, 150, 150), null),
+		MethodDeclaration(new RGB(100, 0, 200), null, TextStyle.Bold),
+		StaticMethod(new RGB(100, 0, 200), null, TextStyle.Italic),
+		Method(new RGB(100, 0, 200), null),
+		PropertyDeclaration(new RGB(50, 180, 100), null, TextStyle.Bold),
+		StaticProperty(new RGB(50, 180, 100), null, TextStyle.Italic),
+		Property(new RGB(50, 180, 100), null),
+		Parameter(new RGB(0, 128, 0), null),
+		Local(new RGB(128, 128, 0), null)
+		;
+		
+		private static IPropertyChangeListener propertyChangeListener;
+		
+		public static void installListener(IPreferenceStore store) {
+			foreach (var value in values()) {
+				var keyPrefix = value.PreferenceKeyPrefix;
+				var key = keyPrefix + "foreground";
+				if (store.contains(key) && !store.isDefault(key)) {
+					value.foreground = PreferenceConverter.getColor(store, key);
+				}
+				key = keyPrefix + "background";
+				if (store.contains(key) && !store.isDefault(key)) {
+					value.background = PreferenceConverter.getColor(store, key);
+				}
+				key = keyPrefix + "bold";
+				if (!store.isDefault(key)) {
+					updateTextStyle(value, TextStyle.Bold, store.getBoolean(key));
+				}
+				key = keyPrefix + "italic";
+				if (!store.isDefault(key)) {
+					updateTextStyle(value, TextStyle.Italic, store.getBoolean(key));
+				}
+				key = keyPrefix + "underline";
+				if (!store.isDefault(key)) {
+					updateTextStyle(value, TextStyle.Underline, store.getBoolean(key));
+				}
+				key = keyPrefix + "strikethrough";
+				if (!store.isDefault(key)) {
+					updateTextStyle(value, TextStyle.Strikethrough, store.getBoolean(key));
+				}
+			}
+		
+			propertyChangeListener = p => {
+				foreach (var value in values()) {
+					if (p.getProperty().startsWith(value.PreferenceKeyPrefix)) {
+						switch (p.getProperty().substring(value.PreferenceKeyPrefix.length())) {
+						case "foreground":
+							value.foreground = (RGB)p.getNewValue();
+							break;
+						case "background":
+							value.background = (RGB)p.getNewValue();
+							break;
+						case "bold":
+							updateTextStyle(value, TextStyle.Bold, (Boolean)p.getNewValue());
+							break;
+						case "italic":
+							updateTextStyle(value, TextStyle.Italic, (Boolean)p.getNewValue());
+							break;
+						case "underline":
+							updateTextStyle(value, TextStyle.Underline, (Boolean)p.getNewValue());
+							break;
+						case "strikethrough":
+							updateTextStyle(value, TextStyle.Strikethrough, (Boolean)p.getNewValue());
+							break;
+						}
+					}
+				}
+			};
+			store.addPropertyChangeListener(propertyChangeListener);
+		}
+
+		public static void uninstallListener(IPreferenceStore store) {
+			if (propertyChangeListener != null) {
+				store.removePropertyChangeListener(propertyChangeListener);
+				propertyChangeListener = null;
+			}
+		}
+
+		static void updateTextStyle(SemanticStyle value, TextStyle textStyle, boolean add) {
+			var ts = value.TextStyles;
+			if (add) {
+				ts.add(TextStyle.Bold);
+			} else {
+				ts.remove(TextStyle.Bold);
+			}
+			value.TextStyles = ts;
+		}
+		
+		private RGB foreground;
+		private RGB background;
+		private EnumSet<TextStyle> defaultTextStyles;
+		private EnumSet<TextStyle> textStyles;
+		
+		private SemanticStyle(RGB defaultForeground, RGB defaultBackground, params TextStyle[] textStyles) {
+			this.DefaultForeground = defaultForeground;
+			this.DefaultBackground = defaultBackground;
+			this.defaultTextStyles = EnumSet.noneOf(typeof(TextStyle));
+			foreach (var style in textStyles) {
+				this.defaultTextStyles.add(style);
+			}
+			this.textStyles = this.defaultTextStyles;
+			this.PreferenceKeyPrefix = getClass().getName() + "." + name() + ".";
+		}
+
+		public String PreferenceKeyPrefix {
+			get;
+			private set;
+		}
+		
+		public RGB DefaultForeground {
+			get;
+			private set;
+		}
+		
+		public RGB DefaultBackground {
+			get;
+			private set;
+		}
+		
+		public RGB Foreground {
+			get {
+				return foreground ?? this.DefaultForeground;
+			}
+			set {
+				foreground = value;
+			}
+		}
+		
+		public RGB Background {
+			get {
+				return background ?? this.DefaultBackground;
+			}
+			set {
+				background = value;
+			}
+		}
+		
+		public EnumSet<TextStyle> DefaultTextStyles {
+			get {
+				return defaultTextStyles.clone();
+			}
+		}
+		
+		public EnumSet<TextStyle> TextStyles {
+			get {
+				return textStyles.clone();
+			}
+			set {
+				textStyles = value.clone();
+			}
+		}
+		
+		public int FontStyle {
+			get {
+				int result = SWT.NORMAL;
+				if (textStyles.contains(TextStyle.Bold)) {
+					result |= SWT.BOLD;
+				}
+				if (textStyles.contains(TextStyle.Italic)) {
+					result |= SWT.ITALIC;
+				}
+				return result;
+			}
+		}
+		
+		public boolean IsBold {
+			get {
+				return textStyles.contains(TextStyle.Bold);
+			}
+		}
+		
+		public boolean IsItalic {
+			get {
+				return textStyles.contains(TextStyle.Italic);
+			}
+		}
+		
+		public boolean Strikethrough {
+			get {
+				return textStyles.contains(TextStyle.Strikethrough);
+			}
+		}
+		
+		public boolean Underline {
+			get {
+				return textStyles.contains(TextStyle.Underline);
+			}
+		}
+	}
+}

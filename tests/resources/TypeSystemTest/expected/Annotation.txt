@@ -1,0 +1,7 @@
+// Lstab/bytecode/test/classes/Annotation; / Lstab/bytecode/test/classes/Annotation;
+[java/lang/Deprecated]
+public class stab/bytecode/test/classes/Annotation : java/lang/Object {
+    // ()V / ()V
+    public V <init>() {
+    }
+}

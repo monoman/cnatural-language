@@ -1,0 +1,6 @@
+public class CharArithmetic {
+	public static boolean test() {
+		char v = '\uFFFF';
+		return ++v == 0;
+	}
+}

@@ -1,0 +1,10 @@
+Lambda( => {
+try {
+return(Literal(Long, [1l]));
+}
+catch (System.NullReferenceException nre) {
+}
+catch {
+}
+}
+)

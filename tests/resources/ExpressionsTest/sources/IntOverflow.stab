@@ -1,0 +1,6 @@
+public class IntOverflow {
+	public static boolean test() {
+		int v = 2147483647;
+		return ++v == -2147483648;
+	}
+}

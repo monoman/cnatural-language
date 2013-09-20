@@ -1,0 +1,129 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.io;
+using java.lang;
+using java.lang.reflect;
+using java.util;
+using org.junit;
+using stab.reflection;
+using stab.tools.helpers;
+
+package stab.tools.compiler.test {
+
+	public abstract class ExecutionTest {
+		private static Library typeSystem;
+		protected CompilerParameters parameters;
+		
+		[After]
+		public void after() {
+			parameters = null;
+		}
+		
+		public abstract String ResourcesPath {
+			get;
+		}
+		
+		protected void doTest(String className, Class<?>[] parameterTypes, Object[] arguments, Object result) {
+            doTest(new String[] { className }, parameterTypes, arguments, result);
+        }
+		
+		protected void doTest(String[] classNames, Class<?>[] parameterTypes, Object[] arguments, Object result) {
+			var userDir = System.getProperty("user.dir");
+			var resourcesPath = PathHelper.combine(userDir, PathHelper.combine("Tests/resources", this.ResourcesPath));
+			var sourcesPath = PathHelper.combine(resourcesPath, "sources");
+			var generatedPath = PathHelper.combine(resourcesPath, "generated");
+            var files = new File[sizeof(classNames)];
+            for (int i = 0; i < sizeof(files); i++) {
+                files[i] = new File(PathHelper.combine(sourcesPath, PathHelper.getFileName(classNames[i].replace('.', '/')) + ".stab"));
+            }
+			
+			var compiler = new Compiler();
+			if (this.parameters == null) {
+				this.parameters = new CompilerParameters();
+			}
+			if (typeSystem == null) {
+				typeSystem = new Library(new String[] { PathHelper.combine(userDir, "runtime/stabrt.jar") });
+			}
+			this.parameters.TypeSystem = new Library(new String[0], typeSystem);
+			this.parameters.AnnotatedTypeSystem = new Library(new String[] { PathHelper.combine(userDir, "annotated/stabal.jar") },
+					this.parameters.TypeSystem);
+			
+			var results = compiler.compileFromFiles(this.parameters, files);
+
+			var hasError = false;
+			foreach (var error in results.Errors) {
+				System.out.print(error.Filename);
+				if (error.Line > 0) {
+					System.out.print(" (");
+					System.out.print(error.Line);
+				}
+				if (error.Column > 0) {
+					System.out.print(", ");
+					System.out.print(error.Column);
+				}
+				System.out.print(")");
+				if (error.Level == 0) {
+					hasError = true;
+					System.out.print(" error ");
+				} else {
+					System.out.print(" warning ");
+				}
+				System.out.print(error.Id);
+				System.out.print(": ");
+				System.out.println(error.Message);
+			}
+			Assert.assertFalse(hasError);
+			
+			var generatedDir = new File(generatedPath);
+			if (!generatedDir.exists()) {
+				generatedDir.mkdir();
+			}
+			
+			foreach (var e in results.ClassFiles.entrySet()) {
+				var classFilePath = PathHelper.combine(generatedPath, e.Key.replace('.', '/') + ".class");
+				var classFileDir = new File(PathHelper.getDirectoryName(classFilePath));
+				if (!classFileDir.exists()) {
+					classFileDir.mkdirs();
+				}
+				var output = new FileOutputStream(classFilePath);
+				output.write(e.Value);
+				output.close();
+			}
+			
+			var loader = new DynamicClassLoader(results.ClassFiles);
+			var testClass = loader.loadClass(classNames[0]);
+			Method testMethod = testClass.getMethod("test", parameterTypes);
+			var value = testMethod.invoke(null, arguments);
+			Assert.assertEquals(result, value);
+		}
+		
+		private class DynamicClassLoader : ClassLoader {
+			private HashMap<String, byte[]> classes;
+			public DynamicClassLoader(HashMap<String, byte[]> classes) {
+				this.classes = classes;
+			}
+			protected override Class<?> findClass(String name) {
+				if (!classes.containsKey(name)) {
+					return super.findClass(name);
+				} else {
+					var code = classes[name];
+					return defineClass(name, code, 0, sizeof(code));
+				}
+			}
+		}
+	}
+}

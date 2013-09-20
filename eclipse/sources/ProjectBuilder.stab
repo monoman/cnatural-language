@@ -1,0 +1,312 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using java.io;
+using java.util;
+using org.eclipse.core.resources;
+using org.eclipse.core.runtime;
+using org.eclipse.jface.dialogs;
+using stab.query;
+using stab.tools.bytecode;
+using stab.tools.helpers;
+using stab.tools.syntaxtree;
+using stab.tools.eclipse.helpers;
+
+package stab.tools.eclipse {
+
+	//
+	// The incremental builder for Stab source files.
+	//
+	public class ProjectBuilder : IncrementalProjectBuilder {
+		private ProjectManager projectManager;
+
+		#pragma warning disable 252
+		public override IProject[] build(int kind, Map args, IProgressMonitor monitor) {
+		#pragma warning restore 252
+			this.projectManager = Environment.getProjectManager(getProject());
+			getProject().getFile(".stabproperties").deleteMarkers(IMarker.PROBLEM, false, 0);
+			
+			if (kind == FULL_BUILD || projectManager.RequireFullBuild) {
+				return buildProject(monitor);
+			} else {
+				var delta = getDelta(getProject());
+				if (delta == null) {
+					return buildProject(monitor);
+				}
+				if (delta.getKind() != IResourceDelta.NO_CHANGE) {
+					return buildDelta(delta, monitor);
+				}
+			}
+			return null;
+		}
+		
+		private IProject[] buildProject(IProgressMonitor monitor) {
+			Environment.trace(this, "Full build");
+			var t0 = System.nanoTime();
+
+			try {
+				monitor.beginTask(Messages.fullBuildTaskName, 4);
+
+				var libs = projectManager.Properties.Libraries.where(p => p.Enabled);
+				var libFiles = libs.select(p => projectManager.Project.getFile(Path.fromPortableString(p.Path))).where(p => p.exists()).toList();
+				int i = libFiles.size();
+				var classPath = new String[i];
+				foreach (var file in libFiles) {
+					classPath[--i] = file.getLocation().toOSString();
+				}
+				
+				var parameters = new SourceCompilerParameters { FullBuild = true, ClassPath = classPath };
+				parameters.AllFiles.addAll(projectManager.getSourceFiles());
+				foreach (var s in projectManager.Properties.PreprocessorSymbols) {
+					parameters.PreprocessorSymbols.add(s);
+				}
+				
+				var compiler = new SourceCompiler();
+				var results = compiler.compile(parameters, new SubProgressMonitor(monitor, 3));
+				if (results.Failed) {
+					if (results.MissingType != null) {
+						projectManager.DependencyInfo = null;
+						IMarker marker = getProject().getFile(".stabproperties").createMarker(IMarker.PROBLEM);
+						marker.setAttribute(IMarker.MESSAGE, results.MissingType);
+						marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
+						marker.setAttribute(IMarker.PRIORITY, IMarker.PRIORITY_HIGH);
+					} else {
+						projectManager.FilesToCompile = results.CompiledFiles;
+					}
+				} else {
+					var t1 = System.nanoTime();
+
+					var outputFolder = getProject().getFolder(projectManager.Properties.OutputPath);
+					if (outputFolder.exists()) {
+						outputFolder.accept(p => {
+							if (p.getType() == IResource.FILE) {
+								if (p.getName().endsWith(".class")) {
+									p.requestResource().delete(IResource.FORCE, null);
+								}
+								return false;
+							}
+							return true;
+						}, IResource.NONE);
+					} else {
+						outputFolder.create(IResource.FORCE, true, null);
+					}
+					foreach (var e in results.ClassFiles.entrySet()) {
+						var fileName = e.Key.replace('.', '/') + ".class";
+						var file = outputFolder.getFile(fileName);
+						EclipseHelper.createFolders(file);
+						file.create(new ByteArrayInputStream(e.Value), IResource.FORCE, null);
+					}
+					
+					Environment.trace(this, results.ClassFiles.size() + " .class files saved in " + ((System.nanoTime() - t1) / 1e6) + "ms");
+
+					projectManager.DependencyInfo = results.DependencyInfo;
+					projectManager.ClassPath = classPath;
+					projectManager.TypeSystem = results.TypeSystem;
+					projectManager.AnnotatedTypeSystem = results.AnnotatedTypeSystem;
+					projectManager.CompilationUnits = results.CompilationUnits;
+					projectManager.FilesToCompile = Query.empty();
+					
+					Environment.fireProjectBuildEvent(projectManager);
+				}
+				updateMarkers(results.CodeErrors, parameters.AllFiles);
+
+				monitor.worked(1);
+			} catch (InterruptedException) {
+			} catch (Exception e) {
+				org.eclipse.ui.PlatformUI.getWorkbench().getDisplay().syncExec(
+						() => MessageDialog.openError(org.eclipse.ui.PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+						"Build error", e.getMessage()));
+			} finally {
+				monitor.done();
+			}
+
+			Environment.trace(this, "Full build done in " + ((System.nanoTime() - t0) / 1e6) + "ms");
+			return null;
+		}
+		
+		private IProject[] buildDelta(IResourceDelta delta, IProgressMonitor monitor) {
+			Environment.trace(this, "Incremental build");
+			var t0 = System.nanoTime();
+
+			try {
+				monitor.beginTask("", 5);
+
+				var filesToCompile = EclipseHelper.getModifiedFiles(delta, Query.singleton("stab"), Query.singleton("bin"));
+				var deletedFiles = filesToCompile.where(p => !p.exists()).select(p => p.getProjectRelativePath().toPortableString());
+				Environment.trace(this, filesToCompile.count() + " files to compile");
+
+				var parameters = new SourceCompilerParameters {
+					ProgressiveBuild = true,
+					ClassPath = projectManager.ClassPath,
+					TypeSystem = projectManager.TypeSystem,
+					DependencyInfo = projectManager.DependencyInfo
+				};
+				parameters.AllFiles.addAll(projectManager.getSourceFiles());
+				parameters.AllFiles.addAll(filesToCompile);
+				foreach (var f in filesToCompile) {
+					parameters.FilesToCompile.add(parameters.AllFiles.getProjectRelativeName(f));
+				}
+				foreach (var f in projectManager.FilesToCompile) {
+					parameters.FilesToCompile.add(f);
+				}
+				foreach (var s in projectManager.Properties.PreprocessorSymbols) {
+					parameters.PreprocessorSymbols.add(s);
+				}
+				
+				var compiler = new SourceCompiler();
+				var results = compiler.compile(parameters, new SubProgressMonitor(monitor, 3));
+				if (results.Failed) {
+					if (results.MissingType != null) {
+						projectManager.DependencyInfo = null;
+						IMarker marker = getProject().getFile(".stabproperties").createMarker(IMarker.PROBLEM);
+						marker.setAttribute(IMarker.MESSAGE, results.MissingType);
+						marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
+						marker.setAttribute(IMarker.PRIORITY, IMarker.PRIORITY_HIGH);
+					} else {
+						projectManager.FilesToCompile = projectManager.FilesToCompile.union(results.CompiledFiles).toList();
+					}
+				} else {
+					// Update the .class files
+					var outputFolder = getProject().getFolder(projectManager.Properties.OutputPath);
+					foreach (var typeName in results.CompiledFiles.selectMany(p => results.DependencyInfo.getFileContents(p))) {
+						var file = outputFolder.getFile(typeName + ".class");
+						if (!file.exists()) {
+							continue;
+						}
+						var type = JvmTypeSystemHelper.getType(results.TypeSystem, typeName);
+						var declaringTypeName = type.Name;
+						var declaringType = type;
+						while ((declaringType = declaringType.DeclaringType) != null) {
+							declaringTypeName = declaringType.Name + "$" + declaringTypeName;
+						}
+						// Deletes all the nested types of the declaring type
+						file.getParent().accept(p => {
+							if (p.getType() == IResource.FILE) {
+								if (p.getName().startsWith(declaringTypeName + "$")) {
+									p.requestResource().delete(IResource.FORCE, null);
+								}
+								return false;
+							}
+							return true;
+						}, IResource.NONE);
+						file.delete(IResource.FORCE, null);
+					}
+					foreach (var e in results.ClassFiles.entrySet()) {
+						var fileName = e.Key.replace('.', '/') + ".class";
+						var file = outputFolder.getFile(fileName);
+						EclipseHelper.createFolders(file);
+						file.create(new ByteArrayInputStream(e.Value), IResource.FORCE, null);
+					}
+					
+					// TODO: delete the .class generated from the types contained in deletedFiles
+					
+					projectManager.DependencyInfo = results.DependencyInfo;
+					projectManager.TypeSystem = results.TypeSystem;
+					projectManager.AnnotatedTypeSystem = results.AnnotatedTypeSystem;
+					projectManager.FilesToCompile = Query.empty();
+					
+					var compilationUnits = new HashMap<String, CompilationUnitNode>(projectManager.CompilationUnits);
+					foreach (var e in results.CompilationUnits.entrySet()) {
+						compilationUnits[e.Key] = e.Value;
+					}
+					foreach (var s in deletedFiles) {
+						compilationUnits.remove(s);
+					}
+					projectManager.CompilationUnits = compilationUnits;
+					
+					Environment.fireProjectBuildEvent(projectManager);
+				}
+				updateMarkers(results.CodeErrors, parameters.AllFiles);
+
+				monitor.worked(1);
+			} catch (InterruptedException) {
+			} finally {
+				monitor.done();
+			}
+		
+			Environment.trace(this, "Incremental build done in " + ((System.nanoTime() - t0) / 1e6) + "ms");
+			return null;
+		}
+		
+		private void updateMarkers(List<CodeError> codeErrors, ResourceSet<IFile> fileSet) {
+			// Collect all the markers
+			var oldMarkers = new HashMap<IFile, IMarker[]>();
+			var markersToDelete = new HashSet<IMarker>();
+			foreach (var file in fileSet.getAllResources().where(p => p.exists())) {
+				try {
+					var markers = file.findMarkers(IMarker.PROBLEM, false, IFile.DEPTH_ZERO);
+					oldMarkers.put(file, markers);
+					foreach (var marker in markers) {
+						markersToDelete.add(marker);
+					}
+				} catch (CoreException e) {
+					Environment.logException(e);
+				}
+			}
+	
+			// List the error to mark and the marks to remove
+			var errorsToMark = new HashSet<CodeError>(codeErrors);
+			foreach (var error in codeErrors) {
+				var file = fileSet.getResource(error.Filename);
+				foreach (var marker in oldMarkers[file]) {
+					if (!markersToDelete.contains(marker)) {
+						continue;
+					}
+					if (error.Line != marker.getAttribute(IMarker.LINE_NUMBER, -1)) {
+						continue;
+					}
+					if (!error.Message.equals(marker.getAttribute(IMarker.MESSAGE, null))) {
+						continue;
+					}
+					int severity = marker.getAttribute(IMarker.SEVERITY, -1);
+					if (((error.Level == 0) ? IMarker.SEVERITY_ERROR : IMarker.SEVERITY_WARNING) != severity) {
+						continue;
+					}
+					if (marker.getAttribute(IMarker.PRIORITY, -1) != IMarker.PRIORITY_HIGH) {
+						continue;
+					}
+					errorsToMark.remove(error);
+					markersToDelete.remove(marker);
+					break;
+				}
+			}
+	
+			// Delete the obsolete markers
+			foreach (var marker in markersToDelete) {
+				try {
+					marker.delete();
+				} catch (CoreException e) {
+					Environment.logException(e);
+				}
+			}
+	
+			// Create the new markers
+			foreach (var error in errorsToMark) {
+				var file = fileSet.getResource(error.Filename);
+				try {
+					var marker = file.createMarker(IMarker.PROBLEM);
+					marker.setAttribute(IMarker.LINE_NUMBER, error.Line);
+					marker.setAttribute(IMarker.MESSAGE, error.Message);
+					marker.setAttribute(IMarker.SEVERITY, (error.Level == 0) ? IMarker.SEVERITY_ERROR : IMarker.SEVERITY_WARNING);
+					marker.setAttribute(IMarker.PRIORITY, IMarker.PRIORITY_HIGH);
+				} catch (CoreException e) {
+					Environment.logException(e);
+				}
+			}
+		}
+	}
+}

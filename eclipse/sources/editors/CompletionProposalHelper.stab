@@ -1,0 +1,263 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using java.util;
+using org.eclipse.jface.text;
+using org.eclipse.jface.text.contentassist;
+using org.eclipse.swt.graphics;
+using stab.query;
+using stab.reflection;
+using stab.tools.compiler;
+
+package stab.tools.eclipse.editors {
+
+	public class CompletionProposalHelper {
+		private static CompletionProposalComparator completionProposalComparator = new CompletionProposalComparator();
+		private class CompletionProposalComparator : Comparator<ICompletionProposal> {
+			public int compare(ICompletionProposal cp1, ICompletionProposal cp2) {
+				return cp1.getDisplayString().toLowerCase().compareTo(cp2.getDisplayString().toLowerCase());
+			}
+		}
+	
+		public static ICompletionProposal[] createEmpty() {
+			return new[] { new EmptyCompletionProposal() };
+		}
+		
+		public static ICompletionProposal[] createCompletionProposals(int offset, int length, String prefix, Iterable<String> packages,
+				Iterable<MemberInfo> members, Iterable<String> texts) {
+			var proposals = new ArrayList<ICompletionProposal>();
+			
+			foreach (var pkg in packages.where(p => p.startsWith(prefix))) {
+				proposals.add(createPackage(offset, length, pkg.substring(prefix.length()), pkg));
+			}
+			
+			foreach (var member in members) {
+				switch (member.MemberKind) {
+				case Type:
+					var Type = member.Type;
+					if (Type.Name.startsWith(prefix)) {
+						proposals.add(createType(offset, length, Type.Name.substring(prefix.length()), Type));
+					}
+					break;
+				case Field:
+					var Field = member.Field;
+					if (Field.Name.startsWith(prefix)) {
+						proposals.add(createField(offset, length, Field.Name.substring(prefix.length()), Field));
+					}
+					break;
+				case Property:
+					if (member.Name.startsWith(prefix)) {
+						proposals.add(createProperty(offset, length, member.Name.substring(prefix.length()), member));
+					}
+					break;
+				case Method:
+					var Method = member.Method;
+					if (Method.Name.startsWith(prefix)) {
+						proposals.add(createMethod(offset, length, Method.Name.substring(prefix.length()), Method));
+					}
+					break;
+				case Local:
+					if (member.Name.startsWith(prefix)) {
+						proposals.add(createLocal(offset, length, member.Name.substring(prefix.length()), member));
+					}
+					break;
+				}
+			}
+			
+			foreach (var text in texts.where(p => p.startsWith(prefix))) {
+				proposals.add(createText(offset, length, text.substring(prefix.length()), text));
+			}
+
+			if (proposals.size() == 0) {
+				return createEmpty();
+			}
+			Collections.sort(proposals, completionProposalComparator);
+			return proposals.toArray(new ICompletionProposal[proposals.size()]);
+		}
+		
+		private static String getDisplayName(TypeInfo type) {
+			var plen = type.PackageName.length();
+			if (plen == 0) {
+				return type.Name;
+			} else {
+				return type.Name + " - " + type.PackageName.substring(0, plen - 1).replace('/', '.');
+			}
+		}
+
+		private static String getDisplayName(FieldInfo field) {
+			return field.Name + " - " + getName(field.DeclaringType);
+		}
+
+		private static String getDisplayName(MethodInfo method) {
+			return method.Name + getParameters(method) + ": " + getName(method.ReturnType) + " - " + getName(method.DeclaringType);
+		}
+		
+		private static String getDisplayName(MemberInfo member) {
+			return member.Name + " - " + getName(member.Type);
+		}
+		
+		private static String getPropertyDisplayName(MemberInfo member) {
+			return member.Name + ": " + getName(member.Type) + " - " + getName(member.DeclaringType);
+		}
+		
+		private static String getParameters(MethodInfo method) {
+			var sb = new StringBuilder();
+			sb.append('(');
+			var first = true;
+			foreach (var p in method.Parameters) {
+				if (first) {
+					first = false;
+				} else {
+					sb.append(", ");
+				}
+				sb.append(getName(p.Type));
+			}
+			sb.append(')');
+			return sb.toString();
+		}
+		
+		private static String getName(TypeInfo type) {
+			switch (type.TypeKind) {
+			case Void:
+			case Boolean:
+			case Byte:
+			case Char:
+			case Short:
+			case Int:
+			case Long:
+			case Float:
+			case Double:
+				return type.TypeKind.toString().toLowerCase();
+			case Array:
+				return getName(type.ElementType) + "[]";
+			case UnboundedWildcard:
+				return "?";
+			case LowerBoundedWildcard:
+				return "? : " + getName(type.WildcardBound);
+			case UpperBoundedWildcard:
+				return getName(type.WildcardBound) + " : ?";
+			}
+			var sb = new StringBuilder();
+			sb.append(type.FullName.replace('/', '.').replace('$', '.'));
+			if (type.GenericArguments.any()) {
+				sb.append("<");
+				var first = true;
+				foreach (var t in type.GenericArguments) {
+					if (first) {
+						first = false;
+					} else {
+						sb.append(", ");
+					}
+					sb.append(getName(t));
+				}
+				sb.append(">");
+			}
+			return sb.toString();
+		}
+		
+		private static ICompletionProposal createPackage(int offset, int length, String text, String displayName) {
+			return new CompletionProposal(text, offset, length, text.length(), Environment.getIcon(Icon.Package), displayName, null, null);
+		}
+		
+		private static ICompletionProposal createType(int offset, int length, String text, TypeInfo type) {
+			Image image;
+			if (type.IsEnum) {
+				image = Environment.getIcon(Icon.Enum);
+			} else if (type.IsInterface) {
+				image = Environment.getIcon(Icon.Interface);
+			} else {
+				image = Environment.getIcon(Icon.Class);
+			}
+			return new CompletionProposal(text, offset, length, text.length(), image, getDisplayName(type), null, null);
+		}
+		
+		private static ICompletionProposal createText(int offset, int length, String text, String displayName) {
+			return new CompletionProposal(text, offset, length, text.length(), Environment.getIcon(Icon.Source), displayName, null, null);
+		}
+		
+		private static ICompletionProposal createField(int offset, int length, String text, FieldInfo field) {
+			Image image;
+			if (field.IsPublic) {
+				image = Environment.getIcon(Icon.PublicField);
+			} else if (field.IsProtected) {
+				image = Environment.getIcon(Icon.ProtectedField);
+			} else if (field.IsPrivate) {
+				image = Environment.getIcon(Icon.PrivateField);
+			} else {
+				image = Environment.getIcon(Icon.DefaultField);
+			}
+			return new CompletionProposal(text, offset, length, text.length(), image, getDisplayName(field), null, null);
+		}
+
+		private static ICompletionProposal createProperty(int offset, int length, String text, MemberInfo property) {
+			Image image;
+			if (property.IsPublic) {
+				image = Environment.getIcon(Icon.PublicProperty);
+			} else if (property.IsProtected) {
+				image = Environment.getIcon(Icon.ProtectedProperty);
+			} else if (property.IsPrivate) {
+				image = Environment.getIcon(Icon.PrivateProperty);
+			} else {
+				image = Environment.getIcon(Icon.DefaultProperty);
+			}
+			return new CompletionProposal(text, offset, length, text.length(), image, getPropertyDisplayName(property), null, null);
+		}
+
+		private static ICompletionProposal createMethod(int offset, int length, String text, MethodInfo method) {
+			Image image;
+			if (method.IsPublic) {
+				image = Environment.getIcon(Icon.PublicMethod);
+			} else if (method.IsProtected) {
+				image = Environment.getIcon(Icon.ProtectedMethod);
+			} else if (method.IsPrivate) {
+				image = Environment.getIcon(Icon.PrivateMethod);
+			} else {
+				image = Environment.getIcon(Icon.DefaultMethod);
+			}
+			return new CompletionProposal(text, offset, length, text.length(), image, getDisplayName(method), null, null);
+		}
+
+		private static ICompletionProposal createLocal(int offset, int length, String text, MemberInfo member) {
+			return new CompletionProposal(text, offset, length, text.length(), Environment.getIcon(Icon.LocalVariable), getDisplayName(member), null, null);
+		}
+		
+		private class EmptyCompletionProposal : ICompletionProposal {
+			public Point getSelection(IDocument document) {
+				return null;
+			}
+			
+			public Image getImage() {
+				return null;
+			}
+			
+			public String getDisplayString() {
+				return Messages.emptyCompletionText;
+			}
+			
+			public IContextInformation getContextInformation() {
+				return null;
+			}
+			
+			public String getAdditionalProposalInfo() {
+				return null;
+			}
+			
+			public void apply(IDocument document) {
+			}
+		}
+	}
+}

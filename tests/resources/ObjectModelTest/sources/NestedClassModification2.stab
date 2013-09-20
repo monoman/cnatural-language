@@ -1,0 +1,16 @@
+public class NestedClassModification2 {
+	private int field = 2;
+	
+	public static boolean test() {
+		Nested n = new Nested();
+		return n.test() == 2 && n.obj.field == 3;
+	}
+
+	public class Nested {
+		public NestedClassModification2 obj;
+		public int test() {
+			obj = new NestedClassModification2();
+			return obj.field++;
+		}
+	}
+}

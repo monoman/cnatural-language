@@ -1,0 +1,778 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using java.lang.annotation;
+using java.util;
+using stab.query;
+using stab.reflection;
+
+package stab.tools.compiler {
+
+    public static class BytecodeHelper {
+        private static HashMap<String, TypeKind> IterableOrIteratorElementTypes;
+        private static HashSet<String> IterableTypes;
+        static BytecodeHelper() {
+            IterableOrIteratorElementTypes = new HashMap<String, TypeKind>();
+            IterableOrIteratorElementTypes["stab/lang/BooleanIterable"] = TypeKind.Boolean;
+            IterableOrIteratorElementTypes["stab/lang/BooleanIterator"] = TypeKind.Boolean;
+            IterableOrIteratorElementTypes["stab/lang/ByteIterable"] = TypeKind.Byte;
+            IterableOrIteratorElementTypes["stab/lang/ByteIterator"] = TypeKind.Byte;
+            IterableOrIteratorElementTypes["stab/lang/ShortIterable"] = TypeKind.Short;
+            IterableOrIteratorElementTypes["stab/lang/ShortIterator"] = TypeKind.Short;
+            IterableOrIteratorElementTypes["stab/lang/CharIterable"] = TypeKind.Char;
+            IterableOrIteratorElementTypes["stab/lang/CharIterator"] = TypeKind.Char;
+            IterableOrIteratorElementTypes["stab/lang/IntIterable"] = TypeKind.Int;
+            IterableOrIteratorElementTypes["stab/lang/IntIterator"] = TypeKind.Int;
+            IterableOrIteratorElementTypes["stab/lang/LongIterable"] = TypeKind.Long;
+            IterableOrIteratorElementTypes["stab/lang/LongIterator"] = TypeKind.Long;
+            IterableOrIteratorElementTypes["stab/lang/FloatIterable"] = TypeKind.Float;
+            IterableOrIteratorElementTypes["stab/lang/FloatIterator"] = TypeKind.Float;
+            IterableOrIteratorElementTypes["stab/lang/DoubleIterable"] = TypeKind.Double;
+            IterableOrIteratorElementTypes["stab/lang/DoubleIterator"] = TypeKind.Double;
+            
+            IterableTypes = new HashSet<String>();
+            IterableTypes.add("stab/lang/BooleanIterable");
+            IterableTypes.add("stab/lang/ByteIterable");
+            IterableTypes.add("stab/lang/ShortIterable");
+            IterableTypes.add("stab/lang/CharIterable");
+            IterableTypes.add("stab/lang/IntIterable");
+            IterableTypes.add("stab/lang/LongIterable");
+            IterableTypes.add("stab/lang/FloatIterable");
+            IterableTypes.add("stab/lang/DoubleIterable");
+            IterableTypes.add("java/lang/Iterable");
+        }
+
+        public static boolean hasImplicitConversion(TypeInfo fromType, TypeInfo toType) {
+            if (fromType == null) {
+                return !toType.IsPrimitive;
+            }
+            return getImplicitConversion(fromType, toType) != null;
+        }
+        
+        public static TypeInfo getImplicitConversion(TypeInfo fromType, TypeInfo toType) {
+            if (toType.IsClosed && toType.isAssignableFrom(fromType)) {
+                return fromType;
+            }
+            if (toType.OriginalTypeDefinition == fromType.OriginalTypeDefinition) {
+                var it1 = toType.GenericArguments.iterator();
+                var it2 = fromType.GenericArguments.iterator();
+                while (it1.hasNext()) {
+                    var t1 = it1.next();
+                    var t2 = it2.next();
+                    switch (t1.TypeKind) {
+                    case GenericParameter:
+                    case UnboundedWildcard:
+                    case LowerBoundedWildcard:
+                        break;
+                    case UpperBoundedWildcard:
+                        if (!hasImplicitConversion(t2, t1.WildcardBound)) {
+                            return null;
+                        }
+                        break;
+                    default:
+                        if (!hasImplicitConversion(t2, t1)) {
+                            return null;
+                        }
+                        break;
+                    }
+                }
+                return fromType;
+            }
+            foreach (var it in fromType.Interfaces) {
+                var t = getImplicitConversion(it, toType);
+                if (t != null) {
+                    return t;
+                }
+            }
+            if (fromType.BaseType == null) {
+                return null;
+            }
+            return getImplicitConversion(fromType.BaseType, toType);
+        }
+    
+        public static boolean isCompiledToObject(TypeInfo type) {
+            if (type.IsObject) {
+                return true;
+            }
+            if (!type.IsGenericParameter) {
+                return false;
+            }
+            TypeInfo result = null;
+            foreach (var t in type.GenericParameterBounds) {
+                if (result != null) {
+                    if (t.isAssignableFrom(result)) {
+                        result = t;
+                    } else if (!result.isAssignableFrom(t)) {
+                        return true;
+                    }
+                } else {
+                    result = t;
+                }
+            }
+            return result == null;
+        }
+
+        public static String getDisplayName(TypeInfo type) {
+            if (type == null) {
+                return "<null>";
+            } else {
+            	return type.DisplayName;
+            }
+        }
+        
+        public static String getDisplayName(MethodInfo method) {
+            var sb = new StringBuilder();
+            if (method.Name.equals("<init>")) {
+                sb.append(method.DeclaringType.Name);
+            } else {
+                sb.append(method.Name);
+            }
+            sb.append('(');
+            var first = true;
+            foreach (var t in method.Parameters.select(p => p.Type)) {
+                if (first) {
+                    first = false;
+                } else {
+                    sb.append(", ");
+                }
+                sb.append(getDisplayName(t));
+            }
+            return sb.append(')').toString();
+        }
+    
+        public static String getIndexerDisplayName(MethodInfo method) {
+            var sb = new StringBuilder();
+            sb.append("this[");
+            var first = true;
+            foreach (var t in method.Parameters.select(p => p.Type)) {
+                if (first) {
+                    first = false;
+                } else {
+                    sb.append(", ");
+                }
+                sb.append(getDisplayName(t));
+            }
+            return sb.append(']').toString();
+        }
+    
+        public static String getPropertyDisplayName(MethodInfo method, String name) {
+            return name;
+        }
+
+        public static MethodInfo getDisposeMethod(Library typeSystem, TypeInfo type) {
+            foreach (var method in Collections.singletonList(type).concat(type.getBaseTypes()).selectMany(p => p.Methods)) {
+                if (!method.Parameters.any()) {
+                    foreach (var annotation in BytecodeHelper.getAnnotations(typeSystem, method)) {
+                        if (BytecodeHelper.isDispose(annotation)) {
+                            return method;
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+        
+        public static TypeInfo getGenericParameterTypeErasure(Library typeSystem, TypeInfo type) {
+            if (type.GenericParameterBounds.any()) {
+            	return type.GenericParameterBounds.first();
+            } else {
+	            return typeSystem.ObjectType;
+            }
+        }
+        
+        static boolean isDelegateType(TypeInfo type) {
+            TypeInfo baseType = type;
+            while ((baseType = baseType.BaseType) != null) {
+                if (baseType.FullName.equals("stab/lang/Delegate")) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        static boolean isExpressionTreeType(TypeInfo type) {
+            return type.FullName.equals("stab/tree/ExpressionTree");
+        }
+    
+        static boolean isIterableType(TypeInfo type) {
+            return IterableTypes.contains(type.FullName);
+        }
+
+        static TypeInfo getIterableOrIteratorElementType(TypeInfo type) {
+            var typeKind = IterableOrIteratorElementTypes.get(type.FullName);
+            if (typeKind == null) {
+                if (type.FullName.equals("java/lang/Iterable") || type.FullName.equals("java/util/Iterator")) {
+                    return type.GenericArguments.single();
+                }
+                return null;
+            } else {
+            	return type.Library.getPrimitiveType(typeKind);
+            }
+        }
+
+        static TypeInfo getImplementedIterable(TypeInfo type) {
+            if (isIterableType(type)) {
+                return type;
+            }
+            var t = type;
+            do {
+                foreach (var it in t.Interfaces) {
+                    var rt = getImplementedIterable(it);
+                    if (rt != null) {
+                        return rt;
+                    }
+                }
+            } while ((t = t.BaseType) != null);
+            return null;
+        }
+        
+        //
+        // Bytecode
+        //
+        
+        static Opcode getLoadOpcode(TypeInfo type) {
+            switch (type.TypeKind) {
+            case Boolean:
+            case Byte:
+            case Char:
+            case Short:
+            case Int:
+                return Opcode.Iload;
+            case Long:
+                return Opcode.Lload;
+            case Float:
+                return Opcode.Fload;
+            case Double:
+                return Opcode.Dload;
+            default:
+                return Opcode.Aload;
+            }
+        }
+
+        static Opcode getStoreOpcode(TypeInfo type) {
+            switch (type.TypeKind) {
+            case Boolean:
+            case Byte:
+            case Char:
+            case Short:
+            case Int:
+                return Opcode.Istore;
+            case Long:
+                return Opcode.Lstore;
+            case Float:
+                return Opcode.Fstore;
+            case Double:
+                return Opcode.Dstore;
+            default:
+                return Opcode.Astore;
+            }
+        }
+
+        static Opcode getAloadOpcode(TypeInfo elementType) {
+            switch (elementType.TypeKind) {
+            case Boolean:
+            case Byte:
+                return Opcode.Baload;
+            case Char:
+                return Opcode.Caload;
+            case Float:
+                return Opcode.Faload;
+            case Double:
+                return Opcode.Daload;
+            case Int:
+                return Opcode.Iaload;
+            case Long:
+                return Opcode.Laload;
+            case Short:
+                return Opcode.Saload;
+            default:
+                return Opcode.Aaload;
+            }
+        }
+
+        static Opcode getAstoreOpcode(TypeInfo elementType) {
+            switch (elementType.TypeKind) {
+            case Boolean:
+            case Byte:
+                return Opcode.Bastore;
+            case Char:
+                return Opcode.Castore;
+            case Float:
+                return Opcode.Fastore;
+            case Double:
+                return Opcode.Dastore;
+            case Int:
+                return Opcode.Iastore;
+            case Long:
+                return Opcode.Lastore;
+            case Short:
+                return Opcode.Sastore;
+            default:
+                return Opcode.Aastore;
+            }
+        }
+
+        static Opcode getReturnOpcode(TypeInfo type) {
+            switch (type.getTypeKind()) {
+            case Boolean:
+            case Byte:
+            case Char:
+            case Short:
+            case Int:
+                return Opcode.Ireturn;
+            case Double:
+                return Opcode.Dreturn;
+            case Float:
+                return Opcode.Freturn;
+            case Long:
+                return Opcode.Lreturn;
+            case Void:
+                return Opcode.Return;
+            default:
+                return Opcode.Areturn;
+            }
+        }
+
+        static void emitTypeof(CodeGenerator generator, Library typeSystem, TypeInfo type) {
+            switch (type.TypeKind) {
+            case Boolean:
+                generator.emit(Opcode.Getstatic, typeSystem.getType("java/lang/Boolean").getField("TYPE"));
+                break;
+            case Byte:
+                generator.emit(Opcode.Getstatic, typeSystem.getType("java/lang/Byte").getField("TYPE"));
+                break;
+            case Char:
+                generator.emit(Opcode.Getstatic, typeSystem.getType("java/lang/Character").getField("TYPE"));
+                break;
+            case Double:
+                generator.emit(Opcode.Getstatic, typeSystem.getType("java/lang/Double").getField("TYPE"));
+                break;
+            case Float:
+                generator.emit(Opcode.Getstatic, typeSystem.getType("java/lang/Float").getField("TYPE"));
+                break;
+            case Int:
+                generator.emit(Opcode.Getstatic, typeSystem.getType("java/lang/Integer").getField("TYPE"));
+                break;
+            case Long:
+                generator.emit(Opcode.Getstatic, typeSystem.getType("java/lang/Long").getField("TYPE"));
+                break;
+            case Short:
+                generator.emit(Opcode.Getstatic, typeSystem.getType("java/lang/Short").getField("TYPE"));
+                break;
+            case Void:
+                generator.emit(Opcode.Getstatic, typeSystem.getType("java/lang/Void").getField("TYPE"));
+                break;
+            default:
+                generator.emit(Opcode.Ldc, type);
+                break;
+            }
+        }
+    
+        static void emitIntConstant(CodeGenerator generator, int i) {
+            switch (i) {
+            case -1:
+                generator.emit(Opcode.Iconst_M1);
+                break;
+            case 0:
+                generator.emit(Opcode.Iconst_0);
+                break;
+            case 1:
+                generator.emit(Opcode.Iconst_1);
+                break;
+            case 2:
+                generator.emit(Opcode.Iconst_2);
+                break;
+            case 3:
+                generator.emit(Opcode.Iconst_3);
+                break;
+            case 4:
+                generator.emit(Opcode.Iconst_4);
+                break;
+            case 5:
+                generator.emit(Opcode.Iconst_5);
+                break;
+            default:
+                if (i >= Byte.MIN_VALUE && i <= Byte.MAX_VALUE) {
+                    generator.emit(Opcode.Bipush, i);
+                } else if (i >= Short.MIN_VALUE && i <= Short.MAX_VALUE) {
+                    generator.emit(Opcode.Sipush, i);
+                } else {
+                    generator.emit(Opcode.Ldc, (Object)i);
+                }
+                break;
+            }
+        }
+        
+        static void emitIntConstant(CodeGenerator generator, Object value) {
+            if (value instanceof Integer) {
+                BytecodeHelper.emitIntConstant(generator, ((Integer)value).intValue());
+            } else if (value instanceof Character) {
+                BytecodeHelper.emitIntConstant(generator, ((Character)value).charValue());
+            } else if (value instanceof Byte) {
+                BytecodeHelper.emitIntConstant(generator, ((Byte)value).byteValue());
+            } else if (value instanceof Short) {
+                BytecodeHelper.emitIntConstant(generator, ((Short)value).shortValue());
+            }
+        }
+
+        static void emitLongConstant(CodeGenerator generator, Object value) {
+            long l = 0;
+            if (value instanceof Long) {
+                l = ((Long)value).longValue();
+            } else if (value instanceof Integer) {
+                l = ((Integer)value).intValue();
+            } else if (value instanceof Character) {
+                l = ((Character)value).charValue();
+            } else if (value instanceof Byte) {
+                l = ((Byte)value).byteValue();
+            } else if (value instanceof Short) {
+                l = ((Short)value).shortValue();
+            }
+            if (l == 0) {
+                generator.emit(Opcode.Lconst_0);
+            } else if (l == 1) {
+                generator.emit(Opcode.Lconst_1);
+            } else {
+                generator.emit(Opcode.Ldc, Long.valueOf(l));
+            }
+        }
+
+        static void emitFloatConstant(CodeGenerator generator, Object value) {
+            float f = 0;
+            if (value instanceof Float) {
+                f = ((Float)value).floatValue();
+            } else if (value instanceof Long) {
+                f = ((Long)value).longValue();
+            } else if (value instanceof Integer) {
+                f = ((Integer)value).intValue();
+            } else if (value instanceof Character) {
+                f = ((Character)value).charValue();
+            } else if (value instanceof Byte) {
+                f = ((Byte)value).byteValue();
+            } else if (value instanceof Short) {
+                f = ((Short)value).shortValue();
+            }
+            if (f == 0f) {
+                generator.emit(Opcode.Fconst_0);
+            } else if (f == 1f) {
+                generator.emit(Opcode.Fconst_1);
+            } else if (f == 2f) {
+                generator.emit(Opcode.Fconst_2);
+            } else {
+                generator.emit(Opcode.Ldc, Float.valueOf(f));
+            }
+        }
+
+        static void emitDoubleConstant(CodeGenerator generator, Object value) {
+            double d = 0;
+            if (value instanceof Double) {
+                d = ((Double)value).doubleValue();
+            } else if (value instanceof Float) {
+                d = ((Float)value).floatValue();
+            } else if (value instanceof Long) {
+                d = ((Long)value).longValue();
+            } else if (value instanceof Integer) {
+                d = ((Integer)value).intValue();
+            } else if (value instanceof Character) {
+                d = ((Character)value).charValue();
+            } else if (value instanceof Byte) {
+                d = ((Byte)value).byteValue();
+            } else if (value instanceof Short) {
+                d = ((Short)value).shortValue();
+            }
+            if (d == 0d) {
+                generator.emit(Opcode.Dconst_0);
+            } else if (d == 1d) {
+                generator.emit(Opcode.Dconst_1);
+            } else {
+                generator.emit(Opcode.Ldc, Double.valueOf(d));
+            }
+        }
+        
+        static void emitNewarray(CodeGenerator generator, int dimensions, TypeInfo elementType) {
+            if (dimensions <= 1) {
+                switch (elementType.TypeKind) {
+                case Boolean:
+                    generator.emit(Opcode.Newarray, 4);
+                    break;
+                case Char:
+                    generator.emit(Opcode.Newarray, 5);
+                    break;
+                case Float:
+                    generator.emit(Opcode.Newarray, 6);
+                    break;
+                case Double:
+                    generator.emit(Opcode.Newarray, 7);
+                    break;
+                case Byte:
+                    generator.emit(Opcode.Newarray, 8);
+                    break;
+                case Short:
+                    generator.emit(Opcode.Newarray, 9);
+                    break;
+                case Int:
+                    generator.emit(Opcode.Newarray, 10);
+                    break;
+                case Long:
+                    generator.emit(Opcode.Newarray, 11);
+                    break;
+                default:
+                    generator.emit(Opcode.Anewarray, elementType);
+                    break;
+                }
+            } else {
+                generator.emit(Opcode.Multianewarray, elementType.ArrayType, dimensions);
+            }
+        }
+        
+        static void emitNumericConversion(CodeGenerator generator, TypeInfo fromType, TypeInfo toType) {
+            switch (fromType.NumericTypeKind) {
+            case Byte:
+            case Char:
+            case Short:
+            case Int:
+                switch (toType.NumericTypeKind) {
+                case Byte:
+                    generator.emit(Opcode.I2b);
+                    break;
+                case Char:
+                    generator.emit(Opcode.I2c);
+                    break;
+                case Short:
+                    generator.emit(Opcode.I2s);
+                    break;
+                case Long:
+                    generator.emit(Opcode.I2l);
+                    break;
+                case Float:
+                    generator.emit(Opcode.I2f);
+                    break;
+                case Double:
+                    generator.emit(Opcode.I2d);
+                    break;
+                }
+                break;
+
+            case Long:
+                switch (toType.TypeKind) {
+                case Byte:
+                    generator.emit(Opcode.L2i);
+                    generator.emit(Opcode.I2b);
+                    break;
+                case Char:
+                    generator.emit(Opcode.L2i);
+                    generator.emit(Opcode.I2c);
+                    break;
+                case Short:
+                    generator.emit(Opcode.L2i);
+                    generator.emit(Opcode.I2s);
+                    break;
+                case Int:
+                    generator.emit(Opcode.L2i);
+                    break;
+                case Float:
+                    generator.emit(Opcode.L2f);
+                    break;
+                case Double:
+                    generator.emit(Opcode.L2d);
+                    break;
+                }
+                break;
+
+            case Float:
+                switch (toType.TypeKind) {
+                case Byte:
+                    generator.emit(Opcode.F2i);
+                    generator.emit(Opcode.I2b);
+                    break;
+                case Char:
+                    generator.emit(Opcode.F2i);
+                    generator.emit(Opcode.I2c);
+                    break;
+                case Short:
+                    generator.emit(Opcode.F2i);
+                    generator.emit(Opcode.I2s);
+                    break;
+                case Int:
+                    generator.emit(Opcode.F2i);
+                    break;
+                case Long:
+                    generator.emit(Opcode.F2l);
+                    break;
+                case Double:
+                    generator.emit(Opcode.F2d);
+                    break;
+                }
+                break;
+
+            case Double:
+                switch (toType.TypeKind) {
+                case Byte:
+                    generator.emit(Opcode.D2i);
+                    generator.emit(Opcode.I2b);
+                    break;
+                case Char:
+                    generator.emit(Opcode.D2i);
+                    generator.emit(Opcode.I2c);
+                    break;
+                case Short:
+                    generator.emit(Opcode.D2i);
+                    generator.emit(Opcode.I2s);
+                    break;
+                case Int:
+                    generator.emit(Opcode.D2i);
+                    break;
+                case Long:
+                    generator.emit(Opcode.D2l);
+                    break;
+                case Float:
+                    generator.emit(Opcode.D2f);
+                    break;
+                }
+                break;
+            }
+        }
+    
+        //
+        // Annotations
+        //
+    
+        public static RetentionPolicy getRetentionPolicy(TypeInfo annotationType) {
+            foreach (var annotation in annotationType.Annotations) {
+                if (annotation.Type.FullName.equals("java/lang/annotation/Retention")) {
+                    var arg = annotation.getArgument("value");
+                    if (arg.getName().equals("RUNTIME")) {
+                        return RetentionPolicy.RUNTIME;
+                    } else if (arg.getName().equals("CLASS")) {
+                        return RetentionPolicy.CLASS;
+                    } else {
+                        return RetentionPolicy.SOURCE;
+                    }
+                }
+            }
+            return RetentionPolicy.CLASS;
+        }
+
+        public static Iterable<AnnotationValue> getAnnotations(Library typeSystem, TypeInfo type) {
+            var annotatedTypeName = "stab/annotated/" + type.FullName;
+            if (typeSystem.typeExists(annotatedTypeName)) {
+                var annotatedType = typeSystem.getType(annotatedTypeName);
+                return type.Annotations.concat(annotatedType.Annotations);
+            }
+            return type.Annotations;
+        }
+
+        public static Iterable<AnnotationValue> getAnnotations(Library typeSystem, MethodInfo method) {
+            var annotatedTypeName = "stab/annotated/" + method.DeclaringType.FullName;
+            if (typeSystem.typeExists(annotatedTypeName)) {
+                var annotatedType = typeSystem.getType(annotatedTypeName);
+                if (method.DeclaringType.GenericArguments.any()) {
+                    annotatedType = typeSystem.getGenericType(annotatedType, method.DeclaringType.GenericArguments);
+                }
+                foreach (var m in annotatedType.Methods) {
+                    if (m.Name.equals(method.Name) && m.hasSameParameters(method)) {
+                        return method.Annotations.concat(m.Annotations);
+                    }
+                }
+            }
+            return method.Annotations;
+        }
+
+        public static boolean isDeprecated(Library typeSystem, TypeInfo type) {
+            return containsDeprecated(getAnnotations(typeSystem, type));
+        }
+        
+        public static boolean isDeprecated(Library typeSystem, MethodInfo method) {
+            return containsDeprecated(getAnnotations(typeSystem, method));
+        }
+        
+        public static boolean isDeprecated(Library typeSystem, FieldInfo field) {
+            return containsDeprecated(field.Annotations);
+        }
+        
+        public static boolean isDeprecated(Library typeSystem, ParameterInfo parameter) {
+            return containsDeprecated(parameter.Annotations);
+        }
+        
+        private static boolean containsDeprecated(Iterable<AnnotationValue> annotations) {
+            return annotations.any(p => p.Type.FullName.equals("java/lang/Deprecated"));
+        }
+        
+        public static boolean isConditional(AnnotationValue annotation) {
+            return annotation.Type.FullName.equals("stab/lang/Conditional");
+        }
+
+        public static boolean isStaticClass(AnnotationValue annotation) {
+            return annotation.Type.FullName.equals("stab/lang/StaticClass");
+        }
+
+        public static boolean isDispose(AnnotationValue annotation) {
+            return annotation.Type.FullName.equals("stab/lang/Dispose");
+        }
+
+        public static boolean isExtensionMethod(AnnotationValue annotation) {
+            return annotation.Type.FullName.equals("stab/lang/ExtensionMethod");
+        }
+
+        public static boolean isIndexerGet(AnnotationValue annotation) {
+            return annotation.Type.FullName.equals("stab/lang/IndexerGet");
+        }
+        
+        public static boolean isIndexerSet(AnnotationValue annotation) {
+            return annotation.Type.FullName.equals("stab/lang/IndexerSet");
+        }
+        
+        public static boolean isPropertyGet(AnnotationValue annotation) {
+            return annotation.Type.FullName.equals("stab/lang/PropertyGet");
+        }
+        
+        public static String getPropertyGetName(MethodInfo method, AnnotationValue annotation) {
+            var nameArg = annotation.getArgument("name");
+            var result = "";
+            if (nameArg == null || nameArg.Value == null || nameArg.Value.equals("")) {
+                if (method.Name.startsWith("get")) {
+                    result = method.Name.substring(3);
+                } else if (method.ReturnType.IsBoolean
+                        && method.Name.length() > 2
+                        && method.Name.startsWith("is")
+                        && Character.isUpperCase(method.Name[2])) {
+                    result = Character.toUpperCase(method.Name[0]) + method.Name.substring(1);
+                }
+            } else {
+                result = (String)nameArg.Value;
+            }
+            return result;
+        }
+        
+        public static boolean isPropertySet(AnnotationValue annotation) {
+            return annotation.Type.FullName.equals("stab/lang/PropertySet");
+        }
+        
+        public static String getPropertySetName(MethodInfo method, AnnotationValue annotation) {
+            var nameArg = annotation.getArgument("name");
+            var result = "";
+            if (nameArg == null || nameArg.Value == null || nameArg.Value.equals("")) {
+                if (method.Name.startsWith("set")) {
+                    result = method.Name.substring(3);
+                }
+            } else {
+                result = (String)nameArg.Value;
+            }
+            return result;
+        }
+    }
+}

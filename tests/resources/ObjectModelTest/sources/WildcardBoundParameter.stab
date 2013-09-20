@@ -1,0 +1,23 @@
+public class WildcardBoundParameter<U> {
+	public static boolean test() {
+		return true;
+	}
+	
+	public void method(WildcardBoundParameterAux<? : U> arg) {
+		var v = arg.method2();
+		arg.method3(v);
+	}
+	
+	public U method2() {
+		return null;
+	}
+	
+	public void method3(U u) {
+	}
+}
+
+public interface WildcardBoundParameterAux<T> {
+	void method(WildcardBoundParameterAux<? : T> arg);
+	T method2();
+	void method3(T t);
+}

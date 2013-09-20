@@ -1,0 +1,8 @@
+using stab.query;
+
+public class IntSet2 {
+	public static boolean test() {
+		var set = Query.asIterable(new[] { 1, 2, 3, 2, 1 }).toSet();
+		return set.count() == 3;
+	}
+}

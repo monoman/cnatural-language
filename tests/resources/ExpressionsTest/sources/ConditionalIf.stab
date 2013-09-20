@@ -1,0 +1,9 @@
+public class ConditionalIf {
+	public static boolean test(boolean c, boolean r1, boolean r2) {
+		if ((c) ? r1 : r2) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+}

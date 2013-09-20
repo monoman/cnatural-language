@@ -1,0 +1,109 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using org.junit;
+using stab.tools.helpers;
+using stab.tools.parser;
+
+package stab.tools.parser.test {
+	
+	public class PreprocessedTextScannerTest {
+		[Test]
+		public void testScanner() {
+			var source = @"
+class C {
+}
+";
+			var codeErrorManager = new CodeErrorManager();
+			var preprocessor = new Preprocessor(codeErrorManager, source.toCharArray());
+			var scanner = new PreprocessedTextScanner(codeErrorManager, preprocessor.preprocess());
+			Assert.assertEquals(LexicalUnit.NewLine, scanner.nextLexicalUnit());
+			Assert.assertEquals(LexicalUnit.Keyword, scanner.nextLexicalUnit());
+			Assert.assertEquals(LexicalUnit.Whitespace, scanner.nextLexicalUnit());
+			Assert.assertEquals(LexicalUnit.Identifier, scanner.nextLexicalUnit());
+			Assert.assertEquals(LexicalUnit.Whitespace, scanner.nextLexicalUnit());
+			Assert.assertEquals(LexicalUnit.OpenBrace, scanner.nextLexicalUnit());
+			Assert.assertEquals(LexicalUnit.NewLine, scanner.nextLexicalUnit());
+			Assert.assertEquals(LexicalUnit.CloseBrace, scanner.nextLexicalUnit());
+			Assert.assertEquals(LexicalUnit.NewLine, scanner.nextLexicalUnit());
+			Assert.assertEquals(LexicalUnit.EndOfStream, scanner.nextLexicalUnit());
+		}
+		
+		[Test]
+		public void testScanner2() {
+			var source = @"
+class C {
+}
+";
+			var codeErrorManager = new CodeErrorManager();
+			var preprocessor = new Preprocessor(codeErrorManager, source.toCharArray());
+			var scanner = new PreprocessedTextScanner(codeErrorManager, preprocessor.preprocess());
+			Assert.assertEquals(LexicalUnit.NewLine, scanner.nextLexicalUnit());
+			Assert.assertEquals(LexicalUnit.Keyword, scanner.nextLexicalUnit());
+			RestorePoint rp = scanner.createRestorePoint();
+			Assert.assertEquals(LexicalUnit.Whitespace, scanner.nextLexicalUnit());
+			Assert.assertEquals(LexicalUnit.Identifier, scanner.nextLexicalUnit());
+			Assert.assertEquals(LexicalUnit.Whitespace, scanner.nextLexicalUnit());
+			Assert.assertEquals(LexicalUnit.OpenBrace, scanner.nextLexicalUnit());
+			Assert.assertEquals(LexicalUnit.NewLine, scanner.nextLexicalUnit());
+			scanner.restore(rp);
+			Assert.assertEquals(LexicalUnit.Keyword, scanner.nextLexicalUnit());
+			Assert.assertEquals("class", new String(scanner.Text, scanner.StartPosition, scanner.EndPosition - scanner.StartPosition));
+			Assert.assertEquals(LexicalUnit.Whitespace, scanner.nextLexicalUnit());
+			Assert.assertEquals(LexicalUnit.Identifier, scanner.nextLexicalUnit());
+			Assert.assertEquals(LexicalUnit.Whitespace, scanner.nextLexicalUnit());
+			Assert.assertEquals(LexicalUnit.OpenBrace, scanner.nextLexicalUnit());
+			Assert.assertEquals(LexicalUnit.NewLine, scanner.nextLexicalUnit());
+			Assert.assertEquals(LexicalUnit.CloseBrace, scanner.nextLexicalUnit());
+			Assert.assertEquals(LexicalUnit.NewLine, scanner.nextLexicalUnit());
+			Assert.assertEquals(LexicalUnit.EndOfStream, scanner.nextLexicalUnit());
+		}
+		
+		[Test]
+		public void testScanner3() {
+			var source = @"#if XXX
+class
+#else
+interface
+#endif
+C {
+}
+";
+			var codeErrorManager = new CodeErrorManager();
+			var preprocessor = new Preprocessor(codeErrorManager, source.toCharArray());
+			var scanner = new PreprocessedTextScanner(codeErrorManager, preprocessor.preprocess());
+			Assert.assertEquals(LexicalUnit.Keyword, scanner.nextLexicalUnit());
+			RestorePoint rp = scanner.createRestorePoint();
+			Assert.assertEquals(LexicalUnit.NewLine, scanner.nextLexicalUnit());
+			Assert.assertEquals(LexicalUnit.Identifier, scanner.nextLexicalUnit());
+			Assert.assertEquals(LexicalUnit.Whitespace, scanner.nextLexicalUnit());
+			Assert.assertEquals(LexicalUnit.OpenBrace, scanner.nextLexicalUnit());
+			Assert.assertEquals(LexicalUnit.NewLine, scanner.nextLexicalUnit());
+			scanner.restore(rp);
+			Assert.assertEquals(LexicalUnit.Keyword, scanner.nextLexicalUnit());
+			Assert.assertEquals("interface", new String(scanner.Text, scanner.StartPosition, scanner.EndPosition - scanner.StartPosition));
+			Assert.assertEquals(LexicalUnit.NewLine, scanner.nextLexicalUnit());
+			Assert.assertEquals(LexicalUnit.Identifier, scanner.nextLexicalUnit());
+			Assert.assertEquals(LexicalUnit.Whitespace, scanner.nextLexicalUnit());
+			Assert.assertEquals(LexicalUnit.OpenBrace, scanner.nextLexicalUnit());
+			Assert.assertEquals(LexicalUnit.NewLine, scanner.nextLexicalUnit());
+			Assert.assertEquals(LexicalUnit.CloseBrace, scanner.nextLexicalUnit());
+			Assert.assertEquals(LexicalUnit.NewLine, scanner.nextLexicalUnit());
+			Assert.assertEquals(LexicalUnit.EndOfStream, scanner.nextLexicalUnit());
+		}
+	}
+}

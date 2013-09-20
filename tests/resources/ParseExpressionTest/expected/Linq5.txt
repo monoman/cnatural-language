@@ -1,0 +1,6 @@
+Assign(Name(query) Assign from item in Name(names)
+orderby Name(item)
+group Name(item) by (Name(item)).Length
+into lengthGroups
+orderby (Name(lengthGroups)).Key descending
+select Name(lengthGroups))

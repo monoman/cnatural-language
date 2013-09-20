@@ -1,0 +1,7 @@
+using java.lang;
+
+public class Conditional2 {
+	public static double test(boolean c, double value) {
+		return (c) ? value : 0;
+	}
+}

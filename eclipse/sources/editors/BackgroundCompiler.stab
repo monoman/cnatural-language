@@ -1,0 +1,280 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using org.eclipse.core.resources;
+using org.eclipse.core.runtime;
+using org.eclipse.core.runtime.jobs;
+using org.eclipse.jface.text;
+using org.eclipse.jface.text.source;
+using org.eclipse.ui.progress;
+using org.eclipse.ui.texteditor;
+using stab.query;
+using stab.reflection;
+using stab.tools.eclipse.helpers;
+using stab.tools.syntaxtree;
+
+package stab.tools.eclipse.editors {
+
+	class BackgroundCompiler : IProjectBuildListener {
+		private SourceEditor editor;
+		private boolean initialized;
+	
+		public BackgroundCompiler(SourceEditor editor) {
+			this.editor = editor;
+			Environment.addProjectBuildListener(this);
+		}
+	
+		void dispose() {
+			Environment.removeProjectBuildListener(this);
+		}
+
+		public void projectBuilt(ProjectBuildEvent event) {
+			if (initialized && !editor.IsActive) {
+				return;
+			}
+			var file = editor.getFile();
+			if (file == null) {
+				return;
+			}
+			var projectManager = Environment.getProjectManager(file);
+			if (event.getSource() == projectManager) {
+				compileAsync();
+			}
+		}
+
+		public void compileAsync() {
+			new CompileJob(this).schedule();
+		}
+	
+		public void compile(IProgressMonitor monitor) {
+			Environment.trace(this, "compiling");
+			var t0 = System.nanoTime();
+
+			try {
+				monitor.beginTask("", 5);
+	
+				var file = editor.getFile();
+				if (file == null) {
+					monitor.worked(5);
+					return;
+				}
+				var projectManager = Environment.getProjectManager(file);
+				if (projectManager == null || projectManager.RequireFullBuild) {
+					Environment.trace(this, "compilation aborted");
+					monitor.worked(5);
+					return;
+				}
+				
+				var filename = file.getProjectRelativePath().toPortableString();
+				var text = editor.Highlighter.Text;
+				var parameters = new SourceCompilerParameters {
+					ProgressiveBuild = true,
+					ClassPath = projectManager.ClassPath,
+					TypeSystem = projectManager.TypeSystem,
+					DependencyInfo = projectManager.DependencyInfo
+				};
+				parameters.AllFiles.addAll(projectManager.getSourceFiles());
+				parameters.FilesToCompile.add(filename);
+				parameters.EditedFileName = filename;
+				parameters.EditedFileText = text;
+				foreach (var s in projectManager.Properties.PreprocessorSymbols) {
+					parameters.PreprocessorSymbols.add(s);
+				}
+				parameters.GenerateClassFiles = false;
+				
+				var compiler = new SourceCompiler();
+				var results = compiler.compile(parameters, new SubProgressMonitor(new ProgressMonitor(monitor, text, editor.Highlighter), 4));
+				if (!results.Failed) {
+					var compilationUnit = results.CompilationUnits[filename];
+					if (compilationUnit != null && text == editor.Highlighter.Text) {
+						initialized = true;
+						new HighlightJob(editor, text, compilationUnit, results.TypeSystem, results.AnnotatedTypeSystem).schedule();
+					}
+				}
+
+				var annotationModel = editor.getDocumentProvider().getAnnotationModel(editor.getEditorInput());
+				// Remove the annotations
+				var it = annotationModel.getAnnotationIterator();
+				while (it.hasNext()) {
+					var annotation = (Annotation)it.next();
+					switch (annotation.getType()) {
+					case "stab.tools.eclipse.parsingErrorAnnotation":
+					case "stab.tools.eclipse.parsingWarningAnnotation":
+						annotationModel.removeAnnotation(annotation);
+						break;
+					}
+				}
+
+				var errors = results.CodeErrors.where(p => p.Filename.equals(filename)).toList();
+				if (!errors.isEmpty()) {
+					IDocument document = null;
+					var documentProvider = editor.getDocumentProvider();
+					if (documentProvider != null) {
+						document = documentProvider.getDocument(editor.getEditorInput());
+					}
+					var markers = file.findMarkers(IMarker.PROBLEM, false, IFile.DEPTH_ZERO);
+					var tokens = editor.Highlighter.Tokens;
+					foreach (var error in errors) {
+						IMarker marker = null;
+						if (markers != null) {
+							foreach (var m in markers) {
+								if (!error.Message.equals(m.getAttribute(IMarker.MESSAGE, null))) {
+									continue;
+								}
+								if (error.Line == m.getAttribute(IMarker.LINE_NUMBER, -1)) {
+									marker = m;
+									break;
+								}
+							}
+						}
+						var annotationType = (error.Level == 0) ?
+								"stab.tools.eclipse.parsingErrorAnnotation" : "stab.tools.eclipse.parsingWarningAnnotation";
+						var annotation = (marker == null) ?
+								new Annotation(annotationType, false, error.Message) : new MarkerAnnotation(annotationType, marker);
+						int offset = document.getLineOffset(error.Line - 1);
+						int length;
+						if (tokens.isEmpty()) {
+							length = document.getLineLength(error.Line - 1);
+						} else {
+							int tabWidth = Environment.getTabWidth();
+							int start = offset;
+							for (int i = 0; i < error.Column - 1; i++) {
+								if (text[start++] == '\t') {
+									i += tabWidth - 1;
+								}
+								offset++;
+							}
+							int idx = Highlighter.getPositionIndex(tokens, offset);
+							if (idx == -1) {
+								length = 1;
+							} else {
+								var tk = tokens[idx];
+								offset = tk.offset;
+								length = tk.length;
+							}
+						}
+						if (marker != null) {
+							marker.setAttribute(IMarker.CHAR_START, offset);
+							marker.setAttribute(IMarker.CHAR_END, offset + length);
+						}
+						annotationModel.addAnnotation(annotation, new Position(offset, length));
+					}
+				}
+				
+				monitor.worked(1);
+			} catch (InterruptedException) {
+			} finally {
+				monitor.done();
+			}
+			
+			Environment.trace(this, "compiling done in " + ((System.nanoTime() - t0) / 1e6) + "ms");
+		}
+		
+		private class ProgressMonitor : IProgressMonitor {
+			private IProgressMonitor monitor;
+			private char[] text;
+			private Highlighter highlighter;
+		
+			ProgressMonitor(IProgressMonitor monitor, char[] text, Highlighter highlighter) {
+				this.monitor = monitor;
+				this.text = text;
+				this.highlighter = highlighter;
+			}
+		
+			public void beginTask(String name, int totalWork) {
+				monitor.beginTask(name, totalWork);
+			}
+			
+			public void done() {
+				monitor.done();
+			}
+			
+			public void internalWorked(double work) {
+				monitor.internalWorked(work);
+			}
+			
+			public boolean isCanceled() {
+				return text != highlighter.Text || monitor.isCanceled();
+			}
+			
+			public void setCanceled(boolean value) {
+				monitor.setCanceled(value);
+			}
+			
+			public void setTaskName(String name) {
+				monitor.setTaskName(name);
+			}
+			
+			public void subTask(String name) {
+				monitor.subTask(name);
+			}
+			
+			public void worked(int work) {
+				monitor.worked(work);
+			}
+		}
+		
+		private class HighlightJob : UIJob {
+			private SourceEditor editor;
+			private char[] text;
+			private CompilationUnitNode compilationUnit;
+			private Library typeSystem;
+			private Library annotatedTypeSystem;
+		
+			HighlightJob(SourceEditor editor, char[] text, CompilationUnitNode compilationUnit,
+					Library typeSystem, Library annotatedTypeSystem)
+					: super("Semantic Highlight") {
+				this.editor = editor;
+				this.text = text;
+				this.compilationUnit = compilationUnit;
+				this.typeSystem = typeSystem;
+				this.annotatedTypeSystem = annotatedTypeSystem;
+			}
+		
+			public override IStatus runInUIThread(IProgressMonitor monitor) {
+				try {
+					monitor.beginTask("", 1);
+					editor.Highlighter.update(text, compilationUnit, typeSystem, annotatedTypeSystem);
+					monitor.worked(1);
+					monitor.done();
+				} catch {
+				}
+				return (monitor.isCanceled()) ? Status.CANCEL_STATUS : Status.OK_STATUS;
+			}
+		}
+		
+	
+		private class CompileJob : Job {
+			private BackgroundCompiler compiler;
+		
+			CompileJob(BackgroundCompiler compiler)
+					: super("Compile") {
+				setPriority(Job.DECORATE);
+				this.compiler = compiler;
+			}
+			
+			protected override IStatus run(IProgressMonitor monitor) {
+				try {
+					compiler.compile(monitor);
+				} catch {
+				}
+				return (monitor.isCanceled()) ? Status.CANCEL_STATUS : Status.OK_STATUS;
+			}
+		}
+		
+	}
+}

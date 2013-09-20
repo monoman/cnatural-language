@@ -1,0 +1,40 @@
+package p1 {
+	public class Packages2Aux {
+		public static int Field = 1;
+	}
+}
+
+package p2 {
+	public class Packages2Aux {
+		public static int Field = 2;
+	}
+
+}
+
+package p3 {
+	using p1;
+
+	public class Packages2Aux2 {
+		public static int test() {
+			return Packages2Aux.Field;
+		}	
+	}
+
+}
+
+package p3 {
+	using p2;
+
+	public class Packages2Aux3 {
+		public static int test() {
+			return Packages2Aux.Field;
+		}	
+	}
+
+}
+
+public class Packages2 {
+	public static int test() {
+		return p3.Packages2Aux2.test() + p3.Packages2Aux3.test();
+	}
+}

@@ -1,0 +1,18 @@
+using java.lang;
+using java.util;
+using stab.query;
+
+public class ToTLongMap5 {
+	public static boolean test() {
+		var map1 = new HashMap<String, Long> { { "K1", 1L }, { "K2", 2L }, { "K3", 3L }};
+		var map2 = Query.asIterable(new[] { 1L, 2L, 3L }).toMap(p => "K" + p);
+		int i = 0;
+		foreach (var k in map2.keySet()) {
+			if (!map1[k].equals(map2.get(k))) {
+				return false;
+			}
+			i++;
+		}
+		return map2.size() == 3 && i == 3;
+	}
+}

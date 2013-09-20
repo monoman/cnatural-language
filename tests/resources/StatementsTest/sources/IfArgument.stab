@@ -1,0 +1,9 @@
+public class IfArgument {
+	public static int test(boolean arg) {
+		if (arg) {
+			return 1;
+		} else {
+			return 2;
+		}
+	}
+}

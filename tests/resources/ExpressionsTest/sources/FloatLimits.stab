@@ -1,0 +1,8 @@
+
+using java.lang;
+
+public class FloatLimits {
+	public static boolean test() {
+		return 3.4028235e38f == Float.MAX_VALUE && 1.40e-45f == Float.MIN_VALUE;
+	}
+}

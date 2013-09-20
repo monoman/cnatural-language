@@ -1,0 +1,6 @@
+public class NullInstanceof {
+	public static boolean test() {
+		int[] t = null;
+		return t instanceof int[];
+	}
+}

@@ -1,0 +1,7 @@
+package p {
+    public class C {
+        protected virtual int m(T t, int i) {
+            return t.m2(i);
+        }
+    }
+}

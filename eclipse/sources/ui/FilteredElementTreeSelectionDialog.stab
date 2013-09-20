@@ -1,0 +1,106 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using org.eclipse.core.runtime;
+using org.eclipse.jface.viewers;
+using org.eclipse.swt.layout;
+using org.eclipse.swt.widgets;
+using org.eclipse.ui.dialogs;
+using org.eclipse.ui.progress;
+
+package stab.tools.eclipse.ui {
+
+	public class FilteredElementTreeSelectionDialog : ElementTreeSelectionDialog {
+
+		public FilteredElementTreeSelectionDialog(Shell parent, ILabelProvider labelProvider, ITreeContentProvider contentProvider)
+				: super(parent, labelProvider, contentProvider) {
+		}
+
+		protected override TreeViewer doCreateTreeViewer(Composite parent, int style) {
+			var tree = new FilteredTreeWithFilter(parent, style);
+			tree.setLayoutData(new GridData(GridData.FILL_BOTH));
+			applyDialogFont(tree);
+			return tree.getViewer();
+		}
+		
+		class FilteredTreeWithFilter : FilteredTree {
+			private boolean narrowingDown;
+			private String previousFilterText;
+			
+			public FilteredTreeWithFilter(Composite parent, int treeStyle)
+					: super(parent, treeStyle, new PatternFilter(), true) {
+			}
+			
+			protected override void textChanged() {
+				narrowingDown = previousFilterText == null || getFilterString().startsWith(previousFilterText);
+				previousFilterText = getFilterString();
+				super.textChanged();
+			}
+			
+			protected override WorkbenchJob doCreateRefreshJob() {
+				return new RefreshJob(this);
+			}
+			
+			IStatus refresh(IProgressMonitor monitor) {
+				if (treeViewer.getControl().isDisposed()) {
+					return Status.CANCEL_STATUS;
+				}
+
+				var text = getFilterString();
+				if (text == null) {
+					return Status.OK_STATUS;
+				}
+
+				var initial = initialText != null && initialText.equals(text);
+				getPatternFilter().setPattern((initial) ? null : text);
+
+				var redrawFalseControl = (treeComposite != null) ? treeComposite : treeViewer.getControl();
+				try {
+					redrawFalseControl.setRedraw(false);
+					if (!narrowingDown) {
+						foreach (var item in treeViewer.getTree().getItems()) {
+							if (item.getExpanded()) {
+								treeViewer.setExpandedState(item.getData(), false);
+							}
+						}
+					}
+					treeViewer.refresh(true);
+					updateToolbar(text.length() > 0 && !initial);
+				} finally {
+					var items = getViewer().getTree().getItems();
+					if (sizeof(items) > 0 && getViewer().getTree().getSelectionCount() == 0) {
+						treeViewer.getTree().setTopItem(items[0]);
+					}
+					redrawFalseControl.setRedraw(true);
+				}
+				return (monitor.isCanceled()) ? Status.CANCEL_STATUS : Status.OK_STATUS;
+			}
+		}
+		
+		class RefreshJob : WorkbenchJob {
+			private FilteredTreeWithFilter filteredTree;
+		
+			RefreshJob(FilteredTreeWithFilter filteredTree) : super("Refresh Filter") {
+				this.filteredTree = filteredTree;
+			}
+			
+			public override IStatus runInUIThread(IProgressMonitor monitor) {
+				return filteredTree.refresh(monitor);
+			}
+		}
+	}
+}

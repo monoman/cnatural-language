@@ -1,0 +1,10 @@
+public class C {
+	boolean t;
+	public void m() {
+	 	boolean b;
+
+		if ((true ? t : (b = true)) && t) {
+	    	if (b) ;        // compile-time error
+		}
+	}
+}

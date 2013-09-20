@@ -1,0 +1,9 @@
+#define XXX
+----
+
+----
+#if expression: true, skipped: false
+....----
+....// OK
+....----
+#end

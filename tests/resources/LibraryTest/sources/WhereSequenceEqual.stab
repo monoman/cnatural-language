@@ -1,0 +1,22 @@
+using java.lang;
+using java.util;
+using stab.query;
+
+public class WhereSequenceEqual {
+	public static String test() {
+		var objects = new ArrayList<WhereSequenceEqual> {
+			new WhereSequenceEqual("obj1", new ArrayList<String> { "a", "b" }),
+			new WhereSequenceEqual("obj2", new ArrayList<String> { "c", "d" }),
+			new WhereSequenceEqual("obj3", new ArrayList<String> { "e", "f" })
+		};
+		return objects.where(p => p.items.sequenceEqual(new ArrayList<String> { "c", "d" })).single().name;
+	}
+	
+	public String name;
+	public List<String> items;
+
+	public WhereSequenceEqual(String name, List<String> items) {
+		this.name = name;
+		this.items = items;
+	}
+}

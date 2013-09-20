@@ -1,0 +1,11 @@
+using java.lang;
+using java.util;
+
+public class Wildcard5 {
+	public static boolean test() {
+		var l1 = new ArrayList<String> { "a", "b", "c" };
+		var l2 = new ArrayList<String>();
+		l2.addAll(l1);
+		return l2.size() == 3;
+	}
+}

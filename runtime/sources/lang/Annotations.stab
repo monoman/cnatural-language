@@ -1,0 +1,103 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang.annotation;
+
+/// <summary>
+/// Contains the types required by the Stab language compiler to compile a program.
+/// </summary>
+package stab.lang {
+
+    /// <summary>
+    /// Indicates to the compiler that a method is the getter of an indexer.
+    /// </summary>
+    [Target({ ElementType.METHOD })]
+    public interface IndexerGet : Annotation {
+    }
+
+    /// <summary>
+    /// Indicates to the compiler that a method is the setter of an indexer.
+    /// </summary>
+    [Target({ ElementType.METHOD })]
+    public interface IndexerSet : Annotation {
+    }
+
+    /// <summary>
+    /// Indicates to the compiler that a method is the getter of a property.
+    /// </summary>
+    [Target({ ElementType.METHOD })]
+    public interface PropertyGet : Annotation {
+        /// <summary>
+        /// Specifies the name to give to a property. If no name is specified, the Javabean convention is used.
+        /// </summary>
+        java.lang.String name() = "";
+    }
+
+    /// <summary>
+    /// Indicates to the compiler that a method is the setter of a property.
+    /// </summary>
+    [Target({ ElementType.METHOD })]
+    public interface PropertySet : Annotation {
+        /// <summary>
+        /// Specifies the name to give to a property. If no name is specified, the Javabean convention is used.
+        /// </summary>
+        java.lang.String name() = "";
+    }
+
+    /// <summary>
+    /// Indicates to the compiler that a class is an extension method container.
+    /// </summary>
+    [Target({ ElementType.TYPE })]
+    public interface StaticClass : Annotation {
+    }
+
+    /// <summary>
+    /// Indicates to the compiler that a method is an extension method.
+    /// </summary>
+    [Target({ ElementType.METHOD })]
+    public interface ExtensionMethod : Annotation {
+    }
+
+    /// <summary>
+    /// Indicates to the compiler that the calls to a method must be compiled to bytecode only if
+    /// a symbol is defined.
+    /// </summary>
+    [Target({ ElementType.METHOD })]
+    public interface Conditional : Annotation {
+        /// <summary>
+        /// Specifies a list of symbols, at least one of which must be defined in order to compile the calls to the method.
+        /// </summary>
+        java.lang.String[] value();
+    }
+    
+    /// <summary>
+    /// Indicates to the compiler that a method can be used to dispose an object after <c>using</c> and <c>foreach</c> statements.
+    /// </summary>
+    [Target({ ElementType.METHOD })]
+    public interface Dispose : Annotation {
+    }
+    
+    /// <summary>
+    /// Indicates to the compiler the list of Java checked exceptions a method can throws.
+    /// </summary>
+    [Target({ ElementType.METHOD })]
+    public interface Throws : Annotation {
+        /// <summary>
+        /// Specifies a list of Java checked exceptions.
+        /// </summary>
+        java.lang.Class<?>[] value();
+    }
+}

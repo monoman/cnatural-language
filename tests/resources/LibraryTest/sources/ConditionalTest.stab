@@ -1,0 +1,12 @@
+#define DEBUG
+
+public class ConditionalTest {
+    public static boolean test() {
+        try {
+            ConditionalAux.assert(false);
+        } catch {
+            return true;
+        }
+        return false;
+    }
+}

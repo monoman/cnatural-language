@@ -1,0 +1,15 @@
+public class PropertySet {
+	public static int test() {
+		var obj = new PropertySet();
+		obj.Value = 1;
+		return obj.field;
+	}
+
+	public int field;
+	
+	public int Value {
+		set {
+			field = value;
+		}
+	}
+}

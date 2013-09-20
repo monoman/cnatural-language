@@ -1,0 +1,14 @@
+stab.tree.ExpressionTree<interface stab.query.FunctionIntInt> tree =
+	(#Parameter0#int#p#) =>
+    {
+        switch (#Parameter0#int#p#) {
+        #0#case 1:
+        #1#case 2:
+            return #Parameter0#int#p#;
+        #2#case 3:
+            break;
+        #3#default:
+            return #Parameter0#int#p# / #Value#int#2#;
+        }
+        return #Parameter0#int#p# % #Value#int#2#;
+    }

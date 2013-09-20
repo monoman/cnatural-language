@@ -1,0 +1,5 @@
+stab.tree.ExpressionTree<interface stab.query.FunctionInt> tree =
+	() =>
+    {
+        return #Value#int#1#;
+    }

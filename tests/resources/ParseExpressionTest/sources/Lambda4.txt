@@ -1,0 +1,1 @@
+(int i, T t) => t(i) ? true : false

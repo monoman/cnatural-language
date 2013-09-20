@@ -1,0 +1,17 @@
+#define XXX
+----
+class
+----
+#if expression: false, skipped: true
+....----
+....C
+....----
+#end
+#elif expression: true, skipped: false
+....----
+.... D
+....----
+#end
+----
+ { }
+----

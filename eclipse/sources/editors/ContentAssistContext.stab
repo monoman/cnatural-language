@@ -1,0 +1,358 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using java.util;
+using stab.query;
+using stab.reflection;
+using stab.tools.compiler;
+using stab.tools.syntaxtree;
+
+package stab.tools.eclipse.editors {
+
+	public class ContentAssistContext {
+		private Library typeSystem;
+		private Library annotatedTypeSystem;
+		private Iterable<String> packageNames;
+		private List<PackageInfo> packageInfos;
+		private List<TypeInfo> typeInfos;
+		private List<MethodInfo> methodInfos;
+		private List<MemberInfo> localInfos;
+		private Set<MemberInfo> allTypeInfos;
+		private Set<MethodInfo> extensionMethodInfos;
+		
+		public ContentAssistContext(Library typeSystem, Library annotatedTypeSystem) {
+			this.typeSystem = typeSystem;
+			this.annotatedTypeSystem = annotatedTypeSystem;
+			this.packageNames = Query.empty();
+			this.packageInfos = new ArrayList<PackageInfo>();
+			this.typeInfos = new ArrayList<TypeInfo>();
+			this.methodInfos = new ArrayList<MethodInfo>();
+			this.localInfos = new ArrayList<MemberInfo>();
+		}
+		
+		public void enterPackage(Iterable<String> names, PackageBodyNode body) {
+			packageNames = packageNames.concat(names);
+			packageInfos.add(body.getUserData(typeof(PackageInfo)));
+		}
+		
+		public void enterClass(ClassDeclarationNode declaration) {
+			typeInfos.add(declaration.getUserData(typeof(TypeInfo)));
+		}
+		
+		public void enterInterface(InterfaceDeclarationNode declaration) {
+			typeInfos.add(declaration.getUserData(typeof(TypeInfo)));
+		}
+		
+		public void enterMethod(MethodDeclarationNode declaration) {
+			methodInfos.add(declaration.getUserData(typeof(MethodInfo)));
+		}
+		
+		public void enterConstructor(ConstructorDeclarationNode declaration) {
+			methodInfos.add(declaration.getUserData(typeof(MethodInfo)));
+		}
+		
+		public void enterPropertyGetter(PropertyDeclarationNode declaration) {
+			methodInfos.add(declaration.GetAccessor.getUserData(typeof(MethodInfo)));
+		}
+		
+		public void enterPropertySetter(PropertyDeclarationNode declaration) {
+			methodInfos.add(declaration.SetAccessor.getUserData(typeof(MethodInfo)));
+		}
+		
+		public void enterIndexerGetter(IndexerDeclarationNode declaration) {
+			methodInfos.add(declaration.GetAccessor.getUserData(typeof(MethodInfo)));
+		}
+		
+		public void enterIndexerSetter(IndexerDeclarationNode declaration) {
+			methodInfos.add(declaration.SetAccessor.getUserData(typeof(MethodInfo)));
+		}
+		
+		public void enterLambda(LambdaExpressionNode declaration) {
+			methodInfos.add(declaration.getUserData(typeof(MethodInfo)));
+		}
+		
+		public void declareLocals(LocalDeclarationStatementNode statement) {
+            foreach (var decl in statement.Declarators) {
+				localInfos.add(decl.getUserData(typeof(MemberInfo)));
+			}
+		}
+		
+		public void declareLocal(ForeachStatementNode statement) {
+			localInfos.add(statement.getUserData(typeof(MemberInfo)));
+		}
+		
+		public void declareLocal(CatchClauseNode node) {
+			localInfos.add(node.getUserData(typeof(MemberInfo)));
+        }
+		
+		public Iterable<String> getRootPackages() {
+			var result = new HashSet<String>();
+			foreach (var c in typeSystem.AllClassNames) {
+				int idx = c.indexOf('/');
+				if (idx != -1) {
+					result.add(c.substring(0, idx));
+				}
+			}
+			foreach (var pinfo in packageInfos) {
+				foreach (var e in pinfo.PackageAliases.entrySet()) {
+					result.add(e.Key);
+				}
+			}
+			return result;
+		}
+		
+		public Iterable<MemberInfo> getMembers() {
+			var type = typeInfos[typeInfos.size() - 1];
+			return filterMembers(type, false, getMemberMap().values());
+		}
+		
+		private Map<String, MemberInfo> getMemberMap() {
+			var members = new HashMap<String, MemberInfo>();
+			putTypeMembers(members);
+			var type = typeInfos[typeInfos.size() - 1];
+			foreach (var t in type.getBaseTypes().reverse()) {
+				putFields(t, members);
+				putProperties(t, members);
+				putMethods(t, members);
+				putNestedTypes(t, members);
+			}
+			putFields(type, members);
+			putProperties(type, members);
+			putMethods(type, members);
+			putNestedTypes(type, members);
+			putLocals(members);
+			return members;
+		}
+
+		public Iterable<MemberInfo> getTypeMembers() {
+			var members = new HashMap<String, MemberInfo>();
+			putTypeMembers(members);
+			return members.values();
+		}
+		
+		public Iterable<MemberInfo> getMembers(String identifier) {
+			if (identifier.equals("this")) {
+				return getMembers();
+			} else if (identifier.equals("super")) {
+				var type = typeInfos[typeInfos.size() - 1];
+				return getMembers(type.BaseType, false);
+			}
+			var members = new HashMap<String, MemberInfo>();
+			putTypeMembers(members);
+			var type = typeInfos[typeInfos.size() - 1];
+			foreach (var t in type.getBaseTypes().reverse()) {
+				putFields(t, members);
+				putProperties(t, members);
+				putNestedTypes(t, members);
+			}
+			putFields(type, members);
+			putProperties(type, members);
+			putNestedTypes(type, members);
+			putLocals(members);
+			var member = members[identifier];
+			if (member == null) {
+				return Query.empty();
+			}
+			return getMembers(member.Type, (member.MemberKind == MemberKind.Local) ? false : member.IsStatic);
+		}
+		
+		public Iterable<MemberInfo> getMembers(TypeInfo declaringType, boolean staticOnly) {
+			var members = new HashMap<String, MemberInfo>();
+			foreach (var t in declaringType.getBaseTypes().reverse()) {
+				putFields(t, members);
+				putProperties(t, members);
+				putMethods(t, members);
+				putNestedTypes(t, members);
+			}
+			putFields(declaringType, members);
+			putProperties(declaringType, members);
+			putMethods(declaringType, members);
+			putNestedTypes(declaringType, members);
+			return filterMembers(typeInfos[typeInfos.size() - 1], staticOnly, members.values());
+		}
+		
+		private void putTypeMembers(Map<String, MemberInfo> members) {
+			foreach (var info in getAllTypeInfos()) {
+				members[info.Type.Name] = info;
+			}
+			
+			foreach (var pinfo in packageInfos) {
+				foreach (var e in pinfo.UsedTypes.entrySet()) {
+					members[e.Key] = MemberInfo.getInfo(e.Value.Type);
+				}
+			}
+		}
+		
+		private Set<MemberInfo> getAllTypeInfos() {
+			if (allTypeInfos == null) {
+				var l = new HashSet<MemberInfo>();
+				var currentPackage = packageNames.aggregate("", (p, q) => p + q + "/");
+				
+				// Top level types
+				foreach (var type in typeSystem.AllClassNames.where(p => p.indexOf('/') == -1)) {
+					var info = MemberInfo.getInfo(typeSystem.getType(type));
+					if (info.Type.PackageName.equals(currentPackage) || info.IsPublic) {
+						l.add(info);
+					}
+				}
+				
+				// Types from enclosing packages
+				var pkg = "";
+				var classNames = typeSystem.AllClassNames;
+				foreach (var name in packageNames) {
+					pkg += name + "/";
+					classNames = classNames.where(p => p.startsWith(pkg));
+					foreach (var type in classNames.where(p => p.indexOf('/', pkg.length()) == -1)) {
+						var info = MemberInfo.getInfo(typeSystem.getType(type));
+						if (info.Type.PackageName.equals(currentPackage) || info.IsPublic) {
+							l.add(info);
+						}
+					}
+				}
+				
+				// Types from using directives
+				foreach (var pinfo in packageInfos) {
+					foreach (var name in pinfo.UsedPackages) {
+						pkg = name + "/";
+						foreach (var type in typeSystem.AllClassNames.where(p => p.startsWith(pkg) && p.indexOf('/', pkg.length()) == -1)) {
+							var info = MemberInfo.getInfo(typeSystem.getType(type));
+							if (info.Type.PackageName.equals(currentPackage) || info.IsPublic) {
+								l.add(info);
+							}
+						}
+					}
+				}
+				
+				allTypeInfos = l;
+			}
+			return allTypeInfos;
+		}
+		
+		private void putFields(TypeInfo declaringType, Map<String, MemberInfo> members) {
+			foreach (var field in declaringType.Fields.where(p => !p.IsSynthetic)) {
+				var member = MemberInfo.getInfo(field);
+				members[field.Name] = member;
+			}
+		}
+
+		private void putMethods(TypeInfo declaringType, Map<String, MemberInfo> members) {
+			foreach (var method in declaringType.Methods.where(p => !p.IsSynthetic && !p.Name.startsWith("<"))) {
+				var isPropertyAccessor = false;
+                foreach (var annotation in BytecodeHelper.getAnnotations(annotatedTypeSystem, method)) {
+                    if (BytecodeHelper.isPropertyGet(annotation)) {
+                    	isPropertyAccessor = true;
+                    	break;
+                    }
+                    if (BytecodeHelper.isPropertySet(annotation)) {
+                    	isPropertyAccessor = true;
+                    	break;
+                    }
+                }
+                if (!isPropertyAccessor) {
+					var member = MemberInfo.getInfo(method);
+					members[method.Name + method.Signature] = member;
+				}
+			}
+			
+			foreach (var method in getExtensionMethods().where(
+					p => BytecodeHelper.hasImplicitConversion(declaringType, p.Parameters.first().Type))) {
+				var member = MemberInfo.getInfo(method);
+				members[method.Name + method.Signature] = member;
+			}
+		}
+		
+		private Set<MethodInfo> getExtensionMethods() {
+			if (extensionMethodInfos == null) {
+				var l = new HashSet<MethodInfo>();
+				foreach (var info in getAllTypeInfos().where(
+						p => BytecodeHelper.getAnnotations(annotatedTypeSystem, p.Type).any(a => BytecodeHelper.isStaticClass(a)))) {
+					foreach (var m in info.Type.Methods.where(
+							p => BytecodeHelper.getAnnotations(annotatedTypeSystem, p).any(a => BytecodeHelper.isExtensionMethod(a)))) {
+						if (m.Parameters.any()) {
+							l.add(m);
+						}
+					}
+				}
+				extensionMethodInfos = l;
+			}
+			return extensionMethodInfos;
+		}
+
+		private void putProperties(TypeInfo declaringType, Map<String, MemberInfo> members) {
+			var getters = new HashMap<String, MethodInfo>();
+			var setters = new HashMap<String, MethodInfo>();
+			foreach (var method in declaringType.Methods.where(p => !p.IsSynthetic && !p.Name.startsWith("<"))) {
+                foreach (var annotation in BytecodeHelper.getAnnotations(annotatedTypeSystem, method)) {
+                    if (BytecodeHelper.isPropertyGet(annotation)) {
+                    	var name = BytecodeHelper.getPropertyGetName(method, annotation);
+                    	getters[name] = method;
+                    	break;
+                    }
+                    if (BytecodeHelper.isPropertySet(annotation)) {
+                    	var name = BytecodeHelper.getPropertySetName(method, annotation);
+                    	setters[name] = method;
+                    	break;
+                    }
+                }
+			}
+			foreach (var e in getters.entrySet()) {
+				var setter = setters.remove(e.Key);
+				var member = MemberInfo.getInfo(e.Value, setter, e.Key);
+				members[e.Key] = member;
+			}
+			foreach (var e in setters.entrySet()) {
+				var member = MemberInfo.getInfo(null, e.Value, e.Key);
+				members[e.Key] = member;
+			}
+		}
+
+		private void putNestedTypes(TypeInfo declaringType, Map<String, MemberInfo> members) {
+			foreach (var nt in declaringType.NestedTypes.where(p => !p.IsSynthetic)) {
+				var member = MemberInfo.getInfo(nt);
+				members[nt.Name] = member;
+			}
+		}
+		
+		private void putLocals(Map<String, MemberInfo> members) {
+			foreach (var method in methodInfos) {
+				foreach (var p in method.Parameters) {
+					var member = MemberInfo.getInfo(p, method);
+					members[member.Name] = member;
+				}
+			}
+			foreach (var member in localInfos) {
+				members[member.Name] = member;
+			}
+		}
+		
+        private Iterable<MemberInfo> filterMembers(TypeInfo scope, boolean staticOnly, Iterable<MemberInfo> members) {
+            foreach (var mi in members) {
+            	if (mi.MemberKind == MemberKind.Local || mi.DeclaringType == null) {
+            		yield return mi;
+            	} else {
+	                if (staticOnly && !mi.IsStatic) {
+	                	continue;
+	                }
+	                if (!scope.canAccessMember(mi.DeclaringType, mi.IsPublic, mi.IsProtected, mi.IsPrivate)) {
+	                    continue;
+	                }
+	                yield return mi;
+                }
+            }
+        }
+	}
+}

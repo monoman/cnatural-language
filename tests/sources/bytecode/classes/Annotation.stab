@@ -1,0 +1,8 @@
+using java.lang;
+
+package stab.bytecode.test.classes {
+
+	[Deprecated]
+	public class Annotation {
+	}
+}

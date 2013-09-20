@@ -1,0 +1,13 @@
+stab.tree.ExpressionTree<interface stab.query.FunctionInt> tree =
+	() =>
+    {
+        try
+        {
+            return #Value#int#1#;
+        }
+        catch (#Local0#class java.lang.RuntimeException#e#)
+        {
+            throw #Local0#class java.lang.RuntimeException#e#;
+        }
+
+    }

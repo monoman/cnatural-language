@@ -1,0 +1,350 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using java.util;
+using stab.query;
+using stab.reflection;
+
+package stab.tools.compiler {
+
+    public class MemberResolver {
+        private Library annotatedTypeSystem;
+        private Scope scope;
+        private ArrayList<String> packages;
+    
+        public MemberResolver(Library typeSystem, Library annotatedTypeSystem) {
+            this.TypeFinder = new TypeFinder(typeSystem);
+            this.annotatedTypeSystem = annotatedTypeSystem;
+            this.packages = new ArrayList<String>();
+        }
+
+        public TypeFinder TypeFinder {
+            get;
+            private set;
+        }
+
+        public MemberInfo resolveTypeName(String packageName, String name) {
+            var s = scope;
+            do {
+                var member = s.memberInfos[name];
+                if (member != null && member.MemberKind == MemberKind.Type) {
+                    if (member.Type.IsGenericParameter || member.Type.IsPublic || member.Type.PackageName.equals(packageName)) {
+                        return member;
+                    }
+                }
+            } while ((s = s.next) != null);
+            return null;
+        }
+
+        public boolean isAmbiguousTypeName(String name) {
+            var s = scope;
+            do {
+                if (s.ambiguousTypes != null && s.ambiguousTypes.contains(name)) {
+                    return true;
+                }
+            } while ((s = s.next) != null);
+            return false;
+        }
+        
+        public Iterable<MemberInfo> resolveName(TypeInfo scope, String name, Iterable<TypeInfo> typeArguments) {
+            var s = this.scope;
+            var outerClass = false;
+            var nTypeArgs = typeArguments.count();
+            do {
+                var member = s.memberInfos[name];
+                if (member != null) {
+                    if (nTypeArgs > 0) {
+                        if (member.MemberKind == MemberKind.Type && nTypeArgs == member.Type.GenericArguments.count()) {
+                            yield return MemberInfo.getInfo(this.TypeFinder.TypeSystem.getGenericType(member.Type, typeArguments));
+                        }
+                    } else {
+                        if (member.MemberKind == MemberKind.Type && member.Type.GenericArguments.count() > 0) {
+                            member = MemberInfo.getInfo(member.Type.RawType);
+                        }
+                        yield return member;
+                        if (member.MemberKind == MemberKind.Local) {
+                            yield break;
+                        }
+                    }
+                }
+                if (s.type != null) {
+                    foreach (var mi in MemberInfo.getMembers(this.TypeFinder.TypeSystem, scope, s.type, name, typeArguments, true)) {
+                        if (outerClass && !mi.IsStatic) {
+                            continue;
+                        }
+                        yield return mi;
+                    }
+                    outerClass = true;
+                }
+            } while ((s = s.next) != null);
+        }
+        
+        public String getPackageFromAlias(String alias) {
+            var s = scope;
+            do {
+                if (s.packageAliases != null) {
+                    var p = s.packageAliases[alias];
+                    if (p != null) {
+                        if (p.count() == 1) {
+                            return p.single();
+                        }
+                        var sb = new StringBuilder();
+                        var it = p.iterator();
+                        sb.append(it.next());
+                        while (it.hasNext()) {
+                            sb.append('/').append(it.next());
+                        }
+                        return sb.toString();
+                    }
+                }
+            } while ((s = s.next) != null);
+            return null;
+        }
+        
+        public Iterable<MethodInfo> getExtensionMethods(TypeInfo type, String name, Iterable<TypeInfo> typeArguments) {
+            int nTypeArgs = typeArguments.count();
+            var s = scope;
+            do {
+                if (s.extensionMethods != null) {
+                    foreach (var m in s.extensionMethods) {
+                        if (!m.Name.equals(name)) {
+                            continue;
+                        }
+                        if (nTypeArgs > 0 && nTypeArgs != m.GenericArguments.count()) {
+                            continue;
+                        }
+                        if (BytecodeHelper.hasImplicitConversion(type, m.Parameters.first().Type)) {
+                            yield return (nTypeArgs > 0) ? this.TypeFinder.TypeSystem.getGenericMethod(m, typeArguments) : m;
+                        }
+                    }
+                }
+            } while ((s = s.next) != null);
+        }
+        
+        public void initialize() {
+            enterScopeCore(false);
+            var typeSystem = this.TypeFinder.TypeSystem;
+            var members = scope.memberInfos;
+            foreach (var s in this.TypeFinder.getClasses("")) {
+                var t = typeSystem.getType(s);
+                members[s] = MemberInfo.getInfo(t);
+                addExtensionMethods(t);
+            }
+        }
+        
+        public void dispose() {
+            leaveScope();
+        }
+        
+        public void enterPackage(String name) {
+            enterScopeCore(false);
+            packages.add(name);
+            var typeSystem = this.TypeFinder.TypeSystem;
+            var currentPackage = getCurrentPackage();
+            var members = scope.memberInfos;
+            foreach (var s in this.TypeFinder.getClasses(packages)) {
+                var t = typeSystem.getType(currentPackage + '/' + s);
+                members[s] = MemberInfo.getInfo(t);
+                addExtensionMethods(t);
+            }
+        }
+
+        private void addExtensionMethods(TypeInfo type) {
+            var isStatic = false;
+            foreach (var annotation in BytecodeHelper.getAnnotations(annotatedTypeSystem, type)) {
+                if (BytecodeHelper.isStaticClass(annotation)) {
+                    isStatic = true;
+                    break;
+                }
+            }
+            if (!isStatic) {
+                return;
+            }
+            var methods = scope.extensionMethods;
+            foreach (var m in type.Methods) {
+                if (!m.IsStatic || !m.Parameters.any()) {
+                    continue;
+                }
+                foreach (var av in BytecodeHelper.getAnnotations(annotatedTypeSystem, m)) {
+                    if (BytecodeHelper.isExtensionMethod(av)) {
+                        if (methods == null) {
+                            methods = new ArrayList<MethodInfo>();
+                            scope.extensionMethods = methods;
+                        }
+                        methods.add(m);
+                        break;
+                    }
+                }
+            }
+        }
+        
+        public static String getPackageName(List<String> packages) {
+            int size = packages.size();
+            if (size == 0) {
+                return "";
+            }
+            if (size == 1) {
+                return packages[0];
+            }
+            var sb = new StringBuilder();
+            sb.append(packages[0]);
+            for (int i = 1; i < size; i++) {
+                sb.append('/').append(packages[i]);
+            }
+            return sb.toString();
+        }
+
+        public String getCurrentPackage() {
+            return getPackageName(packages);
+        }
+
+        public void usingDirective(HashMap<String, MemberInfo> names, Iterable<String> packages,
+            HashMap<String, Iterable<String>> packageAliases) {
+            var members = scope.memberInfos;
+            
+            foreach (var e in names.entrySet()) {
+                members[e.Key] = e.Value;
+            }
+            
+            var typeSystem = this.TypeFinder.TypeSystem;
+            var pkg = new ArrayList<String>();
+            foreach (var p in packages) {
+                pkg.clear();
+                var fullName = p;
+                int idx;
+                while ((idx = fullName.indexOf('/')) != -1) {
+                    pkg.add(fullName.substring(0, idx));
+                    fullName = fullName.substring(idx + 1);
+                }
+                pkg.add(fullName);
+                foreach (var s in this.TypeFinder.getClasses(pkg)) {
+                    if (scope.ambiguousTypes != null && scope.ambiguousTypes.contains(s)) {
+                        continue;
+                    }
+                    var t = typeSystem.getType(p + '/' + s);
+                    var mi = MemberInfo.getInfo(t);
+                    if (mi.IsPublic) {
+                        if (members[s] != null) {
+                            if (scope.ambiguousTypes == null) {
+                                scope.ambiguousTypes = new HashSet<String>();
+                            }
+                            scope.ambiguousTypes.add(s);
+                            members.remove(s);
+                        } else {
+                            members[s] = mi;
+                        }
+                        addExtensionMethods(t);
+                    }
+                }
+            }
+            
+            scope.packageAliases = packageAliases;
+        }
+        
+        public void leavePackage() {
+            packages.remove(packages.size() - 1);
+            leaveScope();
+        }
+        
+        public void enterType(TypeInfo type) {
+            enterScopeCore(false);
+            scope.type = type;
+            var members = scope.memberInfos;
+            foreach (var t in type.GenericArguments) {
+                members[t.FullName] = MemberInfo.getInfo(t);
+            }
+            foreach (var t in type.NestedTypes) {
+                members[t.Name] = MemberInfo.getInfo(t);
+            }
+        }
+        
+        public void leaveType() {
+            leaveScope();
+        }
+        
+        public void enterMethod(MethodInfo method) {
+            enterMethod(method, false);
+        }
+        
+        public void enterMethod(MethodInfo method, boolean statementScope) {
+            enterScopeCore(statementScope);
+            var members = scope.memberInfos;
+            foreach (var p in method.Parameters) {
+                members[p.Name] = MemberInfo.getInfo(p, method);
+            }
+            foreach (var t in method.GenericArguments) {
+                members[t.FullName] = MemberInfo.getInfo(t);
+            }
+        }
+        
+        public void leaveMethod() {
+            leaveScope();
+        }
+        
+        public void enterScope() {
+            enterScopeCore(true);
+        }
+        
+        public void leaveScope() {
+            scope = scope.next;
+        }
+        
+        public MemberInfo defineLocal(String name, TypeInfo type, MethodInfo method) {
+            var result = new LocalMemberInfo(name, type, method, false);
+            scope.memberInfos[name] = result;
+            return result;
+        }
+
+        public boolean hasLocal(String name) {
+            Scope s = scope;
+            do {
+                var mi = s.memberInfos[name];
+                if (mi != null && mi.MemberKind == MemberKind.Local) {
+                    return true;
+                }
+                if (!s.statementScope) {
+                    break;
+                }
+            } while ((s = s.next) != null);
+            return false;
+        }
+        
+        public MemberInfo getLocal(String name) {
+            return scope.memberInfos[name];
+        }
+        
+        private void enterScopeCore(boolean statementScope) {
+            scope = new Scope(statementScope, scope);
+        }
+        
+        private class Scope {
+            Scope next;
+            boolean statementScope;
+            HashMap<String, MemberInfo> memberInfos;
+            HashSet<String> ambiguousTypes;
+            ArrayList<MethodInfo> extensionMethods;
+            HashMap<String, Iterable<String>> packageAliases;
+            TypeInfo type;
+
+            Scope(boolean statementScope, Scope next) {
+                this.statementScope = statementScope;
+                this.memberInfos = new HashMap<String, MemberInfo>();
+                this.next = next;
+            }
+        }
+    }
+}

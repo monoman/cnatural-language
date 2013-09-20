@@ -1,0 +1,263 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using java.lang.reflect;
+using java.util;
+
+package stab.lang {
+
+    /// <summary>
+    /// <c>Delegate</c> is the base class for delegate types in the Stab language.
+    /// </summary>
+	public abstract class Delegate : Cloneable {
+		private Object target;
+		private Method method;
+		private Class<?> delegateClass;
+        
+        /// <summary>Used internally be the compiler to implement compound delegates.</summary>
+		protected Delegate[] delegates;
+		
+		protected Delegate(Object target) {
+			this.target = target;
+		}
+		
+        /// <summary>Implemented automatically by the compiler.</summary>
+		protected abstract Method getMethodCore();
+        
+        /// <summary>Implemented automatically by the compiler.</summary>
+		protected abstract Object getMethodSignature();
+		
+        /// <summary>
+        /// Gets the object on which the current delegate is invoked, or null if the delegate represents a static method.
+        /// If this delegate is a compound delegate, the <c>Target</c> of the last delegate is returned.
+        /// </summary>
+		public Object Target {
+			get {
+				return (delegates == null) ? target : delegates[sizeof(delegates) - 1].target;
+			}
+		}
+		
+        /// <summary>
+        /// Gets the method represented by this delegate.
+        /// </summary>
+		public Method Method {
+			get {
+				if (delegates == null) {
+					if (method == null) {
+						method = getMethodCore();
+					}
+					return method;
+				} else {
+					return delegates[sizeof(delegates) - 1].Method;
+				}
+			}
+		}
+		
+        /// <summary>
+        /// <see cref="Object.equals"/>
+        /// </summary>
+		public override boolean equals(Object obj) {
+			if (obj == null || !(obj instanceof Delegate)) {
+				return false;
+			}
+			var other = (Delegate)obj;
+			if (getDelegateClass() != other.getDelegateClass()) {
+				return false;
+			}
+			if (delegates != null) {
+				if (other.delegates == null || sizeof(delegates) != sizeof(other.delegates)) {
+					return false;
+				}
+				for (int i = 0; i < sizeof(delegates); i++) {
+					if (!delegates[i].equals(other.delegates[i])) {
+						return false;
+					}
+				}
+				return true;
+			}
+			if (target != other.target) {
+				return false;
+			}
+			return getMethodSignature().equals(other.getMethodSignature());
+		}
+
+        /// <summary>
+        /// <see cref="Object.hashCode"/>
+        /// </summary>
+        public override int hashCode() {
+            return getDelegateClass().hashCode();
+        }
+        
+		public static Delegate combine(Delegate d1, Delegate d2) {
+			if (d1 == null) {
+				return d2;
+			}
+			return d1.combine(d2);
+		}
+		
+		public static Delegate remove(Delegate d1, Delegate d2) {
+			if (d1 == null) {
+				return null;
+			}
+			if (d2 == null) {
+				return d1;
+			}
+			if (d1.getDelegateClass() != d2.getDelegateClass()) {
+				throw new IllegalStateException("Incompatible delegates");
+			}
+			return d1.remove(d2);
+		}
+		
+		public static Delegate removeAll(Delegate d1, Delegate d2) {
+			Delegate result;
+			do {
+				result = d1;
+				d1 = remove(d1, d2);
+			} while (result != d1);
+			return result;
+		}
+
+		public Object dynamicInvoke(params Object[] arguments) {
+			if (this.delegates == null) {
+				return this.Method.invoke(target, arguments);
+			} else {
+				var td = this.delegates;
+				Object result = null;
+				for (int i = 0; i < sizeof(td); i++) {
+					result = td[i].dynamicInvoke(arguments);
+				}
+				return result;
+			}
+		}
+		
+		public Delegate[] getInvocationList() {
+			if (this.delegates == null) {
+				return new Delegate[] { this };
+			} else {
+				return Arrays.copyOf(this.delegates, sizeof(this.delegates));
+			}
+		}
+		
+		private Class<?> getDelegateClass() {
+			if (delegateClass == null) {
+				var c = getClass();
+				while (c.getSuperclass() != typeof(Delegate)) {
+					c = c.getSuperclass();
+				}
+				delegateClass = c;
+			}
+			return delegateClass;
+		}
+		
+		private Delegate combine(Delegate d) {
+			if (d == null) {
+				return this;
+			}
+			if (this.getDelegateClass() != d.getDelegateClass()) {
+				throw new IllegalStateException("Incompatible delegates");
+			}
+			int size = (this.delegates == null) ? 1 : sizeof(this.delegates);
+			size += (d.delegates == null) ? 1 : sizeof(d.delegates);
+			var t = new Delegate[size];
+			var result = createSameTypeDelegate();
+			result.delegates = t;
+			int i = 0;
+			if (this.delegates == null) {
+				t[i++] = this;
+			} else {
+				for (int j = 0; j < sizeof(this.delegates); j++) {
+					t[i++] = this.delegates[j];
+				}
+			}
+			if (d.delegates == null) {
+				t[i++] = d;
+			} else {
+				for (int j = 0; j < sizeof(d.delegates); j++) {
+					t[i++] = d.delegates[j];
+				}
+			}
+			return result;
+		}
+
+		private Delegate createSameTypeDelegate() {
+			var result = (Delegate)super.clone();
+			result.target = null;
+			result.method = null;
+			result.delegates = null;
+			return result;
+		}
+		
+		private Delegate remove(Delegate d) {
+			if (this.delegates == null) {
+				return (this.equals(d)) ? null : this;
+			}
+			var td = this.delegates;
+			int tdl = sizeof(td);
+			var dd = d.delegates;
+			if (dd != null) {
+				int ddl = sizeof(dd);
+				for (int i = tdl - ddl; i >= 0; --i) {
+					var delegatesEqual = true;
+					for (int j = 0; j < ddl; j++) {
+						if (!td[i + j].equals(dd[j])) {
+							delegatesEqual = false;
+							break;
+						}
+					}
+					if (!delegatesEqual) {
+						continue;
+					}
+					if (tdl == ddl) {
+						return null;
+					}
+					if (tdl + 1 == ddl) {
+						return td[(i == 0) ? tdl - 1 : 0];
+					}
+					var result = createSameTypeDelegate();
+					var rd = new Delegate[tdl - ddl];
+					result.delegates = rd;
+					for (int j = 0; j < i; j++) {
+						rd[j] = td[j];
+					}
+					for (int j = i + ddl; j < tdl; j++) {
+						rd[j - ddl] = td[j];
+					}
+					return result;
+				}
+			} else {
+				for (int i = tdl - 1; i >= 0; --i) {
+					if (td[i].equals(d)) {
+						if (tdl == 2) {
+							return td[1 - i];
+						}
+						var result = createSameTypeDelegate();
+						var rd = new Delegate[tdl - 1];
+						result.delegates = rd;
+						for (int j = 0; j < i; j++) {
+							rd[j] = td[j];
+						}
+						for (int j = i + 1; j < tdl; j++) {
+							rd[j - 1] = td[j];
+						}
+						return result;
+					}
+				}
+			}
+			return this;
+		}
+	}
+}

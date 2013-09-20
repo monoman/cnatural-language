@@ -1,0 +1,90 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using org.junit;
+
+package stab.tools.compiler.test {
+
+	public class IntegrationTest : ExecutionTest {
+		protected override String ResourcesPath {
+			get {
+				return "IntegrationTest";
+			}
+		}
+		
+		[Test]
+		public void factorial() {
+			doTest("Factorial", new Class<?>[] {}, new Object[] {}, 120);
+		}
+		
+		[Test]
+		public void quicksort() {
+			int[] tab = new int[] { 2, 1, 4, 3 };
+			doTest("Quicksort", new Class<?>[] { typeof(int[]) }, new Object[] { tab }, null);
+			Assert.assertEquals(1, tab[0]);
+			Assert.assertEquals(2, tab[1]);
+			Assert.assertEquals(3, tab[2]);
+			Assert.assertEquals(4, tab[3]);
+		}
+		
+		[Test]
+		public void gcd() {
+			doTest("Gcd", new Class<?>[] { typeof(int), typeof(int) }, new Object[] { 42, 56 }, 14);
+		}
+		
+		[Test]
+		public void bitCount() {
+			doTest("BitCount", new Class<?>[] { typeof(int), typeof(int) }, new Object[] { 1, 0x0F0F0F0F }, 16);
+		}
+		
+		[Test]
+		public void bitCount_1() {
+			doTest("BitCount", new Class<?>[] { typeof(int), typeof(int) }, new Object[] { 2, 0x0F0F0F0F }, 16);
+		}
+		
+		[Test]
+		public void bitCount_2() {
+			doTest("BitCount", new Class<?>[] { typeof(int), typeof(int) }, new Object[] { 3, 0x0F0F0F0F }, 16);
+		}
+		
+		[Test]
+		public void bitCount_3() {
+			doTest("BitCount", new Class<?>[] { typeof(int), typeof(int) }, new Object[] { 4, 0x0F0F0F0F }, 16);
+		}
+		
+		[Test]
+		public void erathosthenesSieve() {
+			doTest("ErathosthenesSieve", new Class<?>[] { typeof(int) }, new Object[] { 1000 }, 170);
+		}
+		
+		[Test]
+		public void factorialLambda() {
+			doTest("FactorialLambda", new Class<?>[] { typeof(int) }, new Object[] { 5 }, 120);
+		}
+		
+		[Test]
+		public void autoboxingPuzzle() {
+			doTest("AutoboxingPuzzle", new Class<?>[] {}, new Object[] {}, 100);
+		}
+		
+		[Test]
+		public void nbody() {
+			doTest("nbody", new Class<?>[] { typeof(int), typeof(String), typeof(String) },
+					new Object[] { 1000, "-0.16907516382852447", "-0.169087605234606" }, true);
+		}
+	}
+}

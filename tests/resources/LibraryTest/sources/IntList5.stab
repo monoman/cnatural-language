@@ -1,0 +1,19 @@
+using java.lang;
+using stab.query;
+
+public class IntList5 {
+	public static boolean test() {
+		var list = Query.range(0, 5).toList();
+		var array1 = new Integer[5];
+		var array2 = list.toArray(array1);
+		if (array1 != array2) {
+			return false;
+		}
+		for (int i = 0; i < sizeof(array1); i++) {
+			if (!array1[i].equals(i)) {
+				return false;
+			}
+		}
+		return true;
+	}
+}

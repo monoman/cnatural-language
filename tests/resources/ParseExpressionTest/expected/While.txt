@@ -1,0 +1,8 @@
+Lambda( => {
+while ((Name(x) NotEqual Literal(DecimalInteger, [0])))
+{
+(PreDecrement Name(x));
+}
+return(Literal(DecimalInteger, [0]));
+}
+)

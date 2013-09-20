@@ -1,0 +1,4 @@
+from s in Name(names)
+where ((Name(s)).Length Equal Literal(DecimalInteger, [5]))
+orderby Name(s)
+select (Name(s)).ToUpper()

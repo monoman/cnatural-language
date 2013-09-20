@@ -1,0 +1,3 @@
+stab.tree.ExpressionTree<interface stab.query.FunctionInt> tree =
+	() =>
+    #Value#class stab.tools.compiler.test.ExpressionTreesTest#this#.testField;

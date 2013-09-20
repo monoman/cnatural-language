@@ -1,0 +1,20 @@
+using java.lang;
+
+public class Covariance {
+	public static boolean test() {
+		CovarianceAux obj = new CovarianceAux2().copy();
+		return obj instanceof CovarianceAux2;
+	}
+}
+
+public class CovarianceAux : Cloneable {
+	public virtual CovarianceAux copy() {
+		return (CovarianceAux)clone();
+	}
+}
+
+public class CovarianceAux2 : CovarianceAux, Cloneable {
+	public override CovarianceAux2 copy() {
+		return (CovarianceAux2)clone();
+	}
+}

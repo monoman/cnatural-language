@@ -1,0 +1,9 @@
+Lambda( => {
+for (int i = Literal(DecimalInteger, [0]);
+Condition((Name(i) LessThan Literal(DecimalInteger, [10])));
+(PostIncrement Name(i));
+)
+{
+}
+}
+)

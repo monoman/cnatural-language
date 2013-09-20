@@ -1,0 +1,22 @@
+using java.lang;
+
+public class Wildcard3 {
+	public static boolean test() {
+		var w1 = new Wildcard3Aux<Integer>(new Integer(1));
+		var w2 = new Wildcard3Aux<Double>(new Double(1));
+		var o1 = test(w1);
+		var o2 = test(w2);
+		return o1 instanceof Integer && o2 instanceof Double;
+	}
+	
+	public static Object test(Wildcard3Aux<? : Number> w) {
+		return w.value;	
+	}
+}
+
+public class Wildcard3Aux<T> {
+	public Wildcard3Aux(T value) {
+		this.value = value;	
+	}
+	public T value;
+}

@@ -1,0 +1,6 @@
+Lambda( => {
+do (Name(Console)).WriteLine((Literal(String, ["x = "]) Add (PostIncrement Name(x))));
+while ((Name(x) LessThan Literal(DecimalInteger, [100])));
+return(Name(x));
+}
+)

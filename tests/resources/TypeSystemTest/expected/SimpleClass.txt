@@ -1,0 +1,6 @@
+// Lstab/bytecode/test/classes/SimpleClass; / Lstab/bytecode/test/classes/SimpleClass;
+public class stab/bytecode/test/classes/SimpleClass : java/lang/Object {
+    // ()V / ()V
+    public V <init>() {
+    }
+}

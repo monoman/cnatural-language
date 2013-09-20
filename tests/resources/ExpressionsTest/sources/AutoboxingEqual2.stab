@@ -1,0 +1,12 @@
+using java.lang;
+
+public class AutoboxingEqual2 {
+	public static boolean test() {
+		Integer x = 1;
+		Integer y = new Integer(1);
+		if (x == y)
+			return true;
+		else
+			return false;
+	}
+}

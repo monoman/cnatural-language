@@ -1,0 +1,11 @@
+
+public class LongWidening {
+	public static boolean test() {
+		long l = 0x7fffffffL;
+		int i = 0x80000000;
+
+		if ((l | i) != 0xffffffffffffffffL)
+			return false;
+		return true;
+	}
+}

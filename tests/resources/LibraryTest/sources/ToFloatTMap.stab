@@ -1,0 +1,19 @@
+using java.lang;
+using java.util;
+using stab.query;
+
+public class ToFloatTMap {
+	public static boolean test() {
+		var list = new ArrayList<String> { "V1", "V2", "V3" };
+		var k = 0f;
+		var map = list.toMap(p => k++);
+		return map.containsValue("V1") &&
+				map.containsValue("V2") &&
+				map.containsValue("V3") &&
+				!map.containsValue("V4") &&
+				map.containsKey(0f) &&
+				map.containsKey(1f) &&
+				map.containsKey(2f) &&
+				!map.containsKey(3f);
+	}
+}

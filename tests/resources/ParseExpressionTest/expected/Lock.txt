@@ -1,0 +1,6 @@
+Lambda( => {
+synchronized (Name(lock)) {
+Assign((Name(lock)).x Assign Name(y));
+}
+}
+)

@@ -1,0 +1,2 @@
+Assign(Name(f) Assign Lambda(p => (Name(p) LessThan (Name(x) Add Literal(DecimalInteger, [10])))?Literal(True, [true]):Literal(False, [false]);
+))

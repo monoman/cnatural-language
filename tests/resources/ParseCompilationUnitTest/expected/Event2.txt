@@ -1,0 +1,12 @@
+using java.lang;
+
+class C : B {
+    public event EventHandler Click {
+        add {
+            AddEventHandler(key, value);
+        }
+        remove {
+            RemoveEventHandler(key, value);
+        }
+    }
+}

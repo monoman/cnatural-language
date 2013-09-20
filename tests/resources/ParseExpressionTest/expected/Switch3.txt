@@ -1,0 +1,9 @@
+Lambda( => {
+switch (Name(m<int>)()) {
+case Literal(DecimalInteger, [1]):
+break;
+default:
+return;
+}
+}
+)

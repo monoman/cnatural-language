@@ -1,0 +1,8 @@
+public class IntArrayPreIncrement {
+	public static boolean test() {
+		var t = new int[] { 1 };
+		int i = ++t[0];
+		++t[0];
+		return t[0] == i + 1;
+	}
+}

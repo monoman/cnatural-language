@@ -1,0 +1,6 @@
+using p1;
+
+package p2 {
+    using p3 = p4;
+
+}

@@ -1,0 +1,319 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using java.util;
+
+package stab.reflection {
+
+    public class SignatureParser {
+        private String signature;
+        private int position;
+        private int current;
+    
+        public SignatureParser(String signature) {
+            this.signature = signature;
+            this.position = -1;
+            advance();
+        }
+        
+        public ClassSignature parseClassSignature() {
+            var result = new ClassSignature();
+            if (current == '<') {
+                result.formalTypeParameters = parseFormalTypeParameters();
+            } else {
+                result.formalTypeParameters = Collections.emptyList<TypeSignature>();
+            }
+            result.superclass = parseClassTypeSignature();
+            var superinterfaces = new ArrayList<TypeSignature>();
+            result.superinterfaces = superinterfaces;
+            while (current != -1) {
+                superinterfaces.add(parseClassTypeSignature());
+            }
+            return result;
+        }
+        
+        public TypeSignature parseFieldTypeSignature() {
+            switch (current) {
+            case 'T':
+                return parseTypeVariableSignature();
+
+            case 'L':
+                return parseClassTypeSignature();
+
+            case '[':
+                return parseArrayTypeSignature();
+                
+            default:
+                throw new IllegalStateException(signature);
+            }
+        }
+
+        public final MethodTypeSignature parseMethodTypeSignature() {
+            var result = new MethodTypeSignature();
+            if (current == '<') {
+                result.formalTypeParameters = parseFormalTypeParameters();
+            } else {
+                result.formalTypeParameters = Collections.emptyList<TypeSignature>();
+            }
+            if (current != '(') {
+                throw new IllegalStateException();
+            }
+            advance();
+            var parameters = new ArrayList<TypeSignature>();
+            result.parameters = parameters;
+            while (current != ')') {
+                parameters.add(parseTypeSignature());
+            }
+            advance();
+            if (current == 'V') {
+                result.returnType = PrimitiveTypeSignature.VoidSignature;
+                advance();
+            } else {
+                result.returnType = parseTypeSignature();
+            }
+            var exceptions = new ArrayList<TypeSignature>();
+            result.exceptions = exceptions;
+            while (current != -1) {
+                if (current != '^') {
+                    throw new IllegalStateException();
+                }
+                advance();
+                if (current == 'T') {
+                    exceptions.add(parseTypeVariableSignature());
+                } else {
+                    exceptions.add(parseClassTypeSignature());
+                }
+            }
+            return result;
+        }
+        
+        private TypeSignature parseTypeSignature() {
+            switch (current) {
+            case 'B':
+                advance();
+                return PrimitiveTypeSignature.ByteSignature;
+                
+            case 'C':
+                advance();
+                return PrimitiveTypeSignature.CharSignature;
+                
+            case 'F':
+                advance();
+                return PrimitiveTypeSignature.FloatSignature;
+                
+            case 'D':
+                advance();
+                return PrimitiveTypeSignature.DoubleSignature;
+                
+            case 'I':
+                advance();
+                return PrimitiveTypeSignature.IntSignature;
+                
+            case 'J':
+                advance();
+                return PrimitiveTypeSignature.LongSignature;
+                
+            case 'S':
+                advance();
+                return PrimitiveTypeSignature.ShortSignature;
+                
+            case 'Z':
+                advance();
+                return PrimitiveTypeSignature.BooleanSignature;
+                
+            default:
+                return parseFieldTypeSignature();
+            }
+        }
+
+        private TypeSignature parseTypeVariableSignature() {
+            if (current != 'T') {
+                throw new IllegalStateException();
+            }
+            advance();
+            int pos = position;
+            for (;;) {
+                switch (current) {
+                case ';':
+                    advance();
+                    return new TypeVariableSignature(signature.substring(pos, position - 1));
+
+                default:
+                    advance();
+                    break;
+                    
+                case -1:
+                    throw new IllegalStateException();
+                }
+            }
+        }
+
+        private TypeSignature parseArrayTypeSignature() {
+            if (current != '[') {
+                throw new IllegalStateException();
+            }
+            advance();
+            return new ArrayTypeSignature(parseTypeSignature());
+        }
+
+        private TypeSignature parseClassTypeSignature() {
+            if (current != 'L') {
+                throw new IllegalStateException();
+            }
+            advance();
+            int pos = position;
+            ClassTypeSignature outerType = null;
+            for (;;) {
+                switch (current) {
+                case '.':
+                case '<':
+                    if (outerType == null) {
+                        outerType = new ClassTypeSignature(TypeSignatureKind.ClassType, "L" + signature.substring(pos, position) + ";");
+                    } else {
+                        var outerName = outerType.getName().substring(1, outerType.getName().length() - 1);
+                        outerType = new ClassTypeSignature(TypeSignatureKind.ClassType,
+                            "L" + outerName + "$" + signature.substring(pos, position) + ";");
+                    }
+                    if (current == '.') {
+                        advance();
+                    } else {
+                        parseTypeArguments(outerType);
+                        if (current == '.') {
+                            advance();
+                        }
+                    }
+                    pos = position;
+                    break;
+                    
+                default:
+                    advance();
+                    break;
+                    
+                case ';':
+                    if (outerType == null) {
+                        outerType = new ClassTypeSignature(TypeSignatureKind.ClassType, "L" + signature.substring(pos, position) + ";");
+                    }
+                    advance();
+                    return outerType;
+                    
+                case -1:
+                    throw new IllegalStateException();
+                }
+            }
+        }
+
+        private void parseTypeArguments(ClassTypeSignature genericTypeDeclaration) {
+            if (current != '<') {
+                throw new IllegalStateException();
+            }
+            advance();
+            var typeArguments = genericTypeDeclaration.typeArguments;
+            for (;;) {
+                switch (current) {
+                case '*':
+                    advance();
+                    typeArguments.add(new WildcardTypeSignature(TypeSignatureKind.UnboundedWildcardType, null));
+                    break;
+
+                case '+':
+                    advance();
+                    typeArguments.add(new WildcardTypeSignature(TypeSignatureKind.UpperBoundedWildcardType, parseFieldTypeSignature()));
+                    break;
+
+                case '-':
+                    advance();
+                    typeArguments.add(new WildcardTypeSignature(TypeSignatureKind.LowerBoundedWildcardType, parseFieldTypeSignature()));
+                    break;
+
+                default:
+                    typeArguments.add(parseFieldTypeSignature());
+                    break;
+
+                case '>':
+                    if (typeArguments.isEmpty()) {
+                        throw new IllegalStateException();
+                    }
+                    advance();
+                    return;
+                    
+                case -1:
+                    throw new IllegalStateException();
+                }
+            }
+        }
+
+        private List<TypeSignature> parseFormalTypeParameters() {
+            if (current != '<') {
+                throw new IllegalStateException();
+            }
+            advance();
+            var result = new ArrayList<TypeSignature>();
+            int pos = position;
+            FormalTypeParameterSignature currentParameterType = null;
+            for (;;) {
+                switch (current) {
+                case ':':
+                    if (position == pos && currentParameterType == null) {
+                        throw new IllegalStateException();
+                    }
+                    if (currentParameterType == null) {
+                        var name = signature.substring(pos, position);
+                        currentParameterType = new FormalTypeParameterSignature(name);
+                        result.add(currentParameterType);
+                    }
+                    switch (advance()) {
+                    case ':':
+                    case '>':
+                        break;
+                        
+                    default:
+                        currentParameterType.formalTypeParameterBounds.add(parseFieldTypeSignature());
+                        pos = position;
+                        break;
+                    }
+                    break;
+                    
+                case '>':
+                    if (currentParameterType == null) {
+                        var name = signature.substring(pos, position);
+                        currentParameterType = new FormalTypeParameterSignature(name);
+                        result.add(currentParameterType);
+                    }
+                    advance();
+                    return result;
+
+                default:
+                    currentParameterType = null;
+                    advance();
+                    break;
+                    
+                case -1:
+                    throw new IllegalStateException();
+                }
+            }
+        }
+
+        private int advance() {
+            if (position + 1 < signature.length()) {
+                return current = signature[++position];
+            } else {
+                ++position;
+                return current = -1;
+            }
+        }
+    }
+}

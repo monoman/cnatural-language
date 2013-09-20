@@ -1,0 +1,17 @@
+using java.lang;
+using java.lang.reflect;
+using javax.xml.bind.annotation;
+
+public class AnnotationArray2 {
+	[XmlElements({[XmlElement(name = "e1")], [XmlElement(name = "e2" )]})]
+	public int getTest() {
+		return 0;
+	}
+
+	public static boolean test() {
+		var c = typeof(AnnotationArray2);
+		var m = c.getMethod("getTest");
+		var elts = m.getAnnotation(typeof(XmlElements));
+		return elts.value()[1].name().equals("e2");
+	}
+}

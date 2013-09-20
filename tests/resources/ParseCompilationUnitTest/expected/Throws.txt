@@ -1,0 +1,8 @@
+class C {
+    void m1() throws Exception {
+    }
+    int P1 {
+        get throws Exception1, Exception2;
+        set;
+    }
+}

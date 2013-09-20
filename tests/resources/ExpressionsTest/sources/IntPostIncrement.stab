@@ -1,0 +1,6 @@
+public class IntPostIncrement {
+	public static boolean test(int arg) {
+		int i = arg++;
+		return arg == i + 1;
+	}
+}

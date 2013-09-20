@@ -1,0 +1,9 @@
+public class LogicalOrAndOr {
+	public static boolean test(boolean a, boolean b, boolean c, boolean d) {
+		if ((a || b) && (c || d)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+}

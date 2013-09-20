@@ -1,0 +1,10 @@
+interface I : J {
+    int m();
+    int this[int i] {
+        get;
+    }
+    int Prop {
+        get;
+        set;
+    }
+}

@@ -1,0 +1,3 @@
+stab.tree.ExpressionTree<interface stab.query.FunctionIntInt> tree =
+	(#Parameter0#int#p#) =>
+    #Parameter0#int#p#;

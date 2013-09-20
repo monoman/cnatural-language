@@ -1,0 +1,17 @@
+using java.lang;
+using java.util;
+using stab.query;
+
+public class ToTFloatMap {
+	public static boolean test() {
+		var map = Query.asIterable(new[] { 1f, 2f, 3f }).toMap(p => "K" + p);
+		return map.containsValue(1f) &&
+				map.containsValue(2f) &&
+				map.containsValue(3f) &&
+				!map.containsValue(4f) &&
+				map.containsKey("K1.0") &&
+				map.containsKey("K2.0") &&
+				map.containsKey("K3.0") &&
+				!map.containsKey("K4.0");
+	}
+}

@@ -1,0 +1,6 @@
+public class FloatNarrowing {
+	public static boolean test() {
+		float f = -3.33f;
+		return (long)f == -3L;
+	}
+}

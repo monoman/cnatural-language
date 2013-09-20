@@ -1,0 +1,693 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using java.io;
+using java.util;
+using javax.xml.xpath;
+using stab.query;
+using stab.reflection;
+using stab.tools.helpers;
+using stab.tools.parser;
+using stab.tools.syntaxtree;
+
+using Document = org.w3c.dom.Document;
+using Element = org.w3c.dom.Element;
+using Node = org.w3c.dom.Node;
+ 
+package stab.tools.compiler {
+
+    class DocumentationBuilder {
+        private CompilerContext context;
+        private Document document;
+        private Element members;
+        private TypeInfo type;
+        private FieldInfo field;
+        private MethodInfo method;
+        private MemberKind memberKind;
+        private SyntaxNode node;
+        
+        DocumentationBuilder(CompilerContext context, Element members) {
+            this.context = context;
+            this.members = members;
+            this.document = members.getOwnerDocument();
+        }
+        
+        void buildPackageDocumentation(String packageName, PackageDeclarationNode packageDeclaration) {
+            var comment = ParserHelper.decodeDocumentation(context.Text, packageDeclaration.DocumentationOffset,
+                    packageDeclaration.DocumentationLength);
+            memberKind = null;
+            node = packageDeclaration;
+            appendDocumentation("N:" + packageName, comment);
+        }
+
+        void buildTypeDocumentation(TypeInfo type, TypeMemberNode typeDeclaration) {
+            var comment = ParserHelper.decodeDocumentation(context.Text, typeDeclaration.DocumentationOffset,
+                    typeDeclaration.DocumentationLength);
+            memberKind = MemberKind.Type;
+            this.type = type;
+            node = typeDeclaration;
+            appendDocumentation(getIdString(type), comment);
+        }
+
+        void buildFieldDocumentation(FieldInfo field, TypeMemberNode fieldDeclaration) {
+            var comment = ParserHelper.decodeDocumentation(context.Text, fieldDeclaration.DocumentationOffset,
+                    fieldDeclaration.DocumentationLength);
+            memberKind = MemberKind.Field;
+            this.field = field;
+            node = fieldDeclaration;
+            appendDocumentation(getIdString(field), comment);
+        }
+
+        void buildMethodDocumentation(MethodInfo method, TypeMemberNode methodDeclaration) {
+            var comment = ParserHelper.decodeDocumentation(context.Text, methodDeclaration.DocumentationOffset,
+                    methodDeclaration.DocumentationLength);
+            memberKind = MemberKind.Method;
+            this.method = method;
+            node = methodDeclaration;
+            appendDocumentation(getIdString(method), comment);
+        }
+
+        void buildIndexerDocumentation(MethodInfo method, TypeMemberNode indexerDeclaration) {
+            var comment = ParserHelper.decodeDocumentation(context.Text, indexerDeclaration.DocumentationOffset,
+                    indexerDeclaration.DocumentationLength);
+            memberKind = MemberKind.Indexer;
+            this.method = method;
+            node = indexerDeclaration;
+            appendDocumentation(getIdString(method), comment);
+        }
+
+        void buildPropertyDocumentation(MethodInfo method, String name, TypeMemberNode propertyDeclaration) {
+            var comment = ParserHelper.decodeDocumentation(context.Text, propertyDeclaration.DocumentationOffset,
+                    propertyDeclaration.DocumentationLength);
+            memberKind = MemberKind.Property;
+            this.method = method;
+            node = propertyDeclaration;
+            appendDocumentation(getIdString(method), comment);
+        }
+        
+        private static String getIdString(TypeInfo type) {
+            return "T:" + getIdName(type);
+        }
+        
+        private static String getIdString(FieldInfo field) {
+            return "F:" + getIdName(field.DeclaringType) + "." + field.Name;
+        }
+        
+        private static String getIdString(MethodInfo method) {
+            var p = method.getUserData(typeof(PropertyMemberInfo));
+            var sb = new StringBuilder();
+            if (p != null) {
+                sb.append("P:");
+                sb.append(getIdName(method.DeclaringType)).append('.');
+                sb.append(p.Name);
+                return sb.toString();
+            }
+            var i = method.getUserData(typeof(IndexerMemberInfo));
+            int nparams = method.Parameters.count();
+            if (i != null) {
+                sb.append("P:");
+                if (method.ReturnType == method.ReturnType.Library.VoidType) {
+                    nparams--;
+                }
+            } else {
+                sb.append("M:");
+            }
+            sb.append(getIdName(method.DeclaringType)).append('.');
+            sb.append((method.Name.equals("<init>")) ? "#init" : method.Name);
+            if (method.Parameters.any()) {
+                sb.append('(');
+                var first = true;
+                foreach (var t in method.Parameters.take(nparams).select(p => p.Type)) {
+                    if (first) {
+                        first = false;
+                    } else {
+                        sb.append(",");
+                    }
+                    sb.append(getIdName(t));
+                }
+                sb.append(')');
+            }
+            return sb.toString();
+        }
+ 
+        private static String getIdName(TypeInfo type) {
+            switch (type.TypeKind) {
+            case Boolean:
+                return "boolean";
+            case Byte:
+                return "byte";
+            case Char:
+                return "char";
+            case Double:
+                return "double";
+            case Float:
+                return "float";
+            case Int:
+                return "int";
+            case Long:
+                return "long";
+            case Short:
+                return "short";
+            case Void:
+                return "void";
+            case Array:
+                return getIdName(type.ElementType) + "[]";
+            default:
+                var result = type.FullName.replace('/', '.').replace('$', '.');
+                if (type.OriginalTypeDefinition != type && type.GenericArguments.any()) {
+                    var sb = new StringBuilder();
+                    sb.append(result).append('{');
+                    var first = true;
+                    foreach (var t in type.GenericArguments) {
+                        if (first) {
+                            first = false;
+                        } else {
+                            sb.append(", ");
+                        }
+                        sb.append(getIdName(t));
+                    }
+                    sb.append('}');
+                    result = sb.toString();
+                }
+                return result;
+            }
+        }
+ 
+        private void appendDocumentation(String idString, String comment) {
+            var xml = "<?xml version=\"1.0\"?><member name=\"" + idString + "\">" + comment + "</member>";
+            try {
+                var doc = XmlHelper.load(new StringReader(xml));
+                var member = doc.getDocumentElement();
+                var copy = (Element)document.importNode(member, false);
+                members.appendChild(copy);
+                foreach (var e in member.elements()) {
+                    copyTopLevelElement(e, copy);
+                }
+            } catch (org.xml.sax.SAXException) {
+                context.addWarning(CompileErrorId.MalformedXmlComment, node, idString);
+                members.appendChild(document.createComment(idString + " is documented with a malformed XML comment"));
+            }
+        }
+
+        private void copyTopLevelElement(Element e, Element parent) {
+            if (e.getNamespaceURI() == null) {
+                switch (e.getLocalName()) {
+                case "summary":
+                case "remarks":
+                case "value":
+                case "returns":
+                case "example":
+                    parent.appendChild(copyContainer(e));
+                    break;
+                case "include":
+                    include(e, parent, false);
+                    break;
+                case "exception":
+                    parent.appendChild(copyException(e));
+                    break;
+                case "param":
+                    parent.appendChild(copyParam(e));
+                    break;
+                case "typeparam":
+                    parent.appendChild(copyTypeparam(e));
+                    break;
+                case "seealso":
+                    parent.appendChild(copySeealso(e));
+                    break;
+                case "code":
+                default:
+                    parent.appendChild((Element)document.importNode(e, true));
+                    break;
+                }
+            } else {
+                parent.appendChild((Element)document.importNode(e, true));
+            }
+        }
+        
+        private Element copyContainer(Element container) {
+            var result = (Element)document.importNode(container, false);
+            copyNestedElementChildren(result, container);
+            return result;
+        }
+        
+        private void include(Element include, Element parent, boolean nested) {
+            var dir = PathHelper.getDirectoryName(node.Filename);
+            var file = include.getAttribute("file");
+            if (Helper.isNullOrEmpty(file)) {
+                context.addWarning(CompileErrorId.MissingDocAttribute, node, "file", "include");
+                parent.appendChild(document.importNode(include, true));
+                return;
+            }
+            var path = include.getAttribute("path");
+            if (Helper.isNullOrEmpty(file)) {
+                context.addWarning(CompileErrorId.MissingDocAttribute, node, "path", "include");
+                parent.appendChild(document.importNode(include, true));
+                return;
+            }
+            var filename = PathHelper.combine(dir, include.getAttribute("file"));
+            var includeFile = new File(filename);
+            try {
+                var doc = XmlHelper.load(new FileInputStream(includeFile));
+                var nodeList = doc.getNodeList(path);
+                for (int i = 0; i < nodeList.getLength(); i++) {
+                    var node = nodeList.item(i);
+                    if (node.getNodeType() == Node.ELEMENT_NODE) {
+                        if (nested) {
+                            copyNestedElement((Element)node, parent);
+                        } else {
+                            copyTopLevelElement((Element)node, parent);
+                        }
+                    } else {
+                        parent.appendChild(document.importNode(include, true));
+                    }
+                }
+            } catch (XPathExpressionException) {
+                context.addWarning(CompileErrorId.IncludePathInvalid, node, path);
+                parent.appendChild(document.importNode(include, true));
+            } catch (org.xml.sax.SAXException) {
+                context.addWarning(CompileErrorId.IncludeFileInvalid, node, filename);
+                parent.appendChild(document.importNode(include, true));
+            } catch (IOException) {
+                context.addWarning(CompileErrorId.IncludeFileNotFound, node, filename);
+                parent.appendChild(document.importNode(include, true));
+            }
+        }
+        
+        private Element copyException(Element exception) {
+            var result = (Element)document.importNode(exception, true);
+            replaceCref(result, true);
+            copyNestedElementChildren(result, exception);
+            return result;
+        }
+
+        private void replaceCref(Element element, boolean exception) {
+            var cref = element.getAttribute("cref");
+            if (Helper.isNullOrEmpty(cref)) {
+                context.addWarning(CompileErrorId.MissingDocAttribute, node, "cref", element.getLocalName());
+            } else {
+                if (cref.length() > 1 && cref[1] == ':') {
+                    return;
+                }
+                String arguments = null;
+                int idx = cref.indexOf('(');
+                if (idx != -1) {
+                    arguments = cref.substring(idx);
+                    cref = cref.substring(0, idx);
+                }
+                idx = cref.indexOf('.');
+                String name;
+                if (idx == -1) {
+                    name = cref;
+                    cref = null;
+                } else {
+                    name = cref.substring(0, idx);
+                    cref = cref.substring(idx + 1);
+                }
+                var members = context.MemberResolver.resolveName(context.CurrentType, name, Query.empty<TypeInfo>()).toList();
+                if (!members.any()) {
+                    if (cref == null) {
+                        context.addWarning(CompileErrorId.UnresolvedCref, node, element.getAttribute("cref"));
+                        element.setAttribute("cref", "!" + element.getAttribute("cref"));
+                        return;
+                    }
+                    var packageName = context.MemberResolver.getPackageFromAlias(name);
+                    if (packageName == null) {
+                        if (context.MemberResolver.TypeFinder.getSubPackages(name).any()
+                         || context.MemberResolver.TypeFinder.getClasses(name).any()) {
+                            packageName = name;
+                        } else {
+                            context.addWarning(CompileErrorId.UnresolvedCref, node, element.getAttribute("cref"));
+                            element.setAttribute("cref", "!" + element.getAttribute("cref"));
+                            return;
+                        }
+                    }
+                    boolean found;
+                    do {
+                        idx = cref.indexOf('.');
+                        if (idx == -1) {
+                            name = cref;
+                            cref = null;
+                        } else {
+                            name = cref.substring(0, idx);
+                            cref = cref.substring(idx + 1);
+                        }
+                        found = false;
+                        foreach (var s in context.MemberResolver.TypeFinder.getSubPackages(packageName)) {
+                            if (s.equals(name)) {
+                                packageName = packageName + '/' + name;
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found && !context.MemberResolver.TypeFinder.getClasses(packageName).contains(name)) {
+                            context.addWarning(CompileErrorId.UnresolvedCref, node, element.getAttribute("cref"));
+                            element.setAttribute("cref", "!" + element.getAttribute("cref"));
+                            return;
+                        }
+                    } while (cref != null && found);
+                    var type = context.TypeSystem.getType(packageName + '/' + name);
+                    replaceCref(element, exception, type, cref, arguments);
+                } else {
+                    replaceCref(element, exception, members, cref, arguments);
+                }
+            }
+        }
+        
+        private void replaceCref(Element element, boolean exception, TypeInfo type, String suffix, String arguments) {
+            if (suffix == null) {
+                if (arguments != null) {
+                    context.addWarning(CompileErrorId.UnresolvedCref, node, element.getAttribute("cref"));
+                    element.setAttribute("cref", "!" + element.getAttribute("cref"));
+                    return;
+                }
+                if (exception) {
+                    if (!context.TypeSystem.getType("java/lang/Throwable").isAssignableFrom(type)) {
+                        context.addWarning(CompileErrorId.ExpectedExceptionInCref, node, element.getAttribute("cref"));
+                        element.setAttribute("cref", "!" + element.getAttribute("cref"));
+                        return;
+                    }
+                }
+                element.setAttribute("cref", getIdString(type));
+            } else {
+                int idx = suffix.indexOf('.');
+                String name;
+                if (idx == -1) {
+                    name = suffix;
+                    suffix = null;
+                } else {
+                    name = suffix.substring(0, idx);
+                    suffix = suffix.substring(idx + 1);
+                }
+                var members = MemberInfo.getMembers(context.AnnotatedTypeSystem, context.CurrentType, type, name, true);
+                replaceCref(element, exception, members, suffix, arguments);
+            }
+        }
+        
+        private void replaceCref(Element element, boolean exception, Iterable<MemberInfo> members, String suffix, String arguments) {
+            if (members.count() > 1 && !members.all(p => p.MemberKind == MemberKind.Method)) {
+                context.addWarning(CompileErrorId.UnresolvedCref, node, element.getAttribute("cref"));
+                element.setAttribute("cref", "!" + element.getAttribute("cref"));
+                return;
+            }
+            var member = members.first();
+            switch (member.MemberKind) {
+            case Type:
+                replaceCref(element, exception, member.Type, suffix, arguments);
+                break;
+            case Field:
+                if (exception) {
+                    context.addWarning(CompileErrorId.ExpectedExceptionInCref, node, element.getAttribute("cref"));
+                    element.setAttribute("cref", "!" + element.getAttribute("cref"));
+                    return;
+                }
+                if (suffix != null || arguments != null) {
+                    context.addWarning(CompileErrorId.UnresolvedCref, node, element.getAttribute("cref"));
+                    element.setAttribute("cref", "!" + element.getAttribute("cref"));
+                    return;
+                }
+                element.setAttribute("cref", getIdString(member.Field));
+                break;
+            
+            case Property:
+                if (exception) {
+                    context.addWarning(CompileErrorId.ExpectedExceptionInCref, node, element.getAttribute("cref"));
+                    element.setAttribute("cref", "!" + element.getAttribute("cref"));
+                    return;
+                }
+                if (suffix != null || arguments != null) {
+                    context.addWarning(CompileErrorId.UnresolvedCref, node, element.getAttribute("cref"));
+                    element.setAttribute("cref", "!" + element.getAttribute("cref"));
+                    return;
+                }
+                element.setAttribute("cref", getIdString(member.GetAccessor ?? member.SetAccessor));
+                break;
+            
+            case Method:
+                if (!exception && suffix == null) {
+                    if (arguments == null && members.count() == 1) {
+                        element.setAttribute("cref", getIdString(member.Method));
+                        return;
+                    } else if (arguments != null && arguments.endsWith(")")) {
+                        var args = new ArrayList<TypeInfo>();
+                        if (arguments.length() > 2) {
+                            arguments = arguments.substring(1, arguments.length() - 1);
+                            int idx;
+                            while ((idx = arguments.indexOf(',')) != -1) {
+                                var name = arguments.substring(0, idx);
+                                arguments = arguments.substring(idx + 1);
+                                var type = getType(name);
+                                if (type == null) {
+                                    goto failed;
+                                }
+                                args.add(type);
+                            }
+                            if (arguments.length() == 0) {
+                                goto failed;
+                            }
+                            var type = getType(arguments);
+                            if (type == null) {
+                                goto failed;
+                            }
+                            args.add(type);
+                        }
+                        foreach (var m in members) {
+                            if (m.Method.Parameters.select(p => p.Type).sequenceEqual(args)) {
+                                element.setAttribute("cref", getIdString(m.Method));
+                                return;
+                            }
+                        }
+                    }
+                }
+            failed:
+                context.addWarning(CompileErrorId.UnresolvedCref, node, element.getAttribute("cref"));
+                element.setAttribute("cref", "!" + element.getAttribute("cref"));
+                break;
+                
+            default:
+                break;
+            }
+        }
+
+        private TypeInfo getType(String name) {
+            name = name.trim();
+            int dimensions = 0;
+            while (name.endsWith("[]")) {
+                dimensions++;
+                name = name.substring(0, name.length() - 2);
+            }
+            TypeInfo result;
+            switch (name) {
+            case "boolean":
+                result = context.TypeSystem.BooleanType;
+                break;
+            case "byte":
+                result = context.TypeSystem.ByteType;
+                break;
+            case "char":
+                result = context.TypeSystem.CharType;
+                break;
+            case "short":
+                result = context.TypeSystem.ShortType;
+                break;
+            case "int":
+                result = context.TypeSystem.IntType;
+                break;
+            case "long":
+                result = context.TypeSystem.LongType;
+                break;
+            case "float":
+                result = context.TypeSystem.FloatType;
+                break;
+            case "double":
+                result = context.TypeSystem.DoubleType;
+                break;
+            default:
+                int idx = name.indexOf(".");
+                String prefix;
+                if (idx == -1) {
+                    prefix = name;
+                    name = null;
+                } else {
+                    prefix = name.substring(0, idx);
+                    name = name.substring(idx + 1);
+                }
+                var members = context.MemberResolver.resolveName(context.CurrentType, prefix, Query.empty<TypeInfo>()).toList();
+                if (!members.any()) {
+                    if (name == null) {
+                        return null;
+                    }
+                    var packageName = context.MemberResolver.getPackageFromAlias(prefix);
+                    if (packageName == null) {
+                        if (context.MemberResolver.TypeFinder.getSubPackages(prefix).any()
+                         || context.MemberResolver.TypeFinder.getClasses(prefix).any()) {
+                            packageName = prefix;
+                        } else {
+                            return null;
+                        }
+                    }
+                    var found = false;
+                    do {
+                        idx = name.indexOf('.');
+                        if (idx == -1) {
+                            prefix = name;
+                            name = null;
+                        } else {
+                            prefix = name.substring(0, idx);
+                            name = name.substring(idx + 1);
+                        }
+                        foreach (var s in context.MemberResolver.TypeFinder.getSubPackages(packageName)) {
+                            if (s.equals(prefix)) {
+                                packageName = packageName + '/' + prefix;
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found && !context.MemberResolver.TypeFinder.getClasses(packageName).contains(prefix)) {
+                            return null;
+                        }
+                    } while (name != null && found);
+                    result = context.TypeSystem.getType(packageName + '/' + prefix);
+                } else if (members.count() > 1) {
+                    return null;
+                } else {
+                    result = members.first().Type;
+                }
+                break;
+            }
+            while (dimensions-- > 0) {
+                type = type.ArrayType;
+            }
+            return result;
+        }
+        
+        private Element copySee(Element see) {
+            var result = (Element)document.importNode(see, false);
+            replaceCref(result, false);
+            copyNestedElementChildren(result, see);
+            return result;
+        }
+        
+        private Element copySeealso(Element seealso) {
+            var result = (Element)document.importNode(seealso, false);
+            replaceCref(result, false);
+            copyNestedElementChildren(result, seealso);
+            return result;
+        }
+        
+        private Element copyParam(Element param) {
+            var result = (Element)document.importNode(param, false);
+            validateParam(param);
+            copyNestedElementChildren(result, param);
+            return result;
+        }
+
+        private void validateParam(Element param) {
+            if (memberKind != MemberKind.Method && memberKind != MemberKind.Indexer) {
+                context.addWarning(CompileErrorId.InvalidParamElement, node);
+            } else {
+                var name = param.getAttribute("name");
+                if (Helper.isNullOrEmpty(name)) {
+                    context.addWarning(CompileErrorId.MissingDocAttribute, node, "name", param.getLocalName());
+                } else if (!method.Parameters.any(p => p.Name.equals(name))) {
+                    context.addWarning(CompileErrorId.InvalidParamNameAttribute, node, name);
+                }
+            }
+        }
+        
+        private Element copyTypeparam(Element typeparam) {
+            var result = (Element)document.importNode(typeparam, false);
+            validateTypeparam(typeparam);
+            copyNestedElementChildren(result, typeparam);
+            return result;
+        }
+
+        private void validateTypeparam(Element typeparam) {
+            if (memberKind == MemberKind.Type) {
+                var name = typeparam.getAttribute("name");
+                if (!type.GenericArguments.any(p => p.FullName.equals(name))) {
+                    context.addWarning(CompileErrorId.InvalidTypeparamNameAttribute, node, name);
+                }
+            } else if (memberKind == MemberKind.Method) {
+                var name = typeparam.getAttribute("name");
+                if (Helper.isNullOrEmpty(name)) {
+                    context.addWarning(CompileErrorId.MissingDocAttribute, node, "name", typeparam.getLocalName());
+                } else if (!method.GenericArguments.any(p => p.FullName.equals(name))) {
+                    context.addWarning(CompileErrorId.InvalidTypeparamNameAttribute, node, name);
+                }
+            } else {
+                context.addWarning(CompileErrorId.InvalidTypeparamElement, node);
+            }
+        }
+        
+        private Element copyParamref(Element paramref) {
+            var result = (Element)document.importNode(paramref, false);
+            validateParam(paramref);
+            copyNestedElementChildren(result, paramref);
+            return result;
+        }
+        
+        private Element copyTypeparamref(Element typeparamref) {
+            var result = (Element)document.importNode(typeparamref, false);
+            validateTypeparam(typeparamref);
+            copyNestedElementChildren(result, typeparamref);
+            return result;
+        }
+        
+        private void copyNestedElementChildren(Element copy, Element nested) {
+            for (var n = nested.getFirstChild(); n != null; n = n.getNextSibling()) {
+                if (n.getNodeType() == Node.ELEMENT_NODE) {
+                    copyNestedElement((Element)n, copy);
+                } else {
+                    copy.appendChild(document.importNode(n, true));
+                }
+            }
+        }
+        
+        private void copyNestedElement(Element nested, Element parent) {
+            if (nested.getNamespaceURI() == null) {
+                switch (nested.getLocalName()) {
+                case "c":
+                case "para":
+                case "list":
+                case "listheader":
+                case "item":
+                case "term":
+                case "description":
+                    parent.appendChild(copyContainer(nested));
+                    break;
+                case "include":
+                    include(nested, parent, true);
+                    break;
+                case "see":
+                    parent.appendChild(copySee(nested));
+                    break;
+                case "paramref":
+                    parent.appendChild(copyParamref(nested));
+                    break;
+                case "typeparamref":
+                    parent.appendChild(copyTypeparamref(nested));
+                    break;
+                default:
+                    parent.appendChild((Element)document.importNode(nested, true));
+                    break;
+                }
+            } else {
+                parent.appendChild((Element)document.importNode(nested, true));
+            }
+        }
+    }
+}

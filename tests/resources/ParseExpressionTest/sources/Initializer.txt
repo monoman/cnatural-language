@@ -1,0 +1,10 @@
+contacts = new List<Contact> {
+	new Contact {
+		Name = "Chris Smith",
+		PhoneNumbers = { "206-555-0101", "425-882-8080" }
+	},
+	new Contact {
+		Name = "Bob Harris",
+		PhoneNumbers = { "650-555-0199" }
+	}
+}

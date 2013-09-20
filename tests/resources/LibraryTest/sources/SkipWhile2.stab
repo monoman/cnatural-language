@@ -1,0 +1,8 @@
+using stab.query;
+
+public class SkipWhile2 {
+	public static boolean test() {
+		var it = Query.asIterable(new[] { -2, -1, 0, 1, 2 });
+		return it.skipWhile(p => p < 0).sequenceEqual(Query.range(0, 3));
+	}
+}

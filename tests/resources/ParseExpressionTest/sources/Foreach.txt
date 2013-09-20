@@ -1,0 +1,5 @@
+() => {
+	foreach (var v in source) {
+		Console.WriteLine(v.ToString());
+	}
+}

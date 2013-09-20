@@ -1,0 +1,1159 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using java.util;
+using org.objectweb.asm;
+using stab.query;
+
+package stab.reflection {
+
+    public class LocalInfo {
+        private TypeInfo type;
+        private String name;
+        int index;
+        Label beginLabel;
+        Label endLabel;
+        
+        LocalInfo(TypeInfo type, String name, int index, Label beginLabel, Label endLabel) {
+            this.type = type;
+            this.name = name;
+            this.index = index;
+            this.beginLabel = beginLabel;
+            this.endLabel = endLabel;
+        }
+
+        public TypeInfo Type {
+            get {
+                return type;
+            }
+        }
+
+        public String Name {
+            get {
+                return name;
+            }
+        }
+
+        public int Index {
+            get {
+                return index;
+            }
+        }
+    }
+
+    public class CodeGenerator {
+        private MethodBuilder method;
+        private ArrayList<Instruction> instructions;
+        private ArrayList<ScopeInfo> scopes;
+        private ArrayList<LocalInfo> locals;
+        private ArrayList<ExceptionHandler> exceptionTable;
+        private ArrayList<LineNumberInfo> lineNumbers;
+    
+        CodeGenerator(MethodBuilder method) {
+            this.instructions = new ArrayList<Instruction>();
+            this.method = method;
+            this.scopes = new ArrayList<ScopeInfo>();
+            this.locals = new ArrayList<LocalInfo>();
+            this.exceptionTable = new ArrayList<ExceptionHandler>();
+            this.lineNumbers = new ArrayList<LineNumberInfo>();
+        }
+
+        public MethodBuilder Method {
+            get {
+                return method;
+            }
+        }
+        
+        public Iterable<Instruction> Instructions {
+            get {
+                return instructions;
+            }
+        }
+
+        public LabelMarker defineLabel() {
+            checkCreated();
+            return new LabelMarker(new Label());
+        }
+        
+        public void markLabel(LabelMarker label) {
+            checkCreated();
+            instructions.add(label);
+        }
+
+        public void lineNumber(int line, LabelMarker label) {
+            checkCreated();
+            lineNumbers.add(new LineNumberInfo(line, label.Label));
+        }
+        
+        public void removeThis() {
+            checkCreated();
+            locals.remove(0);
+            foreach (var l in locals) {
+            	l.index--;
+            }
+            for (int i = 0; i < instructions.size(); i++) {
+            	var inst = instructions[i];
+                if (inst instanceof LocalVariableInstruction) {
+                    var lv = (LocalVariableInstruction)inst;
+                    instructions.set(i, new LocalVariableInstruction(lv.Opcode, lv.LocalVariable - 1));
+                } else if (inst instanceof IncrementInstruction) {
+                    var ii = (IncrementInstruction)inst;
+                    instructions.set(i, new IncrementInstruction(ii.LocalVariable - 1, ii.Increment));
+                }
+            }
+        }
+        
+        public void beginScope() {
+            checkCreated();
+            if (scopes.isEmpty()) {
+                var beginLabel = new Label();
+                instructions.add(new LabelMarker(beginLabel));
+                this.scopes.add(new ScopeInfo(0, new Label()));
+                if (!method.IsStatic) {
+                    declareLocal(method.DeclaringType, "this").beginLabel = beginLabel;
+                }
+                foreach (var p in method.Parameters) {
+                    declareLocal(p.Type, p.Name).beginLabel = beginLabel;
+                }
+            } else {
+                this.scopes.add(new ScopeInfo(this.scopes[this.scopes.size() - 1].localIndex, new Label()));
+            }
+        }
+        
+        public void endScope() {
+            checkCreated();
+            if (this.scopes.isEmpty()) {
+                return;
+            }
+            var currentScope = this.scopes.remove(this.scopes.size() - 1);
+            if (this.scopes.isEmpty() || currentScope.locals.size() > 0) {
+                instructions.add(new LabelMarker(currentScope.endLabel));
+            }
+        }
+
+        public void emptyScope() {
+            while (!this.scopes.isEmpty()) {
+                endScope();
+            }
+        }
+        
+        public LocalInfo declareLocal(TypeInfo type, String name) {
+            return declareLocal(type, name, false);
+        }
+
+        public LocalInfo declareLocal(TypeInfo type, String name, boolean mark) {
+            checkCreated();
+            var currentScope = this.scopes[this.scopes.size() - 1];
+            var result = new LocalInfo(type, name, currentScope.localIndex, null, currentScope.endLabel);
+            switch (type.getTypeKind()) {
+            case Long:
+            case Double:
+                currentScope.localIndex += 2;
+                break;
+            default:
+                currentScope.localIndex++;
+                break;
+            }
+            locals.add(result);
+            currentScope.locals[name] = result;
+        
+            if (mark) {
+                if (result.beginLabel == null) {
+                    if (instructions[instructions.size() - 1].Opcode == Opcode.LabelMarker) {
+                        result.beginLabel = ((LabelMarker)instructions[instructions.size() - 1]).Label;
+                    } else {
+                        result.beginLabel = new Label();
+                        instructions.add(new LabelMarker(result.beginLabel));
+                    }
+                }
+            }
+            return result;
+        }
+        
+        public LocalInfo getLocal(String name) {
+            for (int i = scopes.size() - 1; i >= 0; --i) {
+                var l = this.scopes[i].locals[name];
+                if (l != null) {
+                    return l;
+                }
+            }
+            throw new IllegalStateException("Undefined local: " + name);
+        }
+
+        public Iterable<String> getAllLocalNames() {
+            var result = Query.empty<String>();
+            for (int i = scopes.size() - 1; i >= 0; --i) {
+                result = result.concat(scopes[i].locals.keySet());
+            }
+            return result;
+        }
+        
+        public void exceptionHandler(LabelMarker from, LabelMarker to, LabelMarker target, TypeInfo type) {
+            exceptionTable.add(new ExceptionHandler(from.Label, to.Label, target.Label, type));
+        }
+
+        public void emit(Opcode opcode) {
+            checkCreated();
+            switch (opcode) {
+            case Aaload:
+                instructions.add(Instruction.Aaload);
+                break;
+
+            case Aastore:
+                instructions.add(Instruction.Aastore);
+                break;
+
+            case Aconst_Null:
+                instructions.add(Instruction.Aconst_Null);
+                break;
+
+            case Areturn:
+                instructions.add(Instruction.Areturn);
+                break;
+
+            case Arraylength:
+                instructions.add(Instruction.Arraylength);
+                break;
+
+            case Athrow:
+                instructions.add(Instruction.Athrow);
+                break;
+
+            case Baload:
+                instructions.add(Instruction.Baload);
+                break;
+
+            case Bastore:
+                instructions.add(Instruction.Bastore);
+                break;
+
+            case Caload:
+                instructions.add(Instruction.Caload);
+                break;
+
+            case Castore:
+                instructions.add(Instruction.Castore);
+                break;
+
+            case D2f:
+                instructions.add(Instruction.D2f);
+                break;
+
+            case D2i:
+                instructions.add(Instruction.D2i);
+                break;
+
+            case D2l:
+                instructions.add(Instruction.D2l);
+                break;
+
+            case Dadd:
+                instructions.add(Instruction.Dadd);
+                break;
+
+            case Daload:
+                instructions.add(Instruction.Daload);
+                break;
+
+            case Dastore:
+                instructions.add(Instruction.Dastore);
+                break;
+
+            case Dcmpg:
+                instructions.add(Instruction.Dcmpg);
+                break;
+
+            case Dcmpl:
+                instructions.add(Instruction.Dcmpl);
+                break;
+
+            case Dconst_0:
+                instructions.add(Instruction.Dconst_0);
+                break;
+
+            case Dconst_1:
+                instructions.add(Instruction.Dconst_1);
+                break;
+
+            case Ddiv:
+                instructions.add(Instruction.Ddiv);
+                break;
+
+            case Dmul:
+                instructions.add(Instruction.Dmul);
+                break;
+
+            case Dneg:
+                instructions.add(Instruction.Dneg);
+                break;
+
+            case Drem:
+                instructions.add(Instruction.Drem);
+                break;
+
+            case Dreturn:
+                instructions.add(Instruction.Dreturn);
+                break;
+                
+            case Dsub:
+                instructions.add(Instruction.Dsub);
+                break;
+
+            case Dup:
+                instructions.add(Instruction.Dup);
+                break;
+
+            case Dup_X1:
+                instructions.add(Instruction.Dup_X1);
+                break;
+
+            case Dup_X2:
+                instructions.add(Instruction.Dup_X2);
+                break;
+
+            case Dup2:
+                instructions.add(Instruction.Dup2);
+                break;
+
+            case Dup2_X1:
+                instructions.add(Instruction.Dup2_X1);
+                break;
+
+            case Dup2_X2:
+                instructions.add(Instruction.Dup2_X2);
+                break;
+
+            case F2d:
+                instructions.add(Instruction.F2d);
+                break;
+
+            case F2i:
+                instructions.add(Instruction.F2i);
+                break;
+
+            case F2l:
+                instructions.add(Instruction.F2l);
+                break;
+
+            case Fadd:
+                instructions.add(Instruction.Fadd);
+                break;
+
+            case Faload:
+                instructions.add(Instruction.Faload);
+                break;
+
+            case Fastore:
+                instructions.add(Instruction.Fastore);
+                break;
+
+            case Fcmpg:
+                instructions.add(Instruction.Fcmpg);
+                break;
+
+            case Fcmpl:
+                instructions.add(Instruction.Fcmpl);
+                break;
+
+            case Fconst_0:
+                instructions.add(Instruction.Fconst_0);
+                break;
+
+            case Fconst_1:
+                instructions.add(Instruction.Fconst_1);
+                break;
+
+            case Fconst_2:
+                instructions.add(Instruction.Fconst_2);
+                break;
+
+            case Fdiv:
+                instructions.add(Instruction.Fdiv);
+                break;
+
+            case Fmul:
+                instructions.add(Instruction.Fmul);
+                break;
+
+            case Fneg:
+                instructions.add(Instruction.Fneg);
+                break;
+
+            case Frem:
+                instructions.add(Instruction.Frem);
+                break;
+
+            case Freturn:
+                instructions.add(Instruction.Freturn);
+                break;
+                
+            case Fsub:
+                instructions.add(Instruction.Fsub);
+                break;
+
+            case I2b:
+                instructions.add(Instruction.I2b);
+                break;
+
+            case I2c:
+                instructions.add(Instruction.I2c);
+                break;
+
+            case I2d:
+                instructions.add(Instruction.I2d);
+                break;
+
+            case I2f:
+                instructions.add(Instruction.I2f);
+                break;
+
+            case I2l:
+                instructions.add(Instruction.I2l);
+                break;
+
+            case I2s:
+                instructions.add(Instruction.I2s);
+                break;
+
+            case Iadd:
+                instructions.add(Instruction.Iadd);
+                break;
+
+            case Iaload:
+                instructions.add(Instruction.Iaload);
+                break;
+
+            case Iand:
+                instructions.add(Instruction.Iand);
+                break;
+
+            case Iastore:
+                instructions.add(Instruction.Iastore);
+                break;
+
+            case Iconst_0:
+                instructions.add(Instruction.Iconst_0);
+                break;
+
+            case Iconst_1:
+                instructions.add(Instruction.Iconst_1);
+                break;
+
+            case Iconst_2:
+                instructions.add(Instruction.Iconst_2);
+                break;
+
+            case Iconst_3:
+                instructions.add(Instruction.Iconst_3);
+                break;
+
+            case Iconst_4:
+                instructions.add(Instruction.Iconst_4);
+                break;
+
+            case Iconst_5:
+                instructions.add(Instruction.Iconst_5);
+                break;
+
+            case Iconst_M1:
+                instructions.add(Instruction.Iconst_M1);
+                break;
+
+            case Idiv:
+                instructions.add(Instruction.Idiv);
+                break;
+
+            case Imul:
+                instructions.add(Instruction.Imul);
+                break;
+
+            case Ineg:
+                instructions.add(Instruction.Ineg);
+                break;
+
+            case Ior:
+                instructions.add(Instruction.Ior);
+                break;
+
+            case Irem:
+                instructions.add(Instruction.Irem);
+                break;
+
+            case Ireturn:
+                instructions.add(Instruction.Ireturn);
+                break;
+                
+            case Ishl:
+                instructions.add(Instruction.Ishl);
+                break;
+
+            case Ishr:
+                instructions.add(Instruction.Ishr);
+                break;
+
+            case Isub:
+                instructions.add(Instruction.Isub);
+                break;
+
+            case Iushr:
+                instructions.add(Instruction.Iushr);
+                break;
+
+            case Ixor:
+                instructions.add(Instruction.Ixor);
+                break;
+
+            case L2d:
+                instructions.add(Instruction.L2d);
+                break;
+
+            case L2f:
+                instructions.add(Instruction.L2f);
+                break;
+
+            case L2i:
+                instructions.add(Instruction.L2i);
+                break;
+
+            case Ladd:
+                instructions.add(Instruction.Ladd);
+                break;
+
+            case Laload:
+                instructions.add(Instruction.Laload);
+                break;
+
+            case Land:
+                instructions.add(Instruction.Land);
+                break;
+
+            case Lastore:
+                instructions.add(Instruction.Lastore);
+                break;
+
+            case Lcmp:
+                instructions.add(Instruction.Lcmp);
+                break;
+
+            case Lconst_0:
+                instructions.add(Instruction.Lconst_0);
+                break;
+
+            case Lconst_1:
+                instructions.add(Instruction.Lconst_1);
+                break;
+
+            case Ldiv:
+                instructions.add(Instruction.Ldiv);
+                break;
+
+            case Lmul:
+                instructions.add(Instruction.Lmul);
+                break;
+
+            case Lneg:
+                instructions.add(Instruction.Lneg);
+                break;
+
+            case Lor:
+                instructions.add(Instruction.Lor);
+                break;
+
+            case Lrem:
+                instructions.add(Instruction.Lrem);
+                break;
+
+            case Lreturn:
+                instructions.add(Instruction.Lreturn);
+                break;
+                
+            case Lshl:
+                instructions.add(Instruction.Lshl);
+                break;
+
+            case Lshr:
+                instructions.add(Instruction.Lshr);
+                break;
+
+            case Lsub:
+                instructions.add(Instruction.Lsub);
+                break;
+
+            case Lushr:
+                instructions.add(Instruction.Lushr);
+                break;
+
+            case Lxor:
+                instructions.add(Instruction.Lxor);
+                break;
+
+            case Monitorenter:
+                instructions.add(Instruction.Monitorenter);
+                break;
+
+            case Monitorexit:
+                instructions.add(Instruction.Monitorexit);
+                break;
+
+            case Nop:
+                instructions.add(Instruction.Nop);
+                break;
+
+            case Pop:
+                instructions.add(Instruction.Pop);
+                break;
+
+            case Pop2:
+                instructions.add(Instruction.Pop2);
+                break;
+
+            case Return:
+                instructions.add(Instruction.Return);
+                break;
+
+            case Saload:
+                instructions.add(Instruction.Saload);
+                break;
+
+            case Sastore:
+                instructions.add(Instruction.Sastore);
+                break;
+
+            case Swap:
+                instructions.add(Instruction.Swap);
+                break;
+
+            default:
+                throw new IllegalStateException("Illegal opcode usage: " + opcode);
+            }
+        }
+        
+        public void emit(Opcode opcode, int operand) {
+            checkCreated();
+            switch (opcode) {
+            case Newarray:
+                switch (operand) {
+                case 4:
+                    instructions.add(Instruction.Newarray_4);
+                    break;
+
+                case 5:
+                    instructions.add(Instruction.Newarray_5);
+                    break;
+
+                case 6:
+                    instructions.add(Instruction.Newarray_6);
+                    break;
+
+                case 7:
+                    instructions.add(Instruction.Newarray_7);
+                    break;
+
+                case 8:
+                    instructions.add(Instruction.Newarray_8);
+                    break;
+
+                case 9:
+                    instructions.add(Instruction.Newarray_9);
+                    break;
+
+                case 10:
+                    instructions.add(Instruction.Newarray_10);
+                    break;
+
+                case 11:
+                    instructions.add(Instruction.Newarray_11);
+                    break;
+
+                default:
+                    throw new IllegalStateException("Illegal opcode operand: " + operand);
+                }
+                break;
+
+            case Bipush:
+            case Sipush:
+                instructions.add(new IntOperandInstruction(opcode, operand));
+                break;
+                
+            default:
+                throw new IllegalStateException("Illegal opcode usage: " + opcode);
+            }
+        }
+
+        public void emit(Opcode opcode, LocalInfo local) {
+            checkCreated();
+            int operand = local.Index;
+            switch (opcode) {
+            case Aload:
+                switch (operand) {
+                case 0:
+                    instructions.add(Instruction.Aload_0);
+                    break;
+
+                case 1:
+                    instructions.add(Instruction.Aload_1);
+                    break;
+
+                case 2:
+                    instructions.add(Instruction.Aload_2);
+                    break;
+
+                case 3:
+                    instructions.add(Instruction.Aload_3);
+                    break;
+
+                default:
+                    instructions.add(new LocalVariableInstruction(opcode, operand));
+                    break;
+                }
+                break;
+                
+            case Astore:
+                switch (operand) {
+                case 0:
+                    instructions.add(Instruction.Astore_0);
+                    break;
+
+                case 1:
+                    instructions.add(Instruction.Astore_1);
+                    break;
+
+                case 2:
+                    instructions.add(Instruction.Astore_2);
+                    break;
+
+                case 3:
+                    instructions.add(Instruction.Astore_3);
+                    break;
+
+                default:
+                    instructions.add(new LocalVariableInstruction(opcode, operand));
+                    break;
+                }
+                break;
+                
+            case Dload:
+                switch (operand) {
+                case 0:
+                    instructions.add(Instruction.Dload_0);
+                    break;
+
+                case 1:
+                    instructions.add(Instruction.Dload_1);
+                    break;
+
+                case 2:
+                    instructions.add(Instruction.Dload_2);
+                    break;
+
+                case 3:
+                    instructions.add(Instruction.Dload_3);
+                    break;
+
+                default:
+                    instructions.add(new LocalVariableInstruction(opcode, operand));
+                    break;
+                }
+                break;
+                
+            case Dstore:
+                switch (operand) {
+                case 0:
+                    instructions.add(Instruction.Dstore_0);
+                    break;
+
+                case 1:
+                    instructions.add(Instruction.Dstore_1);
+                    break;
+
+                case 2:
+                    instructions.add(Instruction.Dstore_2);
+                    break;
+
+                case 3:
+                    instructions.add(Instruction.Dstore_3);
+                    break;
+
+                default:
+                    instructions.add(new LocalVariableInstruction(opcode, operand));
+                    break;
+                }
+                break;
+                
+            case Fload:
+                switch (operand) {
+                case 0:
+                    instructions.add(Instruction.Fload_0);
+                    break;
+
+                case 1:
+                    instructions.add(Instruction.Fload_1);
+                    break;
+
+                case 2:
+                    instructions.add(Instruction.Fload_2);
+                    break;
+
+                case 3:
+                    instructions.add(Instruction.Fload_3);
+                    break;
+
+                default:
+                    instructions.add(new LocalVariableInstruction(opcode, operand));
+                    break;
+                }
+                break;
+                
+            case Fstore:
+                switch (operand) {
+                case 0:
+                    instructions.add(Instruction.Fstore_0);
+                    break;
+
+                case 1:
+                    instructions.add(Instruction.Fstore_1);
+                    break;
+
+                case 2:
+                    instructions.add(Instruction.Fstore_2);
+                    break;
+
+                case 3:
+                    instructions.add(Instruction.Fstore_3);
+                    break;
+
+                default:
+                    instructions.add(new LocalVariableInstruction(opcode, operand));
+                    break;
+                }
+                break;
+                
+            case Iload:
+                switch (operand) {
+                case 0:
+                    instructions.add(Instruction.Iload_0);
+                    break;
+
+                case 1:
+                    instructions.add(Instruction.Iload_1);
+                    break;
+
+                case 2:
+                    instructions.add(Instruction.Iload_2);
+                    break;
+
+                case 3:
+                    instructions.add(Instruction.Iload_3);
+                    break;
+
+                default:
+                    instructions.add(new LocalVariableInstruction(opcode, operand));
+                    break;
+                }
+                break;
+                
+            case Istore:
+                switch (operand) {
+                case 0:
+                    instructions.add(Instruction.Istore_0);
+                    break;
+
+                case 1:
+                    instructions.add(Instruction.Istore_1);
+                    break;
+
+                case 2:
+                    instructions.add(Instruction.Istore_2);
+                    break;
+
+                case 3:
+                    instructions.add(Instruction.Istore_3);
+                    break;
+
+                default:
+                    instructions.add(new LocalVariableInstruction(opcode, operand));
+                    break;
+                }
+                break;
+                
+            case Lload:
+                switch (operand) {
+                case 0:
+                    instructions.add(Instruction.Lload_0);
+                    break;
+
+                case 1:
+                    instructions.add(Instruction.Lload_1);
+                    break;
+
+                case 2:
+                    instructions.add(Instruction.Lload_2);
+                    break;
+
+                case 3:
+                    instructions.add(Instruction.Lload_3);
+                    break;
+
+                default:
+                    instructions.add(new LocalVariableInstruction(opcode, operand));
+                    break;
+                }
+                break;
+                
+            case Lstore:
+                switch (operand) {
+                case 0:
+                    instructions.add(Instruction.Lstore_0);
+                    break;
+
+                case 1:
+                    instructions.add(Instruction.Lstore_1);
+                    break;
+
+                case 2:
+                    instructions.add(Instruction.Lstore_2);
+                    break;
+
+                case 3:
+                    instructions.add(Instruction.Lstore_3);
+                    break;
+
+                default:
+                    instructions.add(new LocalVariableInstruction(opcode, operand));
+                    break;
+                }
+                break;
+
+            case Ret:
+                instructions.add(new LocalVariableInstruction(opcode, operand));
+                break;
+                
+            default:
+                throw new IllegalStateException("Illegal opcode usage: " + opcode);
+            }
+            if (local.beginLabel == null) {
+                if (instructions[instructions.size() - 1].Opcode == Opcode.LabelMarker) {
+                    local.beginLabel = ((LabelMarker)instructions[instructions.size() - 1]).Label;
+                } else {
+                    local.beginLabel = new Label();
+                    instructions.add(new LabelMarker(local.beginLabel));
+                }
+            }
+        }
+        
+        public void emit(Opcode opcode, FieldInfo field) {
+            checkCreated();
+            if (field == null) {
+                throw new NullPointerException("field");
+            }
+            switch (opcode) {
+            case Getfield:
+                instructions.add(new FieldInstruction(Opcode.Getfield, field));
+                break;
+
+            case Getstatic:
+                instructions.add(new FieldInstruction(Opcode.Getstatic, field));
+                break;
+
+            case Putfield:
+                instructions.add(new FieldInstruction(Opcode.Putfield, field));
+                break;
+
+            case Putstatic:
+                instructions.add(new FieldInstruction(Opcode.Putstatic, field));
+                break;
+            
+            default:
+                throw new IllegalStateException("Illegal opcode usage: " + opcode);
+            }
+        }
+
+        public void emit(Opcode opcode, MethodInfo method) {
+            checkCreated();
+            if (method == null) {
+                throw new NullPointerException("method");
+            }
+            switch (opcode) {
+            case Invokedynamic:
+            case Invokeinterface:
+            case Invokespecial:
+            case Invokestatic:
+            case Invokevirtual:
+                instructions.add(new MethodInstruction(opcode, method));
+                break;
+                
+            default:
+                throw new IllegalStateException("Illegal opcode usage: " + opcode);
+            }
+        }
+
+        public void emit(Opcode opcode, TypeInfo type) {
+            checkCreated();
+            if (type == null) {
+                throw new NullPointerException("type");
+            }
+            switch (opcode) {
+            case Anewarray:
+            case Checkcast:
+            case Instanceof:
+            case New:
+                instructions.add(new TypeInstruction(opcode, type));
+                break;
+            
+            case Ldc:
+                instructions.add(new LoadConstantInstruction(Type.getType(type.getDescriptor())));
+                break;
+                
+            default:
+                throw new IllegalStateException("Illegal opcode usage: " + opcode);
+            }
+        }
+
+        public void emit(Opcode opcode, LabelMarker label) {
+            if (label == null) {
+                throw new NullPointerException("label");
+            }
+            checkCreated();
+            switch (opcode) {
+            case Goto:
+            case If_acmpeq:
+            case If_acmpne:
+            case If_icmpeq:
+            case If_icmpge:
+            case If_icmpgt:
+            case If_icmple:
+            case If_icmplt:
+            case If_icmpne:
+            case Ifeq:
+            case Ifge:
+            case Ifgt:
+            case Ifle:
+            case Iflt:
+            case Ifne:
+            case Ifnonnull:
+            case Ifnull:
+            case Jsr:
+                instructions.add(new JumpInstruction(opcode, label));
+                break;
+                
+            default:
+                throw new IllegalStateException("Illegal opcode usage: " + opcode);
+            }
+        }
+        
+        public void emit(Opcode opcode, Object constant) {
+            checkCreated();
+            if (opcode != Opcode.Ldc) {
+                throw new IllegalStateException("Illegal opcode usage: " + opcode);
+            }
+            instructions.add(new LoadConstantInstruction(constant));
+        }
+
+        public void emit(Opcode opcode, LocalInfo local, int increment) {
+            checkCreated();
+            if (opcode != Opcode.Iinc) {
+                throw new IllegalStateException("Illegal opcode usage: " + opcode);
+            }
+            instructions.add(new IncrementInstruction(local.getIndex(), increment));
+        }
+
+        public void emit(Opcode opcode, TypeInfo type, int dimensions) {
+            checkCreated();
+            if (opcode != Opcode.Multianewarray) {
+                throw new IllegalStateException("Illegal opcode usage: " + opcode);
+            }
+            instructions.add(new MultiNewArrayInstruction(type, dimensions));
+        }
+
+        public void emit(Opcode opcode, int minimumKey, int maximumKey, LabelMarker[] labels, LabelMarker defaultLabel) {
+            checkCreated();
+            if (opcode != Opcode.Tableswitch) {
+                throw new IllegalStateException("Illegal opcode usage: " + opcode);
+            }
+            instructions.add(new TableSwitchInstruction(minimumKey, maximumKey, labels, defaultLabel));
+        }
+
+        public void emit(Opcode opcode, int[] keys, LabelMarker[] labels, LabelMarker defaultLabel) {
+            checkCreated();
+            if (opcode != Opcode.Lookupswitch) {
+                throw new IllegalStateException("Illegal opcode usage: " + opcode);
+            }
+            instructions.add(new LookupSwitchInstruction(keys, labels, defaultLabel));
+        }
+        
+        void accept(MethodVisitor visitor) {
+            if (!scopes.isEmpty()) {
+                throw new IllegalStateException("Scope stack not empty");
+            }
+            visitor.visitCode();
+            foreach (var e in exceptionTable) {
+                visitor.visitTryCatchBlock(e.from, e.to, e.target, (e.type == null) ? null : e.type.FullName);
+            }
+            foreach (var i in instructions) {
+                i.accept(visitor);
+            }
+            foreach (var l in locals) {
+                visitor.visitLocalVariable(l.Name, l.Type.Descriptor, l.Type.Signature, l.beginLabel, l.endLabel, l.index);
+            }
+            foreach (var l in lineNumbers) {
+                visitor.visitLineNumber(l.line, l.label);
+            }
+            visitor.visitMaxs(0, 0);
+        }
+        
+        private void checkCreated() {
+            method.checkCreated();
+        }
+        
+        private class ScopeInfo {
+            int localIndex;
+            Label endLabel;
+            HashMap<String, LocalInfo> locals;
+            
+            ScopeInfo(int localIndex, Label endLabel) {
+                this.localIndex = localIndex;
+                this.endLabel = endLabel;
+                this.locals = new HashMap<String, LocalInfo>();
+            }
+        }
+        
+        private class ExceptionHandler {
+            Label from;
+            Label to;
+            Label target;
+            TypeInfo type;
+            
+            ExceptionHandler(Label from, Label to, Label target, TypeInfo type) {
+                this.from = from;
+                this.to = to;
+                this.target = target;
+                this.type = type;
+            }
+        }
+
+        private class LineNumberInfo {
+            int line;
+            Label label;
+            
+            LineNumberInfo(int line, Label label) {
+                this.line = line;
+                this.label = label;
+            }
+        }
+    }
+    
+}

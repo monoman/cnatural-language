@@ -1,0 +1,25 @@
+public class ArrayIndexerAssign {
+	private int calls;
+	
+	private int test1() {
+		calls++;
+		return 1;
+	}
+
+	public boolean method() {
+		int[] a = new int[2];
+		int i = 0;
+		
+		a[0] = 1;
+		a[i++] += 3;
+		
+		a[test1()]++;
+		
+		return i == 1 && a[0] == 4 && calls == 1 && a[1] == 1;
+	}
+	
+	public static boolean test() {
+		var obj = new ArrayIndexerAssign();
+		return obj.method();
+	}
+}

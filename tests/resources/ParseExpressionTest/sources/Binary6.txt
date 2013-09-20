@@ -1,0 +1,1 @@
+x = y instanceof C<T> + z

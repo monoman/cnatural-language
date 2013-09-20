@@ -1,0 +1,56 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using org.eclipse.core.runtime;
+using org.eclipse.ui.dialogs;
+using stab.query;
+
+package stab.tools.eclipse.ui {
+
+	public class TypedElementSelectionValidator : ISelectionStatusValidator {
+		private final static IStatus ERROR_STATUS = new Status(Status.ERROR, "unknown", "");
+
+		private Iterable<Class<?>> acceptedTypes;
+		private boolean allowMultipleSelection;
+		private Iterable<?> rejectedElements;
+
+		public TypedElementSelectionValidator(Class<?>[] acceptedTypes, boolean allowMultipleSelection, Iterable<?> rejectedElements) {
+			this.acceptedTypes = Query.asIterable(acceptedTypes);
+			this.allowMultipleSelection = allowMultipleSelection;
+			this.rejectedElements = (rejectedElements == null) ? Query.empty<?>() : rejectedElements;
+		}
+	
+		public IStatus validate(Object[] elements) {
+			if (sizeof(elements) == 0) {
+				return ERROR_STATUS;
+			}
+			if (!allowMultipleSelection && sizeof(elements) > 1) {
+				return ERROR_STATUS;
+			}
+			var selection = Query.asIterable(elements);
+			if (!selection.all(p => acceptedTypes.any(t => t.isInstance(p)))) {
+				return ERROR_STATUS;
+			}
+			foreach (var element in rejectedElements) {
+				if (selection.contains(element)) {
+					return ERROR_STATUS;
+				}
+			}
+			return Status.OK_STATUS;
+		}
+	}
+}

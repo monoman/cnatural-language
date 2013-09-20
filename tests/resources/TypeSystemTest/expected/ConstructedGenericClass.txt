@@ -1,0 +1,6 @@
+// Lstab/bytecode/test/classes/GenericClass; / Lstab/bytecode/test/classes/GenericClass<Ljava/lang/String;>;
+public class stab/bytecode/test/classes/GenericClass<java/lang/String> : java/lang/Object {
+    // ()V / ()V
+    public V <init>() {
+    }
+}

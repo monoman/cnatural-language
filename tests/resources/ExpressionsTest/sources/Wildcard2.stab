@@ -1,0 +1,23 @@
+using java.lang;
+
+public class Wildcard2 {
+	public static boolean test() {
+		Wildcard2Aux<?>[] t = { new Wildcard2Aux<Object>(new Object()), new Wildcard2Aux<String>("STR") };
+		var ot = test(t);
+		return ot[0] instanceof Object && ot[1] instanceof String;
+	}
+	
+	public static Object[] test(Wildcard2Aux<?>[] t) {
+		var result = new Object[2];
+		result[0] = t[0].value;
+		result[1] = t[1].value;
+		return result;	
+	}
+}
+
+public class Wildcard2Aux<T> {
+	public Wildcard2Aux(T value) {
+		this.value = value;	
+	}
+	public T value;
+}

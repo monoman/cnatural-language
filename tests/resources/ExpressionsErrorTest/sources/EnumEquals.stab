@@ -1,0 +1,8 @@
+public class C {
+	public enum E1 { A }
+	public enum E2 { A }
+
+	boolean m() {
+		return E1.A == E2.A;
+	}
+}

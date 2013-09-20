@@ -1,0 +1,6 @@
+Lambda( => {
+if (Literal(True, [true]))
+return(Literal(False, [false]));
+return(Literal(True, [true]));
+}
+)

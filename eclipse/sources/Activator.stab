@@ -1,0 +1,207 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+//#undef TRACE
+
+using java.lang;
+using java.util;
+using org.eclipse.core.commands.common;
+using org.eclipse.core.resources;
+using org.eclipse.core.runtime.jobs;
+using org.eclipse.core.runtime;
+using org.eclipse.jface.resource;
+using Image = org.eclipse.swt.graphics.Image;
+using org.eclipse.ui.plugin;
+using org.osgi.framework;
+using stab.tools.eclipse.editors;
+using stab.tools.eclipse.helpers;
+
+package stab.tools.eclipse {
+
+	//
+	// The plug-in entry point
+	//
+	public class Activator : AbstractUIPlugin {
+		private static final IPath ICONS_PATH= new Path("$nl$/icons");
+
+		static Activator instance;
+
+		private IResourceChangeListener workspaceListener;
+		private Map<IProject, ProjectManager> projectManagers;
+		private ProjectBuildEventManager projectBuildEventManager;
+
+		public Activator() {
+			projectManagers = new HashMap<IProject, ProjectManager>();
+			projectBuildEventManager = new ProjectBuildEventManager();
+		}
+		
+		// Called by Eclipse to initialize the plugin
+		//
+		public override void start(BundleContext context) {
+			super.start(context);
+			instance = this;
+			Environment.trace(this, "Plug-in started");
+
+			workspaceListener = event => {
+				var resource = event.getResource();
+				if (resource.getType() == IResource.PROJECT) {
+					deconfigureProject((IProject)resource);
+				}
+			};
+			
+			var workspace = ResourcesPlugin.getWorkspace();
+			workspace.addResourceChangeListener(workspaceListener, IResourceChangeEvent.PRE_CLOSE);
+			foreach (var project in workspace.getRoot().getProjects()) {
+				configureProject(project);
+			}
+			
+			SemanticStyle.installListener(getPreferenceStore());
+			
+			var startupJob = new StartupJob();
+			startupJob.setPriority(Job.SHORT);
+			startupJob.schedule();
+		}
+		
+		// Called by Eclipse to dispose the plugin
+		//
+		public override void stop(BundleContext context) {
+			SemanticStyle.uninstallListener(getPreferenceStore());
+		
+			if (workspaceListener != null) {
+				ResourcesPlugin.getWorkspace().removeResourceChangeListener(workspaceListener);
+				workspaceListener = null;
+			}
+			foreach (var projectManager in projectManagers.values()) {
+				projectManager.dispose();
+			}
+			projectManagers.clear();
+			instance = null;
+			super.stop(context);
+		}
+
+		Image getIcon(Icon icon) {
+			return getImageRegistry().get(icon.name());
+		}
+
+		protected override void initializeImageRegistry(ImageRegistry registry) {
+			Environment.trace(this, "initializing image registry");
+			
+			foreach (var icon in Icon.values()) {
+				registry.put(icon.name(), ImageDescriptor.createFromURL(FileLocator.find(getBundle(), ICONS_PATH.append(icon.Filename), null)));
+			}
+		}
+		
+		void configureProject(IProject project) {
+			Environment.trace(this, "configuring " + project);
+			
+			getProjectManager(project);
+		}
+		
+		void deconfigureProject(IProject project) {
+			Environment.trace(this, "deconfiguring " + project);
+			
+			var projectManager = projectManagers.remove(project);
+			if (projectManager != null) {
+				projectManager.dispose();
+			}
+		}
+
+		ProjectManager getProjectManager(IResource resource) {
+			switch (resource.getType()) {
+			case IResource.PROJECT:
+				return getProjectManager((IProject)resource);
+			case IResource.FOLDER:
+			case IResource.FILE:
+				return getProjectManager(resource.getProject());
+			default:
+				var e = new IllegalArgumentException("Invalid resource: " + resource);
+				Environment.logException(e);
+				throw e;
+			}
+		}
+		
+		void addProjectBuildListener(IProjectBuildListener listener) {
+			projectBuildEventManager.addListener(listener);
+		}
+		
+		void removeProjectBuildListener(IProjectBuildListener listener) {
+			projectBuildEventManager.removeListener(listener);
+		}
+		
+		void fireProjectBuildEvent(ProjectManager projectManager) {
+			var listeners = projectBuildEventManager.getProjectBuildListeners();
+			if (sizeof(listeners) > 0) {
+				var event = new ProjectBuildEvent(projectManager);
+				for (int i = 0; i < sizeof(listeners); i++) {
+					var listener = (IProjectBuildListener)listeners[i];
+					try {
+						listener.projectBuilt(event);
+					} catch (Exception e) {
+						Environment.logException(e);
+					}
+				}
+			}
+		}
+		
+		private ProjectManager getProjectManager(IProject project) {
+			if (EclipseHelper.hasNature(project, Environment.NATURE_ID)) {
+				var result = projectManagers.get(project);
+				if (result == null) {
+					Environment.trace(this, "new ProjectManager for " + project);
+					
+					result = new ProjectManager(this, project);
+					projectManagers.put(project, result);
+				}
+				return result;
+			} else {
+				return null;
+			}
+		}
+	
+		// Launch the initialization tasks
+		//
+		private class StartupJob : Job {
+			StartupJob() : super(Messages.pluginStartup) {
+			}
+			
+			public override IStatus run(IProgressMonitor monitor) {
+				Environment.trace(this, Messages.pluginStartup);
+				
+				try {
+					monitor.beginTask(Messages.pluginStartup, 1);
+					ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new SubProgressMonitor(monitor, 1));
+				} finally {
+					monitor.done();
+				}
+				return (monitor.isCanceled()) ? Status.CANCEL_STATUS : Status.OK_STATUS;
+			}
+		}
+		
+		private class ProjectBuildEventManager : EventManager {
+			void addListener(IProjectBuildListener listener) {
+				addListenerObject(listener);
+			}
+			
+			void removeListener(IProjectBuildListener listener) {
+				removeListenerObject(listener);
+			}
+			
+			Object[] getProjectBuildListeners() {
+				return getListeners();
+			}
+		}
+	}
+}

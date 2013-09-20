@@ -1,0 +1,4 @@
+from s in names
+where s.Length == 5
+orderby s
+select s.ToUpper()

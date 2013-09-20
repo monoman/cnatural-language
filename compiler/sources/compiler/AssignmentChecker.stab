@@ -1,0 +1,615 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using java.util;
+using stab.tools.syntaxtree;
+
+package stab.tools.compiler {
+
+    enum AssignmentState {
+        NotAssigned,
+        Assigned,
+        AssignedAfterTrue,
+        AssignedAfterFalse
+    }
+
+    class AssignmentChecker : StatementHandler<HashSet<StatementNode>, Boolean> {
+        private CompilerContext context;
+        private AssignmentExpressionChecker expressionChecker;
+        UninitializedLocalInfo uninitializedLocalInfo;
+        private HashSet<StatementNode> origins;
+        
+        AssignmentChecker(CompilerContext context)
+            : super(true) {
+            this.context = context;
+            this.expressionChecker = new AssignmentExpressionChecker(context, this);
+            this.origins = new HashSet<StatementNode>();
+        }
+        
+        void visitStatement(UninitializedLocalInfo localInfo) {
+            this.uninitializedLocalInfo = localInfo;
+            origins.clear();
+            visitOrigin(localInfo.declaration);
+        }
+        
+        private Boolean visitOrigin(StatementNode s) {
+            if (origins.contains(s)) {
+                return Boolean.FALSE;
+            }
+            origins.add(s);
+            return visitStatement(s, new HashSet<StatementNode>());
+        }
+
+        Boolean visitStatement(StatementNode s, HashSet<StatementNode> visited) {
+            if (visited.contains(s)) {
+                return Boolean.FALSE;
+            }
+            do {
+                visited.add(s);
+                if (!handleStatement(s, visited)) {
+                    return Boolean.FALSE;
+                }
+                s = s.getUserData(typeof(StatementNode));
+            } while (s != null && !visited.contains(s));
+            return Boolean.TRUE;
+        }
+
+        protected override Boolean handleBlock(BlockStatementNode block, HashSet<StatementNode> visited) {
+            int size = block.Statements.size();
+            if (size > 0) {
+                return visitStatement(block.Statements[0], visited);
+            }
+            return Boolean.TRUE;
+        }
+        
+        protected override Boolean handleBreak(BreakStatementNode breakStatement, HashSet<StatementNode> visited) {
+            var info = breakStatement.getUserData(typeof(StatementInfo));
+            if (info.Target != null) {
+                visitStatement(info.Target, visited);
+            }
+            return Boolean.FALSE;
+        }
+        
+        protected override Boolean handleContinue(ContinueStatementNode continueStatement, HashSet<StatementNode> visited) {
+            return Boolean.FALSE;
+        }
+
+        protected override Boolean handleDo(DoStatementNode doStatement, HashSet<StatementNode> visited) {
+            if (!handleStatement(doStatement.Statement, visited) || !ReachabilityChecker.isEndPointReachable(doStatement.Statement)) {
+                return Boolean.FALSE;
+            }
+            AssignmentState state = expressionChecker.handleExpression(doStatement.Condition, visited, true);
+            switch (state) {
+            case Assigned:
+            case AssignedAfterFalse:
+                return Boolean.FALSE;
+            case AssignedAfterTrue:
+                return Boolean.TRUE;
+            default:
+                var cinfo = doStatement.Condition.getUserData(typeof(ExpressionInfo));
+                if (cinfo.IsConstant) {
+                    return (Boolean)cinfo.Value;
+                }
+                break;
+            }
+            return Boolean.TRUE;
+        }
+        
+        protected override Boolean handleEmpty(EmptyStatementNode empty, HashSet<StatementNode> visited) {
+            return Boolean.TRUE;
+        }
+        
+        protected override Boolean handleExpression(ExpressionStatementNode expression, HashSet<StatementNode> visited) {
+            var state = expressionChecker.handleExpression(expression.Expression, visited, false);
+            return (state == AssignmentState.Assigned) ? Boolean.FALSE : Boolean.TRUE;
+        }
+
+        protected override Boolean handleFor(ForStatementNode forStatement, HashSet<StatementNode> visited) {
+            foreach (var s in forStatement.Initializer) {
+                if (!handleStatement(s, null)) {
+                    return Boolean.FALSE;
+                }
+            }
+            if (forStatement.Condition == null) {
+                return visitOrigin(forStatement.Statement);
+            }
+            var state = expressionChecker.handleExpression(forStatement.Condition, visited, true);
+            switch (state) {
+            case Assigned:
+                return Boolean.FALSE;
+
+            case AssignedAfterTrue:
+                return Boolean.TRUE;
+                
+            case AssignedAfterFalse:
+                visitOrigin(forStatement.Statement);
+                return Boolean.FALSE;
+                
+            default:
+                var cinfo = forStatement.Condition.getUserData(typeof(ExpressionInfo));
+                if (cinfo.IsConstant) {
+                    if ((Boolean)cinfo.Value) {
+                        return visitOrigin(forStatement.Statement);
+                    } else {
+                        return Boolean.TRUE;
+                    }
+                }
+                visitStatement(forStatement.Statement, visited);
+                return Boolean.TRUE;
+            }
+        }
+
+        protected override Boolean handleForeach(ForeachStatementNode foreachStatement, HashSet<StatementNode> visited) {
+            var state = expressionChecker.handleExpression(foreachStatement.Source, visited, true);
+            if (state == AssignmentState.Assigned) {
+                return null;
+            }
+            visitOrigin(foreachStatement.Statement);
+            return Boolean.TRUE;
+        }
+        
+        protected override Boolean handleGoto(GotoStatementNode gotoStatement, HashSet<StatementNode> visited) {
+            var info = gotoStatement.getUserData(typeof(StatementInfo));
+            visitStatement(info.Target, visited);
+            return Boolean.FALSE;
+        }
+
+        protected override Boolean handleGotoCase(GotoCaseStatementNode gotoCase, HashSet<StatementNode> visited) {
+            var info = gotoCase.getUserData(typeof(StatementInfo));
+            visitStatement(info.Target, visited);
+            return Boolean.FALSE;
+        }
+        
+        protected override Boolean handleIf(IfStatementNode ifStatement, HashSet<StatementNode> visited) {
+            var state = expressionChecker.handleExpression(ifStatement.Condition, visited, true);
+            switch (state) {
+            case Assigned:
+                return Boolean.FALSE;
+
+            case AssignedAfterTrue:
+                if (ifStatement.IfFalse != null) {
+                    return visitOrigin(ifStatement.IfFalse);
+                }
+                break;
+                
+            case AssignedAfterFalse:
+                return visitOrigin(ifStatement.IfTrue);
+                
+            default:
+                ExpressionInfo cinfo = ifStatement.getCondition().getUserData(typeof(ExpressionInfo));
+                if (cinfo.IsConstant) {
+                    if ((Boolean)cinfo.Value) {
+                        return visitOrigin(ifStatement.IfTrue);
+                    } else {
+                        return visitOrigin(ifStatement.IfTrue);
+                    }
+                }
+                Boolean tr = visitOrigin(ifStatement.IfTrue);
+                Boolean rr = Boolean.TRUE;
+                if (ifStatement.getIfFalse() != null) {
+                    rr = visitOrigin(ifStatement.IfFalse);
+                }
+                if (!tr && !rr) {
+                    return Boolean.FALSE;
+                }
+                break;
+            }
+            return Boolean.TRUE;
+        }
+        
+        protected override Boolean handleLabeled(LabeledStatementNode labeled, HashSet<StatementNode> visited) {
+            return handleStatement(labeled.getStatement(), visited);
+        }
+        
+        protected override Boolean handleLocalDeclaration(LocalDeclarationStatementNode localDeclaration, HashSet<StatementNode> visited) {
+            foreach (var decl in localDeclaration.Declarators) {
+                if (decl.Value != null) {
+                    if (expressionChecker.handleExpression(decl.Value, visited, true) == AssignmentState.Assigned) {
+                        return Boolean.FALSE;
+                    }
+                }
+            }
+            return Boolean.TRUE;
+        }
+        
+        protected override Boolean handleReturn(ReturnStatementNode returnStatement, HashSet<StatementNode> visited) {
+            if (returnStatement.Value != null) {
+                expressionChecker.handleExpression(returnStatement.Value, null, true);
+            }
+            return Boolean.FALSE;
+        }
+        
+        protected override Boolean handleSwitch(SwitchStatementNode switchStatement, HashSet<StatementNode> visited) {
+            if (expressionChecker.handleExpression(switchStatement.Selector, visited, true) == AssignmentState.Assigned) {
+                return null;
+            }
+            boolean hasDefault = false;
+            foreach (var section in switchStatement.Sections) {
+                if (section.CaseExpression == null) {
+                    hasDefault = true;
+                }
+                if (section.Statements.size() == 0) {
+                    continue;
+                }
+                var first = section.Statements[0];
+                if (first.getUserData(typeof(StatementInfo)) == null) {
+                    continue;
+                }
+                visitOrigin(first);
+            }
+            if (hasDefault) {
+                return Boolean.FALSE;
+            }
+            return Boolean.TRUE;
+        }
+        
+        protected override Boolean handleSynchronized(SynchronizedStatementNode synchronizedStatement, HashSet<StatementNode> visited) {
+            if (expressionChecker.handleExpression(synchronizedStatement.Lock, visited, true) == AssignmentState.Assigned) {
+                return Boolean.FALSE;
+            }
+            return handleStatement(synchronizedStatement.Statement, visited);
+        }
+
+		protected override Boolean handleUsing(UsingStatementNode usingStatement, HashSet<StatementNode> visited) {
+            if (handleStatement(usingStatement.ResourceAcquisition, visited) == Boolean.FALSE) {
+				return Boolean.FALSE;
+			}
+            return handleStatement(usingStatement.Statement, visited);
+		}
+        
+        protected override Boolean handleWhile(WhileStatementNode whileStatement, HashSet<StatementNode> visited) {
+            switch (expressionChecker.handleExpression(whileStatement.Condition, visited, true)) {
+            case Assigned:
+                return Boolean.FALSE;
+
+            case AssignedAfterTrue:
+                return Boolean.TRUE;
+                
+            case AssignedAfterFalse:
+                visitOrigin(whileStatement.Statement);
+                return Boolean.FALSE;
+                
+            default:
+                var cinfo = whileStatement.Condition.getUserData(typeof(ExpressionInfo));
+                if (cinfo.IsConstant) {
+                    if ((Boolean)cinfo.Value) {
+                        return visitOrigin(whileStatement.Statement);
+                    } else {
+                        return Boolean.TRUE;
+                    }
+                }
+                visitOrigin(whileStatement.Statement);
+                return Boolean.TRUE;
+            }
+        }
+
+        protected override Boolean handleThrow(ThrowStatementNode throwStatement, HashSet<StatementNode> visited) {
+            if (throwStatement.Exception != null) {
+                expressionChecker.handleExpression(throwStatement.Exception, null, true);
+            }
+            return Boolean.FALSE;
+        }
+        
+        protected override Boolean handleTry(TryStatementNode tryStatement, HashSet<StatementNode> visited) {
+            var stmtRes = handleStatement(tryStatement.Block, visited);
+            var isAssigned = tryStatement.Block.getUserData(typeof(StatementInfo)).IsEndPointReachable && !stmtRes;
+            foreach (var node in tryStatement.CatchClauses) {
+                var stmts = node.Block.Statements;
+                if (stmts.size() > 0) {
+                    isAssigned = isAssigned && !visitStatement(stmts[0], visited) ||
+						!stmts[stmts.size() - 1].getUserData(typeof(StatementInfo)).IsEndPointReachable;
+                } else {
+					isAssigned = false;
+				}
+            }
+            if (tryStatement.Finally != null) {
+                stmtRes = handleStatement(tryStatement.Finally, visited);
+                if (!isAssigned) {
+                    isAssigned = tryStatement.Finally.getUserData(typeof(StatementInfo)).IsEndPointReachable && stmtRes;
+                }
+            }
+            return (isAssigned) ? Boolean.FALSE : Boolean.TRUE;
+        }
+        
+        protected override Boolean handleYield(YieldStatementNode yield, HashSet<StatementNode> visited) {
+            if (yield.Value != null) {
+                expressionChecker.handleExpression(yield.Value, null, true);
+                return Boolean.TRUE;
+            }
+            return Boolean.FALSE;
+        }
+
+        private class AssignmentExpressionChecker : ExpressionHandler<HashSet<StatementNode>, AssignmentState> {
+            private CompilerContext context;
+            private AssignmentChecker assignmentChecker;
+        
+            public AssignmentExpressionChecker(CompilerContext context, AssignmentChecker assignmentChecker)
+                : super(true) {
+                this.context = context;
+                this.assignmentChecker = assignmentChecker;
+            }
+
+            protected override AssignmentState handleArrayCreation(ArrayCreationExpressionNode arrayCreation, HashSet<StatementNode> visited,
+                    boolean nested) {
+                foreach (var e in arrayCreation.DimensionExpressions) {
+                    if (handleExpression(e, visited, true) == AssignmentState.Assigned) {
+                        return AssignmentState.Assigned;
+                    }
+                }
+                if (arrayCreation.Initializer != null) {
+                    return handleExpression(arrayCreation.Initializer, visited, true);
+                }
+                return AssignmentState.NotAssigned;
+            }
+            
+            protected override AssignmentState handleArrayInitializer(ArrayInitializerExpressionNode arrayInitializer,
+                    HashSet<StatementNode> visited, boolean nested) {
+                foreach (var e in arrayInitializer.Values) {
+                    if (handleExpression(e, visited, true) == AssignmentState.Assigned) {
+                        return AssignmentState.Assigned;
+                    }
+                }
+                return AssignmentState.NotAssigned;
+            }
+            
+            protected override AssignmentState handleAssign(AssignExpressionNode assign, HashSet<StatementNode> visited, boolean nested) {
+                if (handleExpression(assign.Right, visited, true) == AssignmentState.Assigned) {
+                    return AssignmentState.Assigned;
+                }
+                if (assign.Left.ExpressionKind == ExpressionKind.SimpleName && assign.Operator == AssignOperator.Assign) {
+                    var linfo = assign.Left.getUserData(typeof(ExpressionInfo));
+                    var member = linfo.Member;
+                    if (member.MemberKind == MemberKind.Local && member == assignmentChecker.uninitializedLocalInfo.local) {
+                        return AssignmentState.Assigned;
+                    }
+                } else {
+                    return handleExpression(assign.Left, visited, true);
+                }
+                return AssignmentState.NotAssigned;
+            }
+
+            protected override AssignmentState handleBinary(BinaryExpressionNode binary, HashSet<StatementNode> visited, boolean nested) {
+                var state = handleExpression(binary.LeftOperand, visited, true);
+                switch (binary.Operator) {
+                case LogicalAnd:
+                    switch (state) {
+                    case Assigned:
+                    case AssignedAfterTrue:
+                        return AssignmentState.Assigned;
+                    case AssignedAfterFalse:
+                        switch (handleExpression(binary.RightOperand, visited, true)) {
+                        case Assigned:
+                            return AssignmentState.Assigned;
+                        case AssignedAfterFalse:
+                            return AssignmentState.AssignedAfterFalse;
+                        }
+                        break;
+                    default:
+                        switch (handleExpression(binary.RightOperand, visited, true)) {
+                        case Assigned:
+                        case AssignedAfterTrue:
+                            return AssignmentState.AssignedAfterTrue;
+                        }
+                        break;
+                    }
+                    break;
+
+                case LogicalOr:
+                    switch (state) {
+                    case Assigned:
+                    case AssignedAfterFalse:
+                        return AssignmentState.Assigned;
+                    case AssignedAfterTrue:
+                        switch (handleExpression(binary.RightOperand, visited, true)) {
+                        case Assigned:
+                            return AssignmentState.Assigned;
+                        case AssignedAfterTrue:
+                            return AssignmentState.AssignedAfterTrue;
+                        }
+                        break;
+                    default:
+                        switch (handleExpression(binary.RightOperand, visited, true)) {
+                        case Assigned:
+                        case AssignedAfterFalse:
+                            return AssignmentState.AssignedAfterFalse;
+                        }
+                        break;
+                    }
+                    break;
+
+                case NullCoalescing:
+                    var li = binary.getUserData(typeof(ExpressionInfo));
+                    if (li != null) {
+                        return handleExpression(binary.LeftOperand, null, true);
+                    } else {
+                        return handleExpression(binary.RightOperand, null, true);
+                    }
+                    
+                default:
+                    if (state == AssignmentState.Assigned) {
+                        return AssignmentState.Assigned;
+                    }
+                    return handleExpression(binary.RightOperand, null, true);
+                }
+                return AssignmentState.NotAssigned;
+            }
+
+            protected override AssignmentState handleCast(CastExpressionNode cast, HashSet<StatementNode> visited, boolean nested) {
+                return handleExpression(cast.Expression, visited, true);
+            }
+            
+            protected override AssignmentState handleConditional(ConditionalExpressionNode conditional, HashSet<StatementNode> visited,
+                    boolean nested) {
+                switch (handleExpression(conditional.Condition, visited, true)) {
+                case Assigned:
+                    return AssignmentState.Assigned;
+                case AssignedAfterTrue:
+                    if (handleExpression(conditional.IfFalse, visited, true) == AssignmentState.Assigned) {
+                        return AssignmentState.Assigned;
+                    }
+                    break;
+                case AssignedAfterFalse:
+                    if (handleExpression(conditional.IfTrue, visited, true) == AssignmentState.Assigned) {
+                        return AssignmentState.Assigned;
+                    }
+                    break;
+                default:
+                    var cinfo = conditional.Condition.getUserData(typeof(ExpressionInfo));
+                    if (cinfo.IsConstant) {
+                        if ((Boolean)cinfo.Value) {
+                            return handleExpression(conditional.IfTrue, visited, true);
+                        } else {
+                            return handleExpression(conditional.IfFalse, visited, true);
+                        }
+                    }
+                    var ts = handleExpression(conditional.IfTrue, visited, true);
+                    var fs = handleExpression(conditional.IfFalse, visited, true);
+                    if (ts == AssignmentState.Assigned && fs == AssignmentState.Assigned) {
+                        return AssignmentState.Assigned;
+                    }
+                    break;
+                }
+                return AssignmentState.NotAssigned;
+            }
+
+            protected override AssignmentState handleElementAccess(ElementAccessExpressionNode elementAccess, HashSet<StatementNode> visited,
+                    boolean nested) {
+                if (handleExpression(elementAccess.TargetObject, visited, true) == AssignmentState.Assigned) {
+                    return AssignmentState.Assigned;
+                }
+                foreach (var arg in elementAccess.Indexes) {
+                    if (handleExpression(arg, visited, true) == AssignmentState.Assigned) {
+                        return AssignmentState.Assigned;
+                    }
+                }
+                return AssignmentState.NotAssigned;
+            }
+            
+            protected override AssignmentState handleInvocation(InvocationExpressionNode invocation, HashSet<StatementNode> visited,
+                    boolean nested) {
+                var info = invocation.getUserData(typeof(ExpressionInfo));
+                if (!info.Method.IsExcludedFromCompilation) {
+                    if (handleExpression(invocation.TargetObject, visited, true) == AssignmentState.Assigned) {
+                        return AssignmentState.Assigned;
+                    }
+                    foreach (var arg in invocation.Arguments) {
+                        if (handleExpression(arg, visited, true) == AssignmentState.Assigned) {
+                            return AssignmentState.Assigned;
+                        }
+                    }
+                }
+                return AssignmentState.NotAssigned;
+            }
+
+            protected override AssignmentState handleLambda(LambdaExpressionNode lambda, HashSet<StatementNode> visited, boolean nested) {
+                assignmentChecker.visitStatement(lambda.Body, visited);
+                return AssignmentState.NotAssigned;
+            }
+            
+            protected override AssignmentState handleLiteral(LiteralExpressionNode literal, HashSet<StatementNode> visited, boolean nested) {
+                return AssignmentState.NotAssigned;
+            }
+            
+            protected override AssignmentState handleMemberAccess(MemberAccessExpressionNode memberAccess, HashSet<StatementNode> visited,
+                    boolean nested) {
+                if (handleExpression(memberAccess.TargetObject, visited, true) == AssignmentState.Assigned) {
+                    return AssignmentState.Assigned;
+                }
+                return AssignmentState.NotAssigned;
+            }
+            
+            protected override AssignmentState handleObjectCreation(ObjectCreationExpressionNode objectCreation, HashSet<StatementNode> visited,
+                    boolean nested) {
+                foreach (var arg in objectCreation.Arguments) {
+                    if (handleExpression(arg, visited, true) == AssignmentState.Assigned) {
+                        return AssignmentState.Assigned;
+                    }
+                }
+                var init = objectCreation.Initializer;
+                if (init != null) {
+                    if (init.ExpressionKind == ExpressionKind.ObjectInitializer) {
+                        var initializer = (ObjectInitializerExpressionNode)init;
+                        foreach (var mi in initializer.MemberInitializers) {
+                            if (handleExpression(mi.Value, visited, true) == AssignmentState.Assigned) {
+                                return AssignmentState.Assigned;
+                            }
+                        }
+                    } else {
+                        var initializer = (CollectionInitializerExpressionNode)init;
+                        foreach (var args in initializer.Values) {
+                            foreach (var e in args) {
+                                if (handleExpression(e, visited, true) == AssignmentState.Assigned) {
+                                    return AssignmentState.Assigned;
+                                }
+                            }
+                        }
+                    }
+                }
+                return AssignmentState.NotAssigned;
+            }
+            
+            protected override AssignmentState handleSimpleName(SimpleNameExpressionNode simpleName, HashSet<StatementNode> visited,
+                    boolean nested) {
+                var info = simpleName.getUserData(typeof(ExpressionInfo));
+                var member = info.Member;
+                if (member == assignmentChecker.uninitializedLocalInfo.local) {
+                    throw context.error(CompileErrorId.UnassignedVariableUsage, simpleName, member.Name);
+                }
+                return AssignmentState.NotAssigned;
+            }
+            
+            protected override AssignmentState handleSizeof(SizeofExpressionNode sizeofExpr, HashSet<StatementNode> visited, boolean nested) {
+                return handleExpression(sizeofExpr.Expression, null, true);
+            }
+
+            protected override AssignmentState handleSuperAccess(SuperAccessExpressionNode superAccess, HashSet<StatementNode> visited,
+                    boolean nested) {
+                return AssignmentState.NotAssigned;
+            }
+            
+            protected override AssignmentState handleThisAccess(ThisAccessExpressionNode thisAccess, HashSet<StatementNode> visited,
+                    boolean nested) {
+                return AssignmentState.NotAssigned;
+            }
+            
+            protected override AssignmentState handleType(TypeExpressionNode type, HashSet<StatementNode> visited, boolean nested) {
+                return AssignmentState.NotAssigned;
+            }
+            
+            protected override AssignmentState handleTypeof(TypeofExpressionNode typeofExpr, HashSet<StatementNode> visited, boolean nested) {
+                return AssignmentState.NotAssigned;
+            }
+            
+            protected override AssignmentState handleUnary(UnaryExpressionNode unary, HashSet<StatementNode> visited, boolean nested) {
+                if (unary.Operator == UnaryOperator.Not) {
+                    switch (handleExpression(unary.Operand, visited, true)) {
+                    case Assigned:
+                        return AssignmentState.Assigned;
+                    case AssignedAfterTrue:
+                        return AssignmentState.AssignedAfterFalse;
+                    case AssignedAfterFalse:
+                        return AssignmentState.AssignedAfterTrue;
+                    default:
+                        return AssignmentState.NotAssigned;
+                    }
+                } else {
+                    return handleExpression(unary.Operand, visited, true);
+                }
+            }
+        }
+    }
+}

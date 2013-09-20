@@ -1,0 +1,245 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using java.util;
+
+package stab.query {
+
+    public interface Grouping<TKey, TElement> : Iterable<TElement> {
+        TKey Key {
+            get;
+        }
+    }
+
+    public interface IntGrouping<TElement> : Iterable<TElement> {
+        int Key {
+            get;
+        }
+    }
+
+    public interface LongGrouping<TElement> : Iterable<TElement> {
+        long Key {
+            get;
+        }
+    }
+
+    public interface FloatGrouping<TElement> : Iterable<TElement> {
+        float Key {
+            get;
+        }
+    }
+
+    public interface DoubleGrouping<TElement> : Iterable<TElement> {
+        double Key {
+            get;
+        }
+    }
+    
+    class DefaultGrouping<TKey, TElement> : Grouping<TKey, TElement> {
+        private TElement[] array;
+        private int count;
+        
+        DefaultGrouping(TKey key) {
+            this.Key = key;
+            #pragma warning disable 313
+            this.array = new TElement[4];
+            #pragma warning restore
+        }
+
+        public TKey Key {
+            get;
+            private set;
+        }
+
+        public Iterator<TElement> iterator() {
+            for (int i = 0; i < count; i++) {
+                yield return array[i];
+            }
+        }
+        
+        DefaultGrouping<TKey, TElement> Next {
+            get;
+            set;
+        }
+        
+        void add(TElement item) {
+            if (count == sizeof(array)) {
+                #pragma warning disable 313
+                var t = new TElement[count * 2];
+                #pragma warning restore
+                System.arraycopy(array, 0, t, 0, count);
+                array = t;
+            }
+            array[count++] = item;
+        }
+    }
+    
+    class DefaultIntGrouping<TElement> : IntGrouping<TElement> {
+        private TElement[] array;
+        private int count;
+        
+        DefaultIntGrouping(int key) {
+            this.Key = key;
+            #pragma warning disable 313
+            this.array = new TElement[4];
+            #pragma warning restore
+        }
+
+        public int Key {
+            get;
+            private set;
+        }
+
+        public Iterator<TElement> iterator() {
+            for (int i = 0; i < count; i++) {
+                yield return array[i];
+            }
+        }
+        
+        DefaultIntGrouping<TElement> Next {
+            get;
+            set;
+        }
+        
+        void add(TElement item) {
+            if (count == sizeof(array)) {
+                #pragma warning disable 313
+                var t = new TElement[count * 2];
+                #pragma warning restore
+                System.arraycopy(array, 0, t, 0, count);
+                array = t;
+            }
+            array[count++] = item;
+        }
+    }
+    
+    class DefaultLongGrouping<TElement> : LongGrouping<TElement> {
+        private TElement[] array;
+        private int count;
+        
+        DefaultLongGrouping(long key) {
+            this.Key = key;
+            #pragma warning disable 313
+            this.array = new TElement[4];
+            #pragma warning restore
+        }
+
+        public long Key {
+            get;
+            private set;
+        }
+
+        public Iterator<TElement> iterator() {
+            for (int i = 0; i < count; i++) {
+                yield return array[i];
+            }
+        }
+        
+        DefaultLongGrouping<TElement> Next {
+            get;
+            set;
+        }
+        
+        void add(TElement item) {
+            if (count == sizeof(array)) {
+                #pragma warning disable 313
+                var t = new TElement[count * 2];
+                #pragma warning restore
+                System.arraycopy(array, 0, t, 0, count);
+                array = t;
+            }
+            array[count++] = item;
+        }
+    }
+    
+    class DefaultFloatGrouping<TElement> : FloatGrouping<TElement> {
+        private TElement[] array;
+        private int count;
+        
+        DefaultFloatGrouping(float key) {
+            this.Key = key;
+            #pragma warning disable 313
+            this.array = new TElement[4];
+        }
+
+        public float Key {
+            get;
+            private set;
+        }
+
+        public Iterator<TElement> iterator() {
+            for (int i = 0; i < count; i++) {
+                yield return array[i];
+            }
+        }
+        
+        DefaultFloatGrouping<TElement> Next {
+            get;
+            set;
+        }
+        
+        void add(TElement item) {
+            if (count == sizeof(array)) {
+                #pragma warning disable 313
+                var t = new TElement[count * 2];
+                #pragma warning restore
+                System.arraycopy(array, 0, t, 0, count);
+                array = t;
+            }
+            array[count++] = item;
+        }
+    }
+
+    class DefaultDoubleGrouping<TElement> : DoubleGrouping<TElement> {
+        private TElement[] array;
+        private int count;
+        
+        DefaultDoubleGrouping(double key) {
+            this.Key = key;
+            #pragma warning disable 313
+            this.array = new TElement[4];
+            #pragma warning restore
+        }
+
+        public double Key {
+            get;
+            private set;
+        }
+
+        public Iterator<TElement> iterator() {
+            for (int i = 0; i < count; i++) {
+                yield return array[i];
+            }
+        }
+        
+        DefaultDoubleGrouping<TElement> Next {
+            get;
+            set;
+        }
+        
+        void add(TElement item) {
+            if (count == sizeof(array)) {
+                #pragma warning disable 313
+                var t = new TElement[count * 2];
+                #pragma warning restore
+                System.arraycopy(array, 0, t, 0, count);
+                array = t;
+            }
+            array[count++] = item;
+        }
+    }
+}

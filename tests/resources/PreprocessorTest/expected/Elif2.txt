@@ -1,0 +1,27 @@
+#define YYY
+#if expression: false, skipped: true
+....#undef YYY
+....#region R1
+........----
+......../*
+........----
+....#endregion
+#end
+#else skipped: false
+....#if expression: false, skipped: true
+........----
+........// Block 1
+........----
+....#end
+....#elif expression: true, skipped: false
+........----
+........   // Block 2
+........----
+....#end
+....#else skipped: true
+........----
+........    // Block 3
+........----
+....#end
+#end
+#define ZZZ

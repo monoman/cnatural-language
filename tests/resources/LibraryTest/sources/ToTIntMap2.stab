@@ -1,0 +1,10 @@
+using java.lang;
+using java.util;
+using stab.query;
+
+public class ToTIntMap2 {
+	public static boolean test() {
+		var map = Query.asIterable(new[] { 1, 2, 3, 4, 5 }).toMap(p => "K" + p);
+		return map.getValue("K3") == 3;
+	}
+}

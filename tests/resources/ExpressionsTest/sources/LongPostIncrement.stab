@@ -1,0 +1,6 @@
+public class LongPostIncrement {
+	public static boolean test(long arg) {
+		long l = arg++;
+		return arg == l + 1L;
+	}
+}

@@ -1,0 +1,10 @@
+from car in (Name(root)).Elements(Literal(String, ["car"]))
+let profiles = from profile in (Name(car)).Elements(Literal(String, ["profile"]))
+select new{Name=((Name(profile)).Attribute(Literal(String, ["name"]))).Value, Value=((Name(profile)).Attribute(Literal(String, ["value"]))).Value}
+let supports = from support in (Name(car)).Elements(Literal(String, ["support"]))
+select new{Name=((Name(support)).Attribute(Literal(String, ["name"]))).Value, Value=((Name(support)).Attribute(Literal(String, ["value"]))).Value}
+select new Car{Name=((Name(car)).Attribute(Literal(String, ["name"]))).Value, Vendor=((Name(profiles)).Single(Lambda(prof => ((Name(prof)).Name Equal Literal(String, ["Vendor"]));
+))).Value, Model=((Name(profiles)).Single(Lambda(prof => ((Name(prof)).Name Equal Literal(String, ["Model"]));
+))).Value, Doors=(Type(int)).Parse(((Name(profiles)).Single(Lambda(prof => ((Name(prof)).Name Equal Literal(String, ["Doors"]));
+))).Value), RacingSupport=(((Name(supports)).Single(Lambda(sup => ((Name(sup)).Name Equal Literal(String, ["Racing"]));
+))).Value Equal Literal(String, ["yes"]))}

@@ -1,0 +1,21 @@
+package p {
+
+	public class InterfaceBase : InterfaceBaseAux2 {
+		public int method1() { return 1; }
+		public int method2() { return 2; }
+		
+		public static int test() {
+			InterfaceBase obj = new InterfaceBase();
+			InterfaceBaseAux2 iobj = obj;
+			return iobj.method1() + iobj.method2();
+		}
+	}
+
+	public interface InterfaceBaseAux1 {
+		int method1();
+	}
+
+	public interface InterfaceBaseAux2 : InterfaceBaseAux1 {
+		int method2();
+	}
+}

@@ -1,0 +1,1 @@
+new[]{Literal(DecimalInteger, [1])}

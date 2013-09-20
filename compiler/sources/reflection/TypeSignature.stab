@@ -1,0 +1,163 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using java.util;
+
+package stab.reflection {
+
+    public enum TypeSignatureKind {
+        Boolean,
+        Byte,
+        Char,
+        Double,
+        Float,
+        Int,
+        Long,
+        Short,
+        Void,
+        ArrayType,
+        ClassType,
+        FormalTypeParameter,
+        TypeVariable,
+        LowerBoundedWildcardType,
+        UpperBoundedWildcardType,
+        UnboundedWildcardType
+    }
+
+    public abstract class TypeSignature {
+        protected TypeSignature(TypeSignatureKind typeSignatureKind, String name) {
+            this.TypeSignatureKind = typeSignatureKind;
+            this.Name = name;
+        }
+        
+        public TypeSignatureKind TypeSignatureKind {
+            get;
+            private set;
+        }
+        
+        public String Name {
+            get;
+            private set;
+        }
+        
+        public virtual Iterable<TypeSignature> FormalTypeParameterBounds {
+            get {
+                throw new UnsupportedOperationException();
+            }
+        }
+        
+        public virtual Iterable<TypeSignature> TypeArguments {
+            get {
+                throw new UnsupportedOperationException();
+            }
+        }
+        
+        public virtual TypeSignature ElementType {
+            get {
+                throw new UnsupportedOperationException();
+            }
+        }
+        
+        public virtual TypeSignature WildcardBound {
+            get {
+                throw new UnsupportedOperationException();
+            }
+        }
+    }
+    
+    class ArrayTypeSignature : TypeSignature {
+        private TypeSignature elementType;
+        
+        ArrayTypeSignature(TypeSignature elementType)
+            : super(TypeSignatureKind.ArrayType, "[" + elementType.Name) {
+            this.elementType = elementType;
+        }
+        
+        public override TypeSignature ElementType {
+            get {
+                return elementType;
+            }
+        }
+    }
+    
+    class ClassTypeSignature : TypeSignature {
+        List<TypeSignature> typeArguments;
+        
+        ClassTypeSignature(TypeSignatureKind typeSignatureKind, String name)
+            : super(typeSignatureKind, name) {
+            this.typeArguments = new ArrayList<TypeSignature>();
+        }
+        
+        public override Iterable<TypeSignature> TypeArguments {
+            get {
+                return typeArguments;
+            }
+        }
+    }
+    
+    class PrimitiveTypeSignature : TypeSignature {
+    	static final TypeSignature VoidSignature = new PrimitiveTypeSignature(TypeSignatureKind.Void, "V");
+    	static final TypeSignature BooleanSignature = new PrimitiveTypeSignature(TypeSignatureKind.Boolean, "Z");
+    	static final TypeSignature ByteSignature = new PrimitiveTypeSignature(TypeSignatureKind.Byte, "B");
+    	static final TypeSignature CharSignature = new PrimitiveTypeSignature(TypeSignatureKind.Char, "C");
+    	static final TypeSignature ShortSignature = new PrimitiveTypeSignature(TypeSignatureKind.Short, "S");
+    	static final TypeSignature IntSignature = new PrimitiveTypeSignature(TypeSignatureKind.Int, "I");
+    	static final TypeSignature LongSignature = new PrimitiveTypeSignature(TypeSignatureKind.Long, "J");
+    	static final TypeSignature FloatSignature = new PrimitiveTypeSignature(TypeSignatureKind.Float, "F");
+    	static final TypeSignature DoubleSignature = new PrimitiveTypeSignature(TypeSignatureKind.Double, "D");
+    
+        PrimitiveTypeSignature(TypeSignatureKind typeSignatureKind, String name)
+            : super(typeSignatureKind, name) {
+        }
+    }
+    
+    class FormalTypeParameterSignature : TypeSignature {
+        List<TypeSignature> formalTypeParameterBounds;
+        
+        FormalTypeParameterSignature(String name)
+            : super(TypeSignatureKind.FormalTypeParameter, name) {
+            formalTypeParameterBounds = new ArrayList<TypeSignature>();
+        }
+        
+        public override Iterable<TypeSignature> FormalTypeParameterBounds {
+            get {
+                return formalTypeParameterBounds;
+            }
+        }
+    }
+    
+    class TypeVariableSignature : TypeSignature {
+        TypeVariableSignature(String name)
+            : super(TypeSignatureKind.TypeVariable, name) {
+        }
+    }
+    
+    class WildcardTypeSignature : TypeSignature {
+        private TypeSignature bound;
+        
+        WildcardTypeSignature(TypeSignatureKind typeSignatureKind, TypeSignature bound)
+            : super(typeSignatureKind, "*") {
+            this.bound = bound;
+        }
+        
+        public override TypeSignature WildcardBound {
+            get {
+                return bound;
+            }
+        }
+    }
+}

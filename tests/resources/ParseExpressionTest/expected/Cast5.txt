@@ -1,0 +1,1 @@
+Cast<Foo>((Cast<DictionaryEntry>((Name(baseEnumerator)).Current)).Value)

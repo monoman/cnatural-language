@@ -1,0 +1,21 @@
+Lambda( => {
+string[][] table = {{Literal(String, ["Red"]), Literal(String, ["Blue"]), Literal(String, ["Green"])}, {Literal(String, ["Monday"]), Literal(String, ["Wednesday"]), Literal(String, ["Friday"])}};
+foreach (string str in Name(args)) {
+int row, colm;
+for (Assign(Name(row) Assign Literal(DecimalInteger, [0]));
+Condition((Name(row) LessThanOrEqual Literal(DecimalInteger, [1])));
+(PreIncrement Name(row));
+)
+for (Assign(Name(colm) Assign Literal(DecimalInteger, [0]));
+Condition((Name(colm) LessThanOrEqual Literal(DecimalInteger, [2])));
+(PreIncrement Name(colm));
+)
+if ((Name(str) Equal (Name(table))[Name(row), Name(colm)]))
+goto done;
+(Name(Console)).WriteLine(Literal(String, ["{0} not found"]), Name(str));
+continue;
+done: (Name(Console)).WriteLine(Literal(String, ["Found {0} at [{1}][{2}]"]), Name(str), Name(row), Name(colm));
+;
+}
+}
+)

@@ -1,0 +1,7 @@
+public class BooleanBitwise {
+	public static boolean test() {
+		boolean b1 = true & false;
+		boolean b2 = true | false;
+		return !b1 ^ b2;
+	}
+}

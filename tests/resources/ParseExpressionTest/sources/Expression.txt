@@ -1,0 +1,9 @@
+query2 = people.Where(p => p.Age > 20)
+                   .OrderByDescending(p => p.Age)
+                   .ThenBy(p => p.Name)
+                   .GroupBy(p => p.CanCode, 
+                            p => new {
+                                   p.Name, 
+                                   Senior = p.Age > 30, 
+                                   p.CanCode
+                   })

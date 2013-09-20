@@ -1,0 +1,49 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using org.eclipse.debug.ui;
+using org.eclipse.ui;
+using org.eclipse.ui.console;
+
+package stab.tools.eclipse {
+
+	//
+	// Layout the Stab perspective
+	//
+	public class PerspectiveFactory : IPerspectiveFactory {
+		public void createInitialLayout(IPageLayout layout) {
+			// Folders
+			var editorArea = layout.getEditorArea();
+			var explorerFolder = layout.createFolder("explorer", IPageLayout.LEFT, 0.25f, editorArea);
+			explorerFolder.addView(IPageLayout.ID_PROJECT_EXPLORER);
+			
+			var problemsFolder = layout.createFolder("problems", IPageLayout.BOTTOM, 0.75f, editorArea);
+			problemsFolder.addView(IPageLayout.ID_PROBLEM_VIEW);
+			problemsFolder.addView(IPageLayout.ID_TASK_LIST);
+			problemsFolder.addView(IConsoleConstants.ID_CONSOLE_VIEW);
+			
+			// Shortcuts
+		    layout.addNewWizardShortcut("org.eclipse.ui.wizards.new.folder");
+		    layout.addNewWizardShortcut("org.eclipse.ui.wizards.new.file");
+		    
+		    layout.addShowViewShortcut("org.eclipse.ui.views.ResourceNavigator");
+		    layout.addShowViewShortcut(IPageLayout.ID_PROJECT_EXPLORER);
+	
+		    // Action sets
+		    layout.addActionSet(IDebugUIConstants.LAUNCH_ACTION_SET);
+		}
+	}
+}

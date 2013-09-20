@@ -1,0 +1,8 @@
+Lambda( => {
+(Name(Console)).WriteLine(Literal(String, ["reachable"]));
+goto Label;
+(Name(Console)).WriteLine(Literal(String, ["unreachable"]));
+Label: (Name(Console)).WriteLine(Literal(String, ["reachable"]));
+;
+}
+)

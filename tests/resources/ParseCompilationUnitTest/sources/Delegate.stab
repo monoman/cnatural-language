@@ -1,0 +1,1 @@
+delegate int D(int i);

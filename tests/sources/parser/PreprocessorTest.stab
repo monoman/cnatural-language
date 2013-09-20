@@ -1,0 +1,309 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using java.io;
+using org.junit;
+using stab.query;
+using stab.tools.helpers;
+using stab.tools.parser;
+
+package stab.tools.parser.test {
+	public class PreprocessorTest {
+		[Test]
+		public void testSimpleSource() {
+			doTest("SimpleSource");
+		}
+		
+		[Test]
+		public void testDefine() {
+			doTest("Define");
+		}
+		
+		[Test]
+		public void testDefine2() {
+			doTest("Define2");
+		}
+		
+		[Test]
+		public void testUndef() {
+			doTest("Undef");
+		}
+		
+		[Test]
+		public void testLine() {
+			doTest("Line");
+		}
+		
+		[Test]
+		public void testLine2() {
+			doTest("Line2");
+		}
+		
+		[Test]
+		public void testRegion() {
+			doTest("Region");
+		}
+		
+		[Test]
+		public void testNestedRegions() {
+			doTest("NestedRegions");
+		}
+		
+		[Test]
+		public void testError() {
+			doTest("Error");
+		}
+		
+		[Test]
+		public void testError2() {
+			doTest("Error2");
+		}
+		
+		[Test]
+		public void testWarning() {
+			doTest("Warning");
+		}
+		
+		[Test]
+		public void testPragma() {
+			doTest("Pragma");
+		}
+		
+		[Test]
+		public void testPragma2() {
+			doTest("Pragma2");
+		}
+		
+		[Test]
+		public void testPragma3() {
+			doTest("Pragma3");
+		}
+		
+		[Test]
+		public void testIf() {
+			doTest("If");
+		}
+		
+		[Test]
+		public void testIf2() {
+			doTest("If2");
+		}
+		
+		[Test]
+		public void testIf3() {
+			doTest("If3");
+		}
+		
+		[Test]
+		public void testIf4() {
+			doTest("If4");
+		}
+		
+		[Test]
+		public void testElif() {
+			doTest("Elif");
+		}
+				
+		[Test]
+		public void testElif2() {
+			doTest("Elif2");
+		}
+		
+		[Test]
+		public void testUnicode() {
+			doTest("Unicode");
+		}
+		
+		[Test]
+		public void testNestedIf() {
+			doTest("NestedIf");
+		}
+
+		private void doTest(String test) {
+			var userDir = System.getProperty("user.dir");
+			var sourcePath = PathHelper.combine(PathHelper.combine(userDir, "tests/resources/PreprocessorTest/sources"), test + ".stab");
+			var fileReader = new FileReader(sourcePath);
+			var code = readToEnd(fileReader);
+			var preprocessor = new Preprocessor(new CodeErrorManager(), code.toCharArray());
+			var source = preprocessor.preprocess();
+			var result = preprocessedTextToString(source);
+			
+			var generatedPath = PathHelper.combine(userDir, "tests/resources/PreprocessorTest/generated");
+			var generatedDir = new File(generatedPath);
+			if (!generatedDir.exists()) {
+				generatedDir.mkdir();
+			}
+			var fileWriter = new FileWriter(PathHelper.combine(generatedPath, test + ".txt"));
+			fileWriter.write(result);
+			fileWriter.close();
+			
+			var expectedPath = PathHelper.combine(userDir, "tests/resources/PreprocessorTest/expected");
+			var expectedFile = new File(PathHelper.combine(expectedPath, test + ".txt"));
+			Assert.assertTrue("Expected file not found: " + expectedFile, expectedFile.exists());
+			fileReader = new FileReader(expectedFile);
+			var reference = readToEnd(fileReader);
+			
+			var genReader = new BufferedReader(new StringReader(result));
+			var refReader = new BufferedReader(new StringReader(reference));
+			for (;;) {
+				var genLine = genReader.readLine();
+				var refLine = refReader.readLine();
+				if (genLine == null && refLine == null) {
+					break;
+				}
+				Assert.assertEquals(refLine, genLine);
+			}
+		}
+		
+		private String readToEnd(Reader reader) {
+			var sb = new StringBuilder();
+			var buff = new char[1024];
+			int read;
+			while ((read = reader.read(buff)) != -1) {
+				sb.append(buff, 0, read);
+			}
+			return sb.toString();
+		}
+		
+		private String preprocessedTextToString(PreprocessedText source) {
+			var sb = new StringBuilder();
+			foreach (var part in source.InputSectionParts) {
+				formatInputSectionPart(source.Text, part, sb, 0);
+			}
+			return sb.toString();
+		}
+		
+		private void formatInputSectionPart(char[] source, InputSectionPart part, StringBuilder sb, int indent) {
+			var indentSb = new StringBuilder();
+			for (int i = 0; i < indent; i++) {
+				indentSb.append('.');
+			}
+			var indentStr = indentSb.toString();
+			switch (part.InputSectionPartKind) {
+			case Definition:
+				sb.append(indentStr);
+				if (part.Define) {
+					sb.append("#define ");
+				} else {
+					sb.append("#undef ");
+				}
+				sb.append(part.Symbol).append("\r\n");
+				break;
+				
+			case Line:
+				sb.append(indentStr).append("#line ");
+				if (part.Default) {
+					sb.append("default");
+				} else if (part.Hidden) {
+					sb.append("hidden");
+				} else {
+					sb.append(part.Line).append(" ");
+					if (!Helper.isNullOrEmpty(part.Filename)) {
+						sb.append('"').append(part.Filename).append('"');
+					}
+				}
+				break;
+				
+			case Region:
+				sb.append(indentStr).append("#region");
+				if (!Helper.isNullOrEmpty(part.StartMessage)) {
+					sb.append(" ").append(part.StartMessage);
+				}
+				sb.append("\r\n");
+
+				foreach (var p in part.InputSectionParts) {
+					formatInputSectionPart(source, p, sb, indent + 4);
+				}
+				
+				sb.append(indentStr).append("#endregion");
+				if (!Helper.isNullOrEmpty(part.EndMessage)) {
+					sb.append(" ").append(part.EndMessage);
+				}
+				sb.append("\r\n");
+				break;
+				
+			case If:
+				sb.append(indentStr).append("#if expression: ").append(part.ExpressionValue).append(", skipped: ")
+					.append(part.SkippedSection).append("\r\n");
+				
+				foreach (var p in part.InputSectionParts) {
+					formatInputSectionPart(source, p, sb, indent + 4);
+				}
+				
+				sb.append(indentStr).append("#end\r\n");
+				break;
+				
+			case Elif:
+				sb.append(indentStr).append("#elif expression: ").append(part.ExpressionValue).append(", skipped: ")
+					.append(part.SkippedSection).append("\r\n");
+				
+				foreach (var p in part.InputSectionParts) {
+					formatInputSectionPart(source, p, sb, indent + 4);
+				}
+				
+				sb.append(indentStr).append("#end\r\n");
+				break;
+
+			case Else:
+				sb.append(indentStr).append("#else skipped: ").append(part.SkippedSection).append("\r\n");
+				
+				foreach (var p in part.InputSectionParts) {
+					formatInputSectionPart(source, p, sb, indent + 4);
+				}
+				
+				sb.append(indentStr).append("#end\r\n");
+				break;
+				
+			case Diagnostic:
+				sb.append(indentStr).append((part.Error) ? "#error" : "#warning");
+				if (!Helper.isNullOrEmpty(part.Message)) {
+					sb.append(" ").append(part.Message);
+				}
+				sb.append("\r\n");
+				break;
+				
+			case Pragma:
+				sb.append(indentStr).append("#pragma warning ").append((part.Restore) ? "restore" : "disable");
+				if (part.Warnings.any()) {
+					sb.append(" ");
+					var first = true;
+					foreach (var w in part.Warnings) {
+						if (first) {
+							first = false;
+						} else {
+							sb.append(", ");
+						}
+						sb.append(w);
+					}
+				}
+				sb.append("\r\n");
+				break;
+				
+			case SourceCode:
+				sb.append(indentStr).append("----\r\n");
+				
+				var s = new BufferedReader(new StringReader(new String(source, part.Position, part.Length)));
+				var line = "";
+				while ((line = s.readLine()) != null) {
+					sb.append(indentStr).append(line).append("\r\n");
+				}
+				sb.append(indentStr).append("----\r\n");
+				break;
+			}
+		}
+	}
+}

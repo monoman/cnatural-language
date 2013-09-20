@@ -1,0 +1,192 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using java.util;
+using stab.lang;
+using stab.tools.helpers;
+
+package stab.tools.parser {
+
+    public class ScannerBase {
+        protected ScannerBase(CodeErrorManager codeErrorManager, char[] text, int position, int length, int line, int column) {
+            this.CodeErrorManager = codeErrorManager;
+            this.Text = text;
+            this.TabWidth = 4;
+            this.initialize(position, length, line, column, codeErrorManager.ErrorCount, codeErrorManager.DisabledWarnings);
+        }
+
+        public CodeErrorManager CodeErrorManager {
+            get;
+            private set;
+        }
+        
+        public String Filename {
+            get;
+            set;
+        }
+        
+        public int TabWidth {
+            get;
+            set;
+        }
+        
+        public char[] Text {
+            get;
+            private set;
+        }
+        
+        public int Position {
+            get;
+            protected set;
+        }
+
+        public int Length {
+            get;
+            private set;
+        }
+
+        public int Line {
+            get;
+            protected set;
+        }
+
+        public int Column {
+            get;
+            protected set;
+        }
+        
+        protected int Next {
+            get;
+            private set;
+        }
+        
+        protected int EndOffset {
+            get;
+            private set;
+        }
+        
+        protected void initialize(int position, int length, int line, int column, int errorCount, IntIterable disabledWarnings) {
+            this.Position = position - 1;
+            this.Length = length;
+            this.Line = line;
+            this.EndOffset = length + position - 1;
+            if (this.Position >= 0 && this.Position <= this.EndOffset) {
+                this.Next = this.Text[this.Position];
+            } else {
+                this.Next = 0;
+            }
+            if (this.Next == '\t') {
+                this.Column = column - this.TabWidth;
+            } else {
+                this.Column = column - 1;
+            }
+            this.CodeErrorManager.ErrorCount = errorCount;
+            this.CodeErrorManager.DisabledWarnings = disabledWarnings;
+            this.advance();
+        }
+        
+        protected int advance() {
+            if (this.Next == '\t') {
+                this.Column += this.TabWidth;
+            } else {
+                this.Column++;
+            }
+            if (this.Position + 1 <= this.EndOffset) {
+                this.Position++;
+                return this.Next = this.Text[this.Position];
+            } else {
+                this.Position++;
+                return this.Next = -1;
+            }
+        }
+        
+        protected void scanWhitespaces() {
+            while (true) {
+                switch (advance()) {
+                case ' ':
+                case '\t':
+                case '\v':
+                case '\f':
+                    break;
+
+                case -1:
+                default:
+                    return;
+                }
+            }
+        }
+
+        protected void scanIdentifierPart() {
+            while (true) {
+                switch (advance()) {
+                case -1:
+                    return;
+
+                case '\\':
+                    var unicode = scanUnicodeEscapeSequence();
+                    if (!ParserHelper.isIdentifierPartChar(unicode)) {
+                        // TODO: error?
+                        return;
+                    }
+                    break;
+
+                default:
+                    if (!ParserHelper.isIdentifierPartChar(this.Next)) {
+                        return;
+                    }
+                    break;
+                }
+            }
+        }
+
+        protected int scanUnicodeEscapeSequence() {
+            var result = 0;
+            switch (advance()) {
+            case 'u':
+                for (var i = 0; i < 4; i++) {
+                    int value;
+                    if ((value = ParserHelper.scanHexDigit(advance())) == -1) {
+                        throw error(ParseErrorId.HexadecimalDigitExpected);
+                    }
+                    result = result * 16 + value;
+                }
+                return result;
+            case 'U':
+                for (var i = 0; i < 8; i++) {
+                    int value;
+                    if ((value = ParserHelper.scanHexDigit(advance())) == -1) {
+                        throw error(ParseErrorId.HexadecimalDigitExpected);
+                    }
+                    result = result * 16 + value;
+                }
+                return result;
+            default:
+                throw error(ParseErrorId.InvalidEscapeSequence);
+            }
+        }
+
+        protected CodeErrorException error(ParseErrorId errorId, params Object[] arguments) {
+            addError(errorId, 0, Resources.getMessage(errorId, arguments));
+            return new CodeErrorException();
+        }
+
+        public virtual void addError(ParseErrorId errorId, int level, String message) {
+            CodeErrorManager.addError(Filename, errorId.ordinal() + 1, level, message, Line + 1, Column + 1);
+        }
+    }
+
+}

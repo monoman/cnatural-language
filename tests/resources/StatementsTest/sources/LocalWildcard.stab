@@ -1,0 +1,9 @@
+using java.lang;
+using java.util;
+
+public class LocalWildcard {
+	public static boolean test() {
+		Set<?> s = new HashSet<Object>();
+		return s.isEmpty();
+	}
+}

@@ -1,0 +1,5 @@
+public class ReturnTrue {
+	public static boolean test() {
+		return true;
+	}
+}

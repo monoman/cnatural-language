@@ -1,0 +1,13 @@
+using java.lang;
+using java.lang.reflect;
+using javax.xml.bind.annotation;
+
+[XmlAccessorType(XmlAccessType.FIELD)]
+public class AnnotationEnum {
+
+	public static boolean test() {
+		var c = typeof(AnnotationEnum);
+		var a = c.getAnnotation(typeof(XmlAccessorType));
+		return a.value() == XmlAccessType.FIELD;
+	}
+}

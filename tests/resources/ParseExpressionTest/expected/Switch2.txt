@@ -1,0 +1,7 @@
+Lambda( => {
+switch (Literal(Character, ['c'])) {
+case Literal(Character, ['x']):
+break;
+}
+}
+)

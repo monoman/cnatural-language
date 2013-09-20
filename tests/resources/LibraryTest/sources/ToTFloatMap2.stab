@@ -1,0 +1,10 @@
+using java.lang;
+using java.util;
+using stab.query;
+
+public class ToTFloatMap2 {
+	public static boolean test() {
+		var map = Query.asIterable(new[] { 1f, 2f, 3f, 4f, 5f }).toMap(p => "K" + p);
+		return map.getValue("K3.0") == 3f;
+	}
+}

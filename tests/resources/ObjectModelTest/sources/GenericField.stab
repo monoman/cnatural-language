@@ -1,0 +1,11 @@
+using java.lang;
+
+public class GenericField<T> {
+	public T field;
+	
+	public static int test() {
+		GenericField<Integer> gf = new GenericField<Integer>();
+		gf.field = 1;
+		return gf.field;
+	}
+}

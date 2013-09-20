@@ -1,0 +1,17 @@
+#define TEST
+----
+
+----
+#if expression: false, skipped: true
+....----
+....
+....----
+#end
+#else skipped: false
+....#if expression: true, skipped: false
+........----
+........namespace N {
+........}
+........----
+....#end
+#end

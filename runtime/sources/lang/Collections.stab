@@ -1,0 +1,81 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using java.util;
+
+package stab.lang {
+
+    /// <summary>
+    /// Provides methods to manipulate a collection of ints without boxing / unboxing.
+    /// </summary>
+	public interface IntCollection : Collection<Integer>, IntIterable {
+		boolean add(int i);
+		boolean addAll(IntCollection c);
+		boolean contains(int i);
+		boolean containsAll(IntCollection c);
+		IntIterator iterator();
+		boolean removeItem(int i);
+		boolean removeAll(IntCollection c);
+		boolean retainAll(IntCollection c);
+		int[] toArray(int[] a);
+	}
+
+    /// <summary>
+    /// Provides methods to manipulate a collection of longs without boxing / unboxing.
+    /// </summary>
+	public interface LongCollection : Collection<Long>, LongIterable {
+		boolean add(long l);
+		boolean addAll(LongCollection c);
+		boolean contains(long l);
+		boolean containsAll(LongCollection c);
+		LongIterator iterator();
+		boolean removeItem(long l);
+		boolean removeAll(LongCollection c);
+		boolean retainAll(LongCollection c);
+		long[] toArray(long[] a);
+	}
+
+    /// <summary>
+    /// Provides methods to manipulate a collection of floats without boxing / unboxing.
+    /// </summary>
+	public interface FloatCollection : Collection<Float>, FloatIterable {
+		boolean add(float f);
+		boolean addAll(FloatCollection c);
+		boolean contains(float f);
+		boolean containsAll(FloatCollection c);
+		FloatIterator iterator();
+		boolean removeItem(float f);
+		boolean removeAll(FloatCollection c);
+		boolean retainAll(FloatCollection c);
+		float[] toArray(float[] a);
+	}
+
+    /// <summary>
+    /// Provides methods to manipulate a collection of doubles without boxing / unboxing.
+    /// </summary>
+	public interface DoubleCollection : Collection<Double>, DoubleIterable {
+		boolean add(double d);
+		boolean addAll(DoubleCollection c);
+		boolean contains(double d);
+		boolean containsAll(DoubleCollection c);
+		DoubleIterator iterator();
+		boolean removeItem(double d);
+		boolean removeAll(DoubleCollection c);
+		boolean retainAll(DoubleCollection c);
+		double[] toArray(double[] a);
+	}
+}

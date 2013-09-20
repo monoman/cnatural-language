@@ -1,0 +1,10 @@
+stab.tree.ExpressionTree<interface stab.query.FunctionIntInt> tree =
+	(#Parameter0#int#p#) =>
+    {
+        while (#Parameter0#int#p# > #Value#int#0#)
+            {
+                --#Parameter0#int#p#;
+            }
+
+        return #Value#int#0#;
+    }

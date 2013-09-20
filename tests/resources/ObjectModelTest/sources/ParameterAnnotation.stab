@@ -1,0 +1,13 @@
+using java.lang;
+using java.lang.reflect;
+
+public class ParameterAnnotation {
+	public static boolean test() {
+		Class<?> c = typeof(ParameterAnnotation);
+		Method m = c.getMethod("method", typeof(int));
+		return m.getParameterAnnotations()[0][0] != null;
+	}
+    
+    public static void method([Deprecated] int arg) {
+    }
+}

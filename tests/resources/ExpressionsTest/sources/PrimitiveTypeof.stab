@@ -1,0 +1,9 @@
+using java.lang;
+
+public class PrimitiveTypeof {
+	public static boolean test() {
+		Class<Integer> c1 = typeof(int);
+		Class<Integer> c2 = typeof(Integer);
+		return c1 == c2;
+	}
+}

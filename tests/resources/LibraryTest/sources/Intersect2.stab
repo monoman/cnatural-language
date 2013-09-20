@@ -1,0 +1,9 @@
+using stab.query;
+
+public class Intersect2 {
+	public static boolean test() {
+		var it1 = Query.asIterable(new[] { "1", "2", "5", "7" });
+		var it2 = Query.asIterable(new[] { "2", "3", "4", "6", "7" });
+		return it1.intersect(it2).orderBy(p => p).sequenceEqual(Query.asIterable(new[]{ "2", "7" }));
+	}
+}

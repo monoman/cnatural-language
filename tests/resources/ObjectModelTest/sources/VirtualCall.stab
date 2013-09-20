@@ -1,0 +1,21 @@
+public class VirtualCall : VirtualCallAux {
+
+	public boolean method() {
+		return super.test1() != ((VirtualCallAux)this).test1();
+	}
+
+	public override int test1() {
+		return 3;
+	}
+	
+	public static boolean test() {
+		var obj = new VirtualCall();
+		return obj.method();
+	}
+}
+
+public class VirtualCallAux {
+	public virtual int test1() {
+		return 2;
+	}
+}

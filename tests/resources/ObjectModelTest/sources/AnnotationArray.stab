@@ -1,0 +1,13 @@
+using java.lang;
+using java.lang.reflect;
+using javax.xml.bind.annotation;
+
+[XmlSeeAlso(value = { typeof(Object), typeof(String) })]
+public class AnnotationArray {
+
+	public static boolean test() {
+		var c = typeof(AnnotationArray);
+		var a = c.getAnnotation(typeof(XmlSeeAlso));
+		return a.value()[0] == typeof(Object);
+	}
+}

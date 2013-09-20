@@ -1,0 +1,13 @@
+package p {
+	using java.lang;
+	public class C {
+		public void m(int i, int  j) {
+			do {
+				do {
+					i--;
+					--j;
+				} while (j > 0);
+			} while (i > 0);
+		}
+	}
+}

@@ -1,0 +1,15 @@
+Lambda(i => {
+switch (Name(i)) {
+case Literal(DecimalInteger, [0]):
+Name(CaseZero)();
+goto case Literal(DecimalInteger, [1]);
+case Literal(DecimalInteger, [1]):
+Name(CaseZeroOrOne)();
+goto default;
+case Literal(DecimalInteger, [2]):
+default:
+Name(CaseAny)();
+break;
+}
+}
+)

@@ -1,0 +1,8 @@
+Lambda( => {
+for (Condition();
+(PostIncrement Name(i));
+(PostDecrement Name(j));
+)
+#empty;
+}
+)

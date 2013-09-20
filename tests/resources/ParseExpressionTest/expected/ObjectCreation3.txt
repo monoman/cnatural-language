@@ -1,0 +1,1 @@
+new T{P1=Literal(DecimalInteger, [1]), P2=Literal(DecimalInteger, [2])}

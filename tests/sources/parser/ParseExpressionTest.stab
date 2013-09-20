@@ -1,0 +1,1222 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using java.io;
+using java.util;
+using org.junit;
+using stab.tools.helpers;
+using stab.tools.syntaxtree;
+
+package stab.tools.parser.test {
+	public class ParseExpressionTest {
+		private char[] text;
+		
+		
+		[Test]
+		public void testLiteral() {
+			doTest("Literal");
+		}
+		
+		[Test]
+		public void testLiteral2() {
+			doTest("Literal2");
+		}
+		
+		[Test]
+		public void testLiteral3() {
+			doTest("Literal3");
+		}
+		
+		[Test]
+		public void testLiteral4() {
+			doTest("Literal4");
+		}
+		
+		[Test]
+		public void testMember() {
+			doTest("Member");
+		}
+		
+		[Test]
+		public void testName() {
+			doTest("Name");
+		}
+		
+		[Test]
+		public void testName2() {
+			doTest("Name2");
+		}
+		
+		[Test]
+		public void testName3() {
+			doTest("Name3");
+		}
+		
+		[Test]
+		public void testAnonymousObject() {
+			doTest("AnonymousObject");
+		}
+		
+		[Test]
+		public void testArrayCreation() {
+			doTest("ArrayCreation");
+		}
+		
+		[Test]
+		public void testArrayCreation2() {
+			doTest("ArrayCreation2");
+		}
+		
+		[Test]
+		public void testArrayCreation3() {
+			doTest("ArrayCreation3");
+		}
+
+		[Test]
+		public void testArrayCreation4() {
+			doTest("ArrayCreation4");
+		}
+
+		[Test]
+		public void testArrayCreation5() {
+			doTest("ArrayCreation5");
+		}
+
+		[Test]
+		public void testObjectCreation() {
+			doTest("ObjectCreation");
+		}
+
+		[Test]
+		public void testObjectCreation2() {
+			doTest("ObjectCreation2");
+		}
+
+		[Test]
+		public void testObjectCreation3() {
+			doTest("ObjectCreation3");
+		}
+
+		[Test]
+		public void testThisAccess() {
+			doTest("ThisAccess");
+		}
+
+		[Test]
+		public void testElementAccess() {
+			doTest("ElementAccess");
+		}
+
+		[Test]
+		public void testElementAccess2() {
+			doTest("ElementAccess2");
+		}
+
+		[Test]
+		public void testBaseAccess() {
+			doTest("BaseAccess");
+		}
+
+		[Test]
+		public void testBaseAccess2() {
+			doTest("BaseAccess2");
+		}
+
+		[Test]
+		public void testCollectionCreation() {
+			doTest("CollectionCreation");
+		}
+
+		[Test]
+		public void testCollectionCreation2() {
+			doTest("CollectionCreation2");
+		}
+
+		[Test]
+		public void testImplicitArrayCreation() {
+			doTest("ImplicitArrayCreation");
+		}
+
+		[Test]
+		public void testInvocation() {
+			doTest("Invocation");
+		}
+		
+		[Test]
+		public void testInvocation2() {
+			doTest("Invocation2");
+		}
+
+		[Test]
+		public void testInvocation3() {
+			doTest("Invocation3");
+		}
+		
+		[Test]
+		public void testInvocation4() {
+			doTest("Invocation4");
+		}
+		
+		[Test]
+		public void testInvocation5() {
+			doTest("Invocation5");
+		}
+		
+		[Test]
+		public void testUnary() {
+			doTest("Unary");
+		}
+		
+		[Test]
+		public void testCast() {
+			doTest("Cast");
+		}
+
+		[Test]
+		public void testBinary() {
+			doTest("Binary");
+		}
+
+		[Test]
+		public void testBinary2() {
+			doTest("Binary2");
+		}
+
+		[Test]
+		public void testBinary3() {
+			doTest("Binary3");
+		}
+
+		[Test]
+		public void testBinary4() {
+			doTest("Binary4");
+		}
+
+		[Test]
+		public void testBinary5() {
+			doTest("Binary5");
+		}
+
+		[Test]
+		public void testBinary6() {
+			doTest("Binary6");
+		}
+
+		[Test]
+		public void testParenthesized() {
+			doTest("Parenthesized");
+		}
+
+		[Test]
+		public void testParenthesized2() {
+			doTest("Parenthesized2");
+		}
+
+		[Test]
+		public void testLambda() {
+			doTest("Lambda");
+		}
+
+		[Test]
+		public void testLambda2() {
+			doTest("Lambda2");
+		}
+		
+		[Test]
+		public void testLambda3() {
+			doTest("Lambda3");
+		}
+		
+		[Test]
+		public void testLambda4() {
+			doTest("Lambda4");
+		}
+		
+		[Test]
+		public void testLambda5() {
+			doTest("Lambda5");
+		}
+		
+		[Test]
+		public void testAssign() {
+			doTest("Assign");
+		}
+		
+		[Test]
+		public void testAssign2() {
+			doTest("Assign2");
+		}
+		
+		[Test]
+		public void testAssociativity() {
+			doTest("Associativity");
+		}
+		
+		[Test]
+		public void testAssociativity2() {
+			doTest("Associativity2");
+		}
+
+		[Test]
+		public void testInitializer() {
+			doTest("Initializer");
+		}
+
+		[Test]
+		public void testTypeof() {
+			doTest("Typeof");
+		}
+
+		[Test]
+		public void testTypeof2() {
+			doTest("Typeof2");
+		}
+
+		[Test]
+		public void testTypeof3() {
+			doTest("Typeof3");
+		}
+
+		[Test]
+		public void testCast2() {
+			doTest("Cast2");
+		}
+
+		[Test]
+		public void testCast3() {
+			doTest("Cast3");
+		}
+
+		[Test]
+		public void testCast4() {
+			doTest("Cast4");
+		}
+
+		[Test]
+		public void testCast5() {
+			doTest("Cast5");
+		}
+
+		[Test]
+		public void testLinq() {
+			doTest("Linq");
+		}
+
+		[Test]
+		public void testLinq2() {
+			doTest("Linq2");
+		}
+
+		[Test]
+		public void testLinq3() {
+			doTest("Linq3");
+		}
+
+		[Test]
+		public void testLinq4() {
+			doTest("Linq4");
+		}
+
+		[Test]
+		public void testLinq5() {
+			doTest("Linq5");
+		}
+
+		[Test]
+		public void testLinq6() {
+			doTest("Linq6");
+		}
+
+		[Test]
+		public void testLinq7() {
+			doTest("Linq7");
+		}
+
+		[Test]
+		public void testLinq8() {
+			doTest("Linq8");
+		}
+
+		[Test]
+		public void testExpression() {
+			doTest("Expression");
+		}
+
+		[Test]
+		public void testDeclaration() {
+			doTest("Declaration");
+		}
+
+		[Test]
+		public void testDeclaration2() {
+			doTest("Declaration2");
+		}
+
+		[Test]
+		public void testIf() {
+			doTest("If");
+		}
+
+		[Test]
+		public void testIf2() {
+			doTest("If2");
+		}
+
+		[Test]
+		public void testWhile() {
+			doTest("While");
+		}
+
+		[Test]
+		public void testDo() {
+			doTest("Do");
+		}
+
+		[Test]
+		public void testFor() {
+			doTest("For");
+		}
+
+		[Test]
+		public void testFor2() {
+			doTest("For2");
+		}
+
+		[Test]
+		public void testFor3() {
+			doTest("For3");
+		}
+
+		[Test]
+		public void testFor4() {
+			doTest("For4");
+		}
+
+		[Test]
+		public void testFor5() {
+			doTest("For5");
+		}
+
+		[Test]
+		public void testFor6() {
+			doTest("For6");
+		}
+
+		[Test]
+		public void testTry() {
+			doTest("Try");
+		}
+
+		[Test]
+		public void testTry2() {
+			doTest("Try2");
+		}
+
+		[Test]
+		public void testTry3() {
+			doTest("Try3");
+		}
+
+		[Test]
+		public void testTry4() {
+			doTest("Try4");
+		}
+
+		[Test]
+		public void testSwitch() {
+			doTest("Switch");
+		}
+
+		[Test]
+		public void testSwitch2() {
+			doTest("Switch2");
+		}
+
+		[Test]
+		public void testSwitch3() {
+			doTest("Switch3");
+		}
+
+		[Test]
+		public void testSwitch4() {
+			doTest("Switch4");
+		}
+
+		[Test]
+		public void testForeach() {
+			doTest("Foreach");
+		}
+
+		[Test]
+		public void testForeach2() {
+			doTest("Foreach2");
+		}
+
+		[Test]
+		public void testUsing() {
+			doTest("Using");
+		}
+
+		[Test]
+		public void testLock() {
+			doTest("Lock");
+		}
+
+		[Test]
+		public void testGoto() {
+			doTest("Goto");
+		}
+
+		[Test]
+		public void testInstructions() {
+			doTest("Instructions");
+		}
+
+		[Test]
+		public void testGenericAccess() {
+			doTest("GenericAccess");
+		}
+		
+		
+		private void doTest(String test) {
+			var userDir = System.getProperty("user.dir");
+			var sourcePath = PathHelper.combine(PathHelper.combine(userDir, "tests/resources/ParseExpressionTest/sources"), test + ".txt");
+			var fileReader = new FileReader(sourcePath);
+			var code = readToEnd(fileReader);
+			text = code.toCharArray();
+			var parser = new Parser();
+			var scanner = new SourceCodeScanner(new CodeErrorManager(), text);
+			var expression = parser.parseExpression(scanner);
+			var result = expressionToString(expression);
+			
+			var generatedPath = PathHelper.combine(userDir, "tests/resources/ParseExpressionTest/generated");
+			var generatedDir = new File(generatedPath);
+			if (!generatedDir.exists()) {
+				generatedDir.mkdir();
+			}
+			var fileWriter = new FileWriter(PathHelper.combine(generatedPath, test + ".txt"));
+			fileWriter.write(result);
+			fileWriter.close();
+			
+			var expectedPath = PathHelper.combine(userDir, "tests/resources/ParseExpressionTest/expected");
+			var expectedFile = new File(PathHelper.combine(expectedPath, test + ".txt"));
+			Assert.assertTrue("Expected file not found: " + expectedFile, expectedFile.exists());
+			fileReader = new FileReader(expectedFile);
+			var reference = readToEnd(fileReader);
+			
+			var genReader = new BufferedReader(new StringReader(result));
+			var refReader = new BufferedReader(new StringReader(reference));
+			for (;;) {
+				var genLine = genReader.readLine();
+				var refLine = refReader.readLine();
+				if (genLine == null && refLine == null) {
+					break;
+				}
+				Assert.assertEquals(refLine, genLine);
+			}
+		}
+		
+		private String expressionToString(ExpressionNode expression) {
+			var sb = new StringBuilder();
+			var first = false;
+			switch (expression.ExpressionKind) {
+			case Literal:
+				var literal = (LiteralExpressionNode)expression;
+				sb.append("Literal(");
+				sb.append(literal.LiteralKind);
+				sb.append(", [");
+				sb.append(new String(text, literal.ValueOffset, literal.ValueLength));
+				sb.append("])");
+				break;
+				
+			case MemberAccess:
+				var member = (MemberAccessExpressionNode)expression;
+				sb.append("(");
+				sb.append(expressionToString(member.TargetObject));
+				sb.append(").");
+				sb.append(new String(text, member.Member.NameOffset, member.Member.NameLength));
+				break;
+				
+			case Type:
+				var type = (TypeExpressionNode)expression;
+				sb.append("Type(");
+				sb.append(typeReferenceToString(type.TypeReference));
+				sb.append(")");
+				break;
+
+			case SimpleName:
+				var name = (SimpleNameExpressionNode)expression;
+				sb.append("Name(");
+				sb.append(new String(text, name.NameOffset, name.NameLength));
+				formatTypeArguments(name.TypeArguments, sb);
+				sb.append(")");
+				break;
+
+			case ThisAccess:
+				sb.append("this");
+				break;
+
+			case SuperAccess:
+				sb.append("base");
+				break;
+
+			case ObjectCreation:
+				var objectCreation = (ObjectCreationExpressionNode)expression;
+				sb.append("new ");
+				sb.append(typeReferenceToString(objectCreation.Type));
+				if (objectCreation.Arguments.size() > 0 || objectCreation.Initializer == null) {
+					sb.append("(");
+					first = true;
+					foreach (var arg in objectCreation.Arguments) {
+						if (first) {
+							first = false;
+						} else {
+							sb.append(", ");
+						}
+						sb.append(expressionToString(arg));
+					}
+					sb.append(")");
+				}
+				if (objectCreation.Initializer != null) {
+					sb.append(expressionToString(objectCreation.Initializer));
+				}
+				break;
+
+			case ObjectInitializer:
+				var objectInit = (ObjectInitializerExpressionNode)expression;
+				sb.append("{");
+				first = true;
+				foreach (var mi in objectInit.MemberInitializers) {
+					if (first) {
+						first = false;
+					} else {
+						sb.append(", ");
+					}
+					sb.append(new String(text, mi.NameOffset, mi.NameLength));
+					sb.append("=");
+					sb.append(expressionToString(mi.Value));
+				}
+				sb.append("}");
+				break;
+
+			case CollectionInitializer:
+				var collectionInit = (CollectionInitializerExpressionNode)expression;
+				sb.append("{");
+				first = true;
+				foreach (var v in collectionInit.Values) {
+					if (first) {
+						first = false;
+					} else {
+						sb.append(", ");
+					}
+					sb.append("{");
+					var f = true;
+					foreach (var exp in v) {
+						if (f) {
+							f = false;
+						} else {
+							sb.append(", ");
+						}
+						sb.append(expressionToString(exp));
+					}
+					sb.append("}");
+				}
+				sb.append("}");
+				break;
+
+			case AnonymousObjectCreation:
+				var anonymousCreation = (AnonymousObjectCreationExpressionNode)expression;
+				sb.append("new{");
+				first = true;
+				foreach (var decl in anonymousCreation.MemberDeclarators) {
+					if (first) {
+						first = false;
+					} else {
+						sb.append(", ");
+					}
+					if (decl.NameLength > 0) {
+						sb.append(new String(text, decl.NameOffset, decl.NameLength));
+						sb.append("=");
+					}
+					sb.append(expressionToString(decl.Value));
+				}
+				sb.append("}");
+				break;
+
+			case ArrayCreation:
+				var arrayCreation = (ArrayCreationExpressionNode)expression;
+				sb.append("new");
+				if (arrayCreation.Type != null) {
+					sb.append(" ");
+					sb.append(typeReferenceToString(arrayCreation.Type));
+				}
+				if (arrayCreation.DimensionExpressions.size() > 0) {
+					sb.append("[");
+					first = true;
+					foreach (var exp in arrayCreation.DimensionExpressions) {
+						if (first) {
+							first = false;
+						} else {
+							sb.append(", ");
+						}
+						sb.append(expressionToString(exp));
+					}
+					sb.append("]");
+				}
+				if (arrayCreation.Dimensions > 0) {
+					sb.append("[");
+					for (int i = 1; i < arrayCreation.Dimensions; i++) {
+						sb.append(",");
+					}
+					sb.append("]");
+				}
+				if (arrayCreation.Initializer != null) {
+					sb.append(expressionToString(arrayCreation.Initializer));
+				}
+				break;
+
+			case ArrayInitializer:
+				var arrayInit = (ArrayInitializerExpressionNode)expression;
+				sb.append("{");
+				first = true;
+				foreach (var v in arrayInit.Values) {
+					if (first) {
+						first = false;
+					} else {
+						sb.append(", ");
+					}
+					sb.append(expressionToString(v));
+				}
+				sb.append("}");
+				break;
+
+			case ElementAccess:
+				var elementAccess = (ElementAccessExpressionNode)expression;
+				sb.append("(");
+				sb.append(expressionToString(elementAccess.TargetObject));
+				sb.append(")[");
+				first = true;
+				foreach (var index in elementAccess.Indexes) {
+					if (first) {
+						first = false;
+					} else {
+						sb.append(", ");
+					}
+					sb.append(expressionToString(index));
+				}
+				sb.append("]");
+				break;
+
+			case Invocation:
+				var invocation = (InvocationExpressionNode)expression;
+				sb.append(expressionToString(invocation.TargetObject));
+				sb.append("(");
+				first = true;
+				foreach (var arg in invocation.Arguments) {
+					if (first) {
+						first = false;
+					} else {
+						sb.append(", ");
+					}
+					sb.append(expressionToString(arg));
+				}
+				sb.append(")");
+				break;
+
+			case Unary:
+				var unary = (UnaryExpressionNode)expression;
+				sb.append("(");
+				sb.append(unary.Operator.toString());
+				sb.append(" ");
+				sb.append(expressionToString(unary.Operand));
+				sb.append(")");
+				break;
+				
+			case Binary:
+				var binary = (BinaryExpressionNode)expression;
+				sb.append("(");
+				sb.append(expressionToString(binary.LeftOperand));
+				sb.append(" ");
+				sb.append(binary.Operator.toString());
+				sb.append(" ");
+				sb.append(expressionToString(binary.RightOperand));
+				sb.append(")");
+				break;
+				
+			case Cast:
+				var cast = (CastExpressionNode)expression;
+				sb.append("Cast<");
+				sb.append(typeReferenceToString(cast.TargetType));
+				sb.append(">(");
+				sb.append(expressionToString(cast.Expression));
+				sb.append(")");
+				break;
+				
+			case Assign:
+				var assign = (AssignExpressionNode)expression;
+				sb.append("Assign(");
+				sb.append(expressionToString(assign.Left));
+				sb.append(" ");
+				sb.append(assign.Operator.toString());
+				sb.append(" ");
+				sb.append(expressionToString(assign.Right));
+				sb.append(")");
+				break;
+
+			case Lambda:
+				var lambda = (LambdaExpressionNode)expression;
+				sb.append("Lambda(");
+				first = true;
+				foreach (var par in lambda.Parameters) {
+					if (first) {
+						first = false;
+					} else {
+						sb.append(", ");
+					}
+					if (par.Modifier != ParameterModifier.None) {
+						sb.append(par.Modifier.toString().toLowerCase());
+						sb.append(" ");
+					}
+					if (par.Type != null) {
+						sb.append(typeReferenceToString(par.Type));
+						sb.append(" ");
+					}
+					sb.append(new String(text, par.NameOffset, par.NameLength));
+				}
+				sb.append(" => ");
+				sb.append(statementToString(lambda.Body));
+				sb.append(")");
+				break;
+
+			case Conditional:
+				var conditional = (ConditionalExpressionNode)expression;
+				sb.append(expressionToString(conditional.Condition));
+				sb.append("?");
+				sb.append(expressionToString(conditional.IfTrue));
+				sb.append(":");
+				sb.append(expressionToString(conditional.IfFalse));
+				break;
+
+			case Typeof:
+				var tpof = (TypeofExpressionNode)expression;
+				sb.append("typeof(");
+				sb.append(typeReferenceToString(tpof.Type));
+				sb.append(")");
+				break;
+
+			case Query:
+				var query = (QueryExpressionNode)expression;
+				sb.append("from ");
+				if (query.From.Type != null) {
+					sb.append(typeReferenceToString(query.From.Type));
+					sb.append(" ");
+				}
+				sb.append(new String(text, query.From.NameOffset, query.From.NameLength));
+				sb.append(" in ");
+				sb.append(expressionToString(query.From.Origin));
+				sb.append("\r\n");
+				formatQueryBody(query.Body, sb);
+				break;
+
+			default:
+				throw new RuntimeException("Unhandled expression type: " + expression.ExpressionKind);
+			}
+			return sb.toString();
+		}
+
+		private void formatQueryBody(QueryBodyNode body, StringBuilder sb) {
+			foreach (var c in body.Clauses) {
+				switch (c.QueryBodyClauseKind) {
+				case From:
+					var from = (FromQueryBodyClauseNode)c;
+					sb.append("from ");
+					if (from.Type != null) {
+						sb.append(typeReferenceToString(from.Type));
+						sb.append(" ");
+					}
+					sb.append(new String(text, from.NameOffset, from.NameLength));
+					sb.append(" in ");
+					sb.append(expressionToString(from.Origin));
+					sb.append("\r\n");
+					break;
+
+				case Join:
+					var join = (JoinQueryBodyClauseNode)c;
+					sb.append("join ");
+					if (join.Type != null) {
+						sb.append(typeReferenceToString(join.Type));
+						sb.append(" ");
+					}
+					sb.append(new String(text, join.NameOffset, join.NameLength));
+					sb.append(" in ");
+					sb.append(expressionToString(join.Origin));
+					sb.append(" on ");
+					sb.append(expressionToString(join.EqualsLeftOperand));
+					sb.append(" equals ");
+					sb.append(expressionToString(join.EqualsRightOperand));
+					if (join.ResultLength > 0) {
+						sb.append(" into ");
+						sb.append(new String(text, join.ResultOffset, join.ResultLength));
+					}
+					sb.append("\r\n");
+					break;
+
+				case Let:
+					var let = (LetQueryBodyClauseNode)c;
+					sb.append("let ");
+					sb.append(new String(text, let.NameOffset, let.NameLength));
+					sb.append(" = ");
+					sb.append(expressionToString(let.Value));
+					sb.append("\r\n");
+					break;
+
+				case Orderby:
+					var orderby = (OrderbyQueryBodyClauseNode)c;
+					sb.append("orderby ");
+					boolean first = true;
+					foreach (var o in orderby.Orderings) {
+						if (first) {
+							first = false;
+						} else {
+							sb.append(", ");
+						}
+						sb.append(expressionToString(o.KeySelector));
+						if (o.Descending) {
+							sb.append(" descending");
+						}
+					}
+					sb.append("\r\n");
+					break;
+
+				case Where:
+					var where = (WhereQueryBodyClauseNode)c;
+					sb.append("where ");
+					sb.append(expressionToString(where.Predicat));
+					sb.append("\r\n");
+					break;
+
+				default:
+					throw new RuntimeException("Unhandled query clause: " + c.QueryBodyClauseKind);
+				}
+			}
+			if (body.By != null) {
+				sb.append("group ");
+			} else {
+				sb.append("select ");
+			}
+			sb.append(expressionToString(body.SelectOrGroup));
+			if (body.By != null) {
+				sb.append(" by ");
+				sb.append(expressionToString(body.By));
+			}
+			if (body.Continuation != null) {
+				sb.append("\r\ninto ");
+				sb.append(new String(text, body.Continuation.NameOffset, body.Continuation.NameLength));
+				sb.append("\r\n");
+				formatQueryBody(body.Continuation.Body, sb);
+			}
+		}
+
+		private String statementToString(StatementNode statement) {
+			var sb = new StringBuilder();
+			switch (statement.StatementKind) {
+			case Empty:
+				sb.append("#empty;\r\n");
+				break;
+
+			case Expression:
+				var expression = (ExpressionStatementNode)statement;
+				sb.append(expressionToString(expression.Expression));
+				sb.append(";\r\n");
+				break;
+				
+			case Block:
+				var block = (BlockStatementNode)statement;
+				sb.append("{\r\n");
+				foreach (var s in block.Statements) {
+					sb.append(statementToString(s));
+				}
+				sb.append("}\r\n");
+				break;
+
+			case LocalDeclaration:
+				var locals = (LocalDeclarationStatementNode)statement;
+				if (locals.Type == null) {
+					sb.append("var ");
+				} else {
+					sb.append(typeReferenceToString(locals.Type));
+					sb.append(" ");
+				}
+				var first = true;
+				foreach (var d in locals.Declarators) {
+					if (first) {
+						first = false;
+					} else {
+						sb.append(", ");
+					}
+					sb.append(new String(text, d.NameOffset, d.NameLength));
+					if (d.Value != null) {
+						sb.append(" = ");
+						sb.append(expressionToString(d.Value));
+					}
+				}
+				sb.append(";\r\n");
+				break;
+
+			case Return:
+				var rt = (ReturnStatementNode)statement;
+				sb.append("return");
+				if (rt.Value != null) {
+					sb.append("(");
+					sb.append(expressionToString(rt.Value));
+					sb.append(")");
+
+				}
+				sb.append(";\r\n");
+				break;
+
+			case If:
+				var ifStatement = (IfStatementNode)statement;
+				sb.append("if (");
+				sb.append(expressionToString(ifStatement.Condition));
+				sb.append(")\r\n");
+				sb.append(statementToString(ifStatement.IfTrue));
+				if (ifStatement.IfFalse != null) {
+					sb.append("else\r\n");
+					sb.append(statementToString(ifStatement.IfFalse));
+				}
+				break;
+
+			case While:
+				var whileStatement = (WhileStatementNode)statement;
+				sb.append("while (");
+				sb.append(expressionToString(whileStatement.Condition));
+				sb.append(")\r\n");
+				sb.append(statementToString(whileStatement.Statement));
+				break;
+
+			case Do:
+				var doStatement = (DoStatementNode)statement;
+				sb.append("do ");
+				sb.append(statementToString(doStatement.Statement));
+				sb.append("while (");
+				sb.append(expressionToString(doStatement.Condition));
+				sb.append(");\r\n");
+				break;
+
+			case For:
+				var forStatement = (ForStatementNode)statement;
+				sb.append("for (");
+				foreach (var init in forStatement.Initializer) {
+					sb.append(statementToString(init));
+				}
+				sb.append("Condition(");
+				if (forStatement.Condition != null) {
+					sb.append(expressionToString(forStatement.Condition));
+				}
+				sb.append(");\r\n");
+				foreach (var iter in forStatement.Iterator) {
+					sb.append(statementToString(iter));
+				}
+				sb.append(")\r\n");
+				sb.append(statementToString(forStatement.Statement));
+				break;
+
+			case Try:
+				var tryStatement = (TryStatementNode)statement;
+				sb.append("try ");
+				sb.append(statementToString(tryStatement.Block));
+				foreach (var cc in tryStatement.CatchClauses) {
+					sb.append("catch ");
+					if (cc.ExceptionType != null) {
+						sb.append("(");
+						sb.append(typeReferenceToString(cc.ExceptionType));
+						if (cc.NameLength > 0) {
+							sb.append(" ");
+							sb.append(new String(text, cc.NameOffset, cc.NameLength));
+						}
+						sb.append(") ");
+					}
+					sb.append(statementToString(cc.Block));
+				}
+				if (tryStatement.Finally != null) {
+					sb.append("finally ");
+					sb.append(statementToString(tryStatement.Finally));
+				}
+				break;
+
+			case Switch:
+				var switchStatement = (SwitchStatementNode)statement;
+				sb.append("switch (");
+				sb.append(expressionToString(switchStatement.Selector));
+				sb.append(") {\r\n");
+				foreach (var ss in switchStatement.Sections) {
+					if (ss.CaseExpression != null) {
+						sb.append("case ");
+						sb.append(expressionToString(ss.CaseExpression));
+						sb.append(":\r\n");
+					} else {
+						sb.append("default:\r\n");
+					}
+					foreach (var s in ss.Statements) {
+						sb.append(statementToString(s));
+					}
+				}
+				sb.append("}\r\n");
+				break;
+
+			case Foreach:
+				var foreachStatement = (ForeachStatementNode)statement;
+				sb.append("foreach (");
+				if (foreachStatement.Type != null) {
+					sb.append(typeReferenceToString(foreachStatement.Type));
+					sb.append(" ");
+				} else {
+					sb.append("var ");
+				}
+				sb.append(new String(text, foreachStatement.NameOffset, foreachStatement.NameLength));
+				sb.append(" in ");
+				sb.append(expressionToString(foreachStatement.Source));
+				sb.append(") ");
+				sb.append(statementToString(foreachStatement.Statement));
+				break;
+
+			case Break:
+				sb.append("break;\r\n");
+				break;
+
+			case Continue:
+				sb.append("continue;\r\n");
+				break;
+
+			case GotoCase:
+				var gotoCaseStatememt = (GotoCaseStatementNode)statement;
+				sb.append("goto ");
+				if (gotoCaseStatememt.Expression != null) {
+					sb.append("case ");
+					sb.append(expressionToString(gotoCaseStatememt.Expression));
+				} else {
+					sb.append("default");
+				}
+				sb.append(";\r\n");
+				break;
+
+			case Using:
+				var usingStatement = (UsingStatementNode)statement;
+				sb.append("using (");
+				sb.append(statementToString(usingStatement.ResourceAcquisition));
+				sb.append(") ");
+				sb.append(statementToString(usingStatement.Statement));
+				break;
+
+			case Synchronized:
+				var lockStatement = (SynchronizedStatementNode)statement;
+				sb.append("synchronized (");
+				sb.append(expressionToString(lockStatement.Lock));
+				sb.append(") ");
+				sb.append(statementToString(lockStatement.Statement));
+				break;
+
+			case Goto:
+				var gotoStatememt = (GotoStatementNode)statement;
+				sb.append("goto ");
+				sb.append(new String(text, gotoStatememt.LabelOffset, gotoStatememt.LabelLength));
+				sb.append(";\r\n");
+				break;
+
+			case Labeled:
+				var label = (LabeledStatementNode)statement;
+				sb.append(new String(text, label.NameOffset, label.NameLength));
+				sb.append(": ");
+				sb.append(statementToString(label.Statement));
+				sb.append(";\r\n");
+				break;
+
+			default:
+				throw new RuntimeException("Unhandled statement: " + statement.StatementKind);
+			}
+			return sb.toString();
+		}
+		
+		private String typeReferenceToString(TypeReferenceNode typeRef) {
+			var sb = new StringBuilder();
+			switch (typeRef.TypeReferenceKind) {
+				case Int:
+				case Long:
+				case Short:
+				case Float:
+				case Double:
+				case Boolean:
+				case Byte:
+				case Void:
+					sb.append(typeRef.TypeReferenceKind.toString().toLowerCase());
+					break;
+
+				case SimpleName:
+					var simpleName = (SimpleNameTypeReferenceNode)typeRef;
+					sb.append(new String(text, simpleName.NameOffset, simpleName.NameLength));
+					if (simpleName.TypeArguments.size() > 0) {
+						formatTypeArguments(simpleName.TypeArguments, sb);
+					}
+					break;
+
+				case Qualified:
+					var qtype = (QualifiedTypeReferenceNode)typeRef;
+					sb.append(typeReferenceToString(qtype.EnclosingType));
+					sb.append(".");
+					sb.append(typeReferenceToString(qtype.SimpleName));
+					break;
+
+				case Array:
+					var array = (ArrayTypeReferenceNode)typeRef;
+					sb.append(typeReferenceToString(array.ElementType));
+					sb.append("[]");
+					break;
+
+				default:
+					throw new RuntimeException("Unhandled type kind: " + typeRef.TypeReferenceKind);
+			}
+			return sb.toString();
+		}
+
+		private void formatTypeArguments(List<TypeReferenceNode> typeArgs, StringBuilder sb) {
+			if (typeArgs.size() > 0) {
+				sb.append("<");
+				var first = true;
+				foreach (var t in typeArgs) {
+					if (first) {
+						first = false;
+					} else {
+						sb.append(", ");
+					}
+					sb.append(typeReferenceToString(t));
+				}
+				sb.append(">");
+			}
+		}
+			
+		private String readToEnd(Reader reader) {
+			var sb = new StringBuilder();
+			var buff = new char[1024];
+			int read;
+			while ((read = reader.read(buff)) != -1) {
+				sb.append(buff, 0, read);
+			}
+			return sb.toString();
+		}
+	}
+}

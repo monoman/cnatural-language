@@ -1,0 +1,5 @@
+public class DoubleIntLessThan {
+	public static boolean test(double d, int i) {
+		return d < i;
+	}
+}

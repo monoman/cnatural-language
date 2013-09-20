@@ -1,0 +1,10 @@
+#define TEST
+
+#if X
+
+#else
+#if (TEST)
+namespace N {
+}
+#endif
+#endif

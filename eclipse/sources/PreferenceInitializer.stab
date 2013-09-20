@@ -1,0 +1,48 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using org.eclipse.core.runtime.preferences;
+using org.eclipse.jface.preference;
+using stab.tools.eclipse.editors;
+
+package stab.tools.eclipse {
+
+	public class PreferenceInitializer : AbstractPreferenceInitializer {
+		
+		//
+		// Called by Eclipse to initialize the preference store default values.
+		//
+		public override void initializeDefaultPreferences() {
+			Environment.trace(this, "initializing preference store default values");
+			
+			var store = Environment.PreferenceStore;
+			
+			foreach (var style in SemanticStyle.values()) {
+				var keyPrefix = style.PreferenceKeyPrefix;
+				if (style.DefaultForeground != null) {
+					PreferenceConverter.setDefault(store, keyPrefix + "foreground", style.DefaultForeground);
+				}
+				if (style.DefaultBackground != null) {
+					PreferenceConverter.setDefault(store, keyPrefix + "background", style.DefaultBackground);
+				}
+				store.setDefault(keyPrefix + "bold", style.IsBold);
+				store.setDefault(keyPrefix + "italic", style.IsItalic);
+				store.setDefault(keyPrefix + "underline", style.Underline);
+				store.setDefault(keyPrefix + "strikethrough", style.Strikethrough);
+			}
+		}
+	}
+}

@@ -1,0 +1,1597 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using java.io;
+using java.util;
+using org.junit;
+using stab.tools.helpers;
+using stab.tools.syntaxtree;
+
+package stab.tools.parser.test {
+	public class ParseCompilationUnitTest {
+		[Test]
+		public void testEmptyClass() {
+			doTest("EmptyClass");
+		}
+
+		[Test]
+		public void testEmptyPackage() {
+			doTest("EmptyPackage");
+		}
+
+		[Test]
+		public void testEmptyClass2() {
+			doTest("EmptyClass2");
+		}
+
+		[Test]
+		public void testEmptyNestedClass() {
+			doTest("EmptyNestedClass");
+		}
+
+		[Test]
+		public void testMethod() {
+			doTest("Method");
+		}
+
+		[Test]
+		public void testMethodParameter() {
+			doTest("MethodParameter");
+		}
+
+		[Test]
+		public void testMethod2() {
+			doTest("Method2");
+		}
+
+		[Test]
+		public void testModifiers() {
+			doTest("Modifiers");
+		}
+
+		[Test]
+		public void testUsing() {
+			doTest("Using");
+		}
+
+		[Test]
+		public void testGenerics() {
+			doTest("Generics");
+		}
+
+		[Test]
+		public void testGenerics2() {
+			doTest("Generics2");
+		}
+
+		[Test]
+		public void testClassBase() {
+			doTest("ClassBase");
+		}
+
+		[Test]
+		public void testTypeParameterConstraints() {
+			doTest("TypeParameterConstraints");
+		}
+
+		[Test]
+		public void testGenericMethod() {
+			doTest("GenericMethod");
+		}
+
+		[Test]
+		public void testGenericMethod2() {
+			doTest("GenericMethod2");
+		}
+
+		[Test]
+		public void testField() {
+			doTest("Field");
+		}
+
+		[Test]
+		public void testField2() {
+			doTest("Field2");
+		}
+
+		[Test]
+		public void testProperty() {
+			doTest("Property");
+		}
+
+		[Test]
+		public void testProperty2() {
+			doTest("Property2");
+		}
+
+		[Test]
+		public void testProperty3() {
+			doTest("Property3");
+		}
+
+		[Test]
+		public void testProperty4() {
+			doTest("Property4");
+		}
+
+		[Test]
+		public void testIndexer() {
+			doTest("Indexer");
+		}
+
+		[Test]
+		public void testIndexer2() {
+			doTest("Indexer2");
+		}
+
+		[Test]
+		public void testClass() {
+			doTest("Class");
+		}
+
+		[Test]
+		public void testConstructor() {
+			doTest("Constructor");
+		}
+
+		[Test]
+		public void testConstructor2() {
+			doTest("Constructor2");
+		}
+
+		[Test]
+		public void testDestructor() {
+			doTest("Destructor");
+		}
+
+		[Test]
+		public void testDestructor2() {
+			doTest("Destructor2");
+		}
+
+		[Test]
+		public void testDelegate() {
+			doTest("Delegate");
+		}
+
+		[Test]
+		public void testInterface() {
+			doTest("Interface");
+		}
+
+		[Test]
+		public void testMain() {
+			doTest("Main");
+		}
+
+		[Test]
+		public void testUnsignedRightShift() {
+			doTest("UnsignedRightShift");
+		}
+
+		[Test]
+		public void testVar() {
+			doTest("Var");
+		}
+
+		[Test]
+		public void testForeach() {
+			doTest("Foreach");
+		}
+
+		[Test]
+		public void testFor() {
+			doTest("For");
+		}
+
+		[Test]
+		public void testIf() {
+			doTest("If");
+		}
+
+		[Test]
+		public void testIf2() {
+			doTest("If2");
+		}
+
+		[Test]
+		public void testWhile() {
+			doTest("While");
+		}
+
+		[Test]
+		public void testDo() {
+			doTest("Do");
+		}
+
+		[Test]
+		public void testThrow() {
+			doTest("Throw");
+		}
+
+		[Test]
+		public void testBreak() {
+			doTest("Break");
+		}
+
+		[Test]
+		public void testContinue() {
+			doTest("Continue");
+		}
+
+		[Test]
+		public void testCollectionInitializer() {
+			doTest("CollectionInitializer");
+		}
+
+		[Test]
+		public void testEnum() {
+			doTest("Enum");
+		}
+
+		[Test]
+		public void testEnum2() {
+			doTest("Enum2");
+		}
+		
+		[Test]
+		public void testWildcard() {
+			doTest("Wildcard");
+		}
+		
+		private void doTest(String test) {
+			var userDir = System.getProperty("user.dir");
+			var sourcePath = PathHelper.combine(PathHelper.combine(userDir, "tests/resources/ParseCompilationUnitTest/sources"), test + ".stab");
+			var fileReader = new FileReader(sourcePath);
+			var code = readToEnd(fileReader);
+			var text = code.toCharArray();
+			var parser = new Parser();
+			var scanner = new SourceCodeScanner(new CodeErrorManager(), text);
+			var compilationUnit = parser.parseCompilationUnit(scanner);
+			var result = new CompilationUnitPrinter().print(text, compilationUnit);
+			
+			var generatedPath = PathHelper.combine(userDir, "tests/resources/ParseCompilationUnitTest/generated");
+			var generatedDir = new File(generatedPath);
+			if (!generatedDir.exists()) {
+				generatedDir.mkdir();
+			}
+			var fileWriter = new FileWriter(PathHelper.combine(generatedPath, test + ".txt"));
+			fileWriter.write(result);
+			fileWriter.close();
+			
+			var expectedPath = PathHelper.combine(userDir, "tests/resources/ParseCompilationUnitTest/expected");
+			var expectedFile = new File(PathHelper.combine(expectedPath, test + ".txt"));
+			Assert.assertTrue("Expected file not found: " + expectedFile, expectedFile.exists());
+			fileReader = new FileReader(expectedFile);
+			var reference = readToEnd(fileReader);
+			
+			var genReader = new BufferedReader(new StringReader(result));
+			var refReader = new BufferedReader(new StringReader(reference));
+			for (;;) {
+				var genLine = genReader.readLine();
+				var refLine = refReader.readLine();
+				if (genLine == null && refLine == null) {
+					break;
+				}
+				Assert.assertEquals(refLine, genLine);
+			}
+		}
+
+		private String readToEnd(Reader reader) {
+			var sb = new StringBuilder();
+			var buff = new char[1024];
+			int read;
+			while ((read = reader.read(buff)) != -1) {
+				sb.append(buff, 0, read);
+			}
+			return sb.toString();
+		}
+	}
+	
+	public class CompilationUnitPrinter {
+		private char[] text;
+	
+		public String print(char[] text, CompilationUnitNode compilationUnit) {
+			this.text = text;
+			var sb = new StringBuilder();
+			print(compilationUnit.getBody(), 0, sb);
+			return sb.toString();
+		}
+
+		private void print(PackageBodyNode packageBody, int indent, StringBuilder sb) {
+			var indentText = buildIndentText(indent);
+			if (packageBody.UsingDirectives.size() > 0) {
+				foreach (var ud in packageBody.UsingDirectives) {
+					sb.append(indentText);
+					sb.append("using ");
+					if (ud.AliasLength > 0) {
+						sb.append(new String(text, ud.AliasOffset, ud.AliasLength));
+						sb.append(" = ");
+					}
+					print(ud.TypeOrPackage, sb);
+					sb.append(";\r\n");
+				}
+				sb.append("\r\n");
+			}
+			foreach (var m in packageBody.Members) {
+				switch (m.PackageMemberKind) {
+				case Package:
+					var packageDeclaration = (PackageDeclarationNode)m;
+					sb.append(indentText);
+					sb.append("package ");
+					var first = true;
+					foreach (var id in packageDeclaration.Identifiers) {
+						if (first) {
+							first = false;
+						} else {
+							sb.append(".");
+						}
+						sb.append(new String(text, id.Offset, id.Length));
+					}
+					sb.append(" {\r\n");
+					if (packageDeclaration.Body != null) {
+						print(packageDeclaration.Body, indent + 1, sb);
+					}
+					sb.append(indentText);
+					sb.append("}\r\n");
+					break;
+
+				case Class:
+					print((ClassDeclarationNode)m, indent, sb);
+					break;
+
+				case Interface:
+					print((InterfaceDeclarationNode)m, indent, sb);
+					break;
+
+				case Delegate:
+					print((DelegateDeclarationNode)m, indent, sb);
+					break;
+
+				default:
+					throw new RuntimeException("Package member not supported: " + m.PackageMemberKind);
+				}
+			}
+		}
+
+		private void print(InterfaceDeclarationNode interfaceDeclaration, int indent, StringBuilder sb) {
+			var indentText = buildIndentText(indent);
+			foreach (var attr in interfaceDeclaration.Annotations) {
+				sb.append(indentText);
+				print(attr, true, sb);
+			}
+			sb.append(indentText);
+			print(interfaceDeclaration.Modifiers, sb);
+			sb.append("interface ");
+			sb.append(new String(text, interfaceDeclaration.NameOffset, interfaceDeclaration.NameLength));
+			if (interfaceDeclaration.TypeParameters.size() > 0) {
+				sb.append("<");
+				var first = true;
+				foreach (var t in interfaceDeclaration.TypeParameters) {
+					if (first) {
+						first = false;
+					} else {
+						sb.append(", ");
+					}
+					print(t, sb);
+				}
+				sb.append(">");
+			}
+			if (interfaceDeclaration.InterfaceBase.size() > 0) {
+				sb.append(" : ");
+				boolean first = true;
+				foreach (var t in interfaceDeclaration.InterfaceBase) {
+					if (first) {
+						first = false;
+					} else {
+						sb.append(", ");
+					}
+					print(t, sb);
+				}
+			}
+			print(interfaceDeclaration.ConstraintsClauses, indentText, sb);
+			sb.append(" {\r\n");
+			foreach (var m in interfaceDeclaration.Members) {
+				switch (m.TypeMemberKind) {
+				case Method:
+					var methodDeclaration = (MethodDeclarationNode)m;
+					foreach (var attr in methodDeclaration.Annotations) {
+						sb.append(buildIndentText(indent + 1));
+						print(attr, true, sb);
+					}
+					sb.append(buildIndentText(indent + 1));
+					print(methodDeclaration.Modifiers, sb);
+					print(methodDeclaration.ReturnType, sb);
+					sb.append(" ");
+					sb.append(new String(text, methodDeclaration.NameOffset, methodDeclaration.NameLength));
+					var first = true;
+					if (methodDeclaration.TypeParameters.size() > 0) {
+						sb.append("<");
+						first = true;
+						foreach (var t in methodDeclaration.TypeParameters) {
+							if (first) {
+								first = false;
+							} else {
+								sb.append(", ");
+							}
+							print(t, sb);
+						}
+						sb.append(">");
+					}
+					sb.append("(");
+					first = true;
+					foreach (var p in methodDeclaration.Parameters) {
+						if (first) {
+							first = false;
+						} else {
+							sb.append(", ");
+						}
+						print(p, sb);
+					}
+					sb.append(")");
+					print(methodDeclaration.ConstraintsClauses, buildIndentText(indent + 1), sb);
+					if (methodDeclaration.Body != null) {
+						sb.append(" ");
+						print(methodDeclaration.Body, indent + 1, sb);
+					} else {
+						sb.append(";\r\n");
+					}
+					break;
+
+				case Property:
+					var propertyDeclaration = (PropertyDeclarationNode)m;
+					foreach (var attr in propertyDeclaration.Annotations) {
+						sb.append(buildIndentText(indent + 1));
+						print(attr, true, sb);
+					}
+					sb.append(buildIndentText(indent + 1));
+					print(propertyDeclaration.Modifiers, sb);
+					print(propertyDeclaration.Type, sb);
+					sb.append(" ");
+					sb.append(new String(text, propertyDeclaration.NameOffset, propertyDeclaration.NameLength));
+					sb.append(" {\r\n");
+					if (propertyDeclaration.GetAccessor != null) {
+						print(propertyDeclaration.GetAccessor, true, indent + 1, sb);
+					}
+					if (propertyDeclaration.SetAccessor != null) {
+						print(propertyDeclaration.SetAccessor, false, indent + 1, sb);
+					}
+					sb.append(buildIndentText(indent + 1));
+					sb.append("}\r\n");
+					break;
+
+				case Indexer:
+					var indexerDeclaration = (IndexerDeclarationNode)m;
+					foreach (var attr in indexerDeclaration.Annotations) {
+						sb.append(buildIndentText(indent + 1));
+						print(attr, true, sb);
+					}
+					sb.append(buildIndentText(indent + 1));
+					print(indexerDeclaration.Modifiers, sb);
+					print(indexerDeclaration.Type, sb);
+					sb.append(" ");
+					sb.append("this[");
+					first = true;
+					foreach (var p in indexerDeclaration.Parameters) {
+						if (first) {
+							first = false;
+						} else {
+							sb.append(", ");
+						}
+						print(p, sb);
+					}
+					sb.append("] {\r\n");
+					if (indexerDeclaration.GetAccessor != null) {
+						print(indexerDeclaration.GetAccessor, true, indent + 1, sb);
+					}
+					if (indexerDeclaration.SetAccessor != null) {
+						print(indexerDeclaration.SetAccessor, false, indent + 1, sb);
+					}
+					sb.append(buildIndentText(indent + 1));
+					sb.append("}\r\n");
+					break;
+				}
+			}
+			sb.append(indentText);
+			sb.append("}\r\n");
+		}
+
+		private void print(DelegateDeclarationNode declaration, int indent, StringBuilder sb) {
+			var indentText = buildIndentText(indent);
+			foreach (var attr in declaration.Annotations) {
+				sb.append(indentText);
+				print(attr, true, sb);
+			}
+			sb.append(indentText);
+			print(declaration.Modifiers, sb);
+			sb.append("delegate ");
+			print(declaration.ReturnType, sb);
+			sb.append(" ");
+			sb.append(new String(text, declaration.NameOffset, declaration.NameLength));
+			sb.append("(");
+			boolean first = true;
+			foreach (var p in declaration.Parameters) {
+				if (first) {
+					first = false;
+				} else {
+					sb.append(", ");
+				}
+				print(p, sb);
+			}
+			sb.append(");\r\n");
+		}
+
+		private void print(ClassDeclarationNode classDeclaration, int indent, StringBuilder sb) {
+			var indentText = buildIndentText(indent);
+			foreach (var attr in classDeclaration.Annotations) {
+				print(attr, true, sb);
+			}
+			sb.append(indentText);
+			print(classDeclaration.Modifiers, sb);
+			if (classDeclaration.IsEnum) {
+				sb.append("enum ");
+			} else {
+				sb.append("class ");
+			}
+			sb.append(new String(text, classDeclaration.NameOffset, classDeclaration.NameLength));
+			print(classDeclaration.TypeParameters, sb);
+			if (classDeclaration.ClassBase.size() > 0) {
+				sb.append(" : ");
+				boolean first = true;
+				foreach (var t in classDeclaration.ClassBase) {
+					if (first) {
+						first = false;
+					} else {
+						sb.append(", ");
+					}
+					print(t, sb);
+				}
+			}
+			print(classDeclaration.ConstraintsClauses, indentText, sb);
+			sb.append(" {\r\n");
+			print(classDeclaration.Members, indent, sb);
+			sb.append(indentText);
+			sb.append("}\r\n");
+		}
+
+		private void print(List<ITypeMember> members, int indent, StringBuilder sb) {
+			var indentText = buildIndentText(indent);
+			var hasEnumConstant = false;
+			foreach (ITypeMember m in members) {
+				if (m.TypeMemberKind == TypeMemberKind.EnumConstant) {
+					hasEnumConstant = true;
+					var enumConstant = (EnumConstantDeclarationNode)m;
+					foreach (var attr in enumConstant.Annotations) {
+						sb.append(buildIndentText(indent + 1));
+						print(attr, true, sb);
+					}
+					sb.append(buildIndentText(indent + 1));
+					sb.append(new String(text, enumConstant.NameOffset, enumConstant.NameLength));
+					if (!enumConstant.Arguments.isEmpty()) {
+						sb.append("(");
+						var first = true;
+						foreach (var p in enumConstant.getArguments()) {
+							if (first) {
+								first = false;
+							} else {
+								sb.append(", ");
+							}
+							print(p, sb);
+						}
+						sb.append(")");
+					}
+					sb.append(",\r\n");
+				}
+			}
+			if (hasEnumConstant) {
+				sb.append(indentText);
+				sb.append("    ;\r\n");
+			}
+			foreach (var m in members) {
+				switch (m.TypeMemberKind) {
+				case EnumConstant:
+					break;
+
+				case Class:
+					print((ClassDeclarationNode)m, indent + 1, sb);
+					break;
+
+				case Constructor:
+					var constructor = (ConstructorDeclarationNode)m;
+					foreach (var attr in constructor.Annotations) {
+						sb.append(buildIndentText(indent + 1));
+						print(attr, true, sb);
+					}
+					sb.append(buildIndentText(indent + 1));
+					print(constructor.Modifiers, sb);
+					sb.append(new String(text, constructor.NameOffset, constructor.NameLength));
+					sb.append("(");
+					var first = true;
+					foreach (var p in constructor.getParameters()) {
+						if (first) {
+							first = false;
+						} else {
+							sb.append(", ");
+						}
+						print(p, sb);
+					}
+					sb.append(")");
+					if (constructor.Initializer != null) {
+						sb.append(" : ");
+						if (constructor.Initializer.IsSuper) {
+							sb.append("super(");
+						} else {
+							sb.append("this(");
+						}
+						first = true;
+						foreach (var arg in constructor.Initializer.Arguments) {
+							if (first) {
+								first = false;
+							} else {
+								sb.append(", ");
+							}
+							print(arg, sb);
+						}
+						sb.append(")");
+					}
+					if (constructor.Body != null) {
+						sb.append(" ");
+						print(constructor.Body, indent + 1, sb);
+					} else {
+						sb.append(";\r\n");
+					}
+					break;
+
+				case Destructor:
+					var destructor = (DestructorDeclarationNode)m;
+					foreach (var attr in destructor.getAnnotations()) {
+						sb.append(buildIndentText(indent + 1));
+						print(attr, true, sb);
+					}
+					sb.append(buildIndentText(indent + 1));
+					print(destructor.Modifiers, sb);
+					sb.append("~");
+					sb.append(new String(text, destructor.NameOffset, destructor.NameLength));
+					sb.append("()");
+					if (destructor.Body != null) {
+						sb.append(" ");
+						print(destructor.Body, indent + 1, sb);
+					} else {
+						sb.append(";\r\n");
+					}
+					break;
+
+				case Method:
+					var methodDeclaration = (MethodDeclarationNode)m;
+					foreach (var attr in methodDeclaration.Annotations) {
+						sb.append(buildIndentText(indent + 1));
+						print(attr, true, sb);
+					}
+					var mindent = buildIndentText(indent + 1);
+					sb.append(mindent);
+					print(methodDeclaration.Modifiers, sb);
+					print(methodDeclaration.ReturnType, sb);
+					sb.append(" ");
+					sb.append(new String(text, methodDeclaration.NameOffset, methodDeclaration.NameLength));
+					print(methodDeclaration.TypeParameters, sb);
+					sb.append("(");
+					first = true;
+					foreach (var p in methodDeclaration.Parameters) {
+						if (first) {
+							first = false;
+						} else {
+							sb.append(", ");
+						}
+						print(p, sb);
+					}
+					sb.append(")");
+					print(methodDeclaration.ConstraintsClauses, mindent, sb);
+					if (methodDeclaration.Body != null) {
+						sb.append(" ");
+						print(methodDeclaration.Body, indent + 1, sb);
+					} else {
+						sb.append(";\r\n");
+					}
+					break;
+
+				case Field:
+					var fieldDeclaration = (FieldDeclarationNode)m;
+					foreach (var attr in fieldDeclaration.Annotations) {
+						sb.append(buildIndentText(indent + 1));
+						print(attr, true, sb);
+					}
+					sb.append(buildIndentText(indent + 1));
+					print(fieldDeclaration.Modifiers, sb);
+					print(fieldDeclaration.Type, sb);
+					sb.append(" ");
+					first = true;
+					foreach (var decl in fieldDeclaration.Declarators) {
+						if (first) {
+							first = false;
+						} else {
+							sb.append(", ");
+						}
+						sb.append(new String(text, decl.NameOffset, decl.NameLength));
+						if (decl.Value != null) {
+							sb.append(" = ");
+							print(decl.Value, sb);
+						}
+					}
+					sb.append(";\r\n");
+					break;
+
+				case Property:
+					var propertyDeclaration = (PropertyDeclarationNode)m;
+					foreach (var attr in propertyDeclaration.Annotations) {
+						sb.append(buildIndentText(indent + 1));
+						print(attr, true, sb);
+					}
+					sb.append(buildIndentText(indent + 1));
+					print(propertyDeclaration.Modifiers, sb);
+					print(propertyDeclaration.Type, sb);
+					sb.append(" ");
+					sb.append(new String(text, propertyDeclaration.NameOffset, propertyDeclaration.NameLength));
+					sb.append(" {\r\n");
+					if (propertyDeclaration.GetAccessor != null) {
+						print(propertyDeclaration.GetAccessor, true, indent + 1, sb);
+					}
+					if (propertyDeclaration.SetAccessor != null) {
+						print(propertyDeclaration.SetAccessor, false, indent + 1, sb);
+					}
+					sb.append(buildIndentText(indent + 1));
+					sb.append("}\r\n");
+					break;
+
+				case Indexer:
+					var indexerDeclaration = (IndexerDeclarationNode)m;
+					foreach (var attr in indexerDeclaration.Annotations) {
+						sb.append(buildIndentText(indent + 1));
+						print(attr, true, sb);
+					}
+					sb.append(buildIndentText(indent + 1));
+					print(indexerDeclaration.Modifiers, sb);
+					print(indexerDeclaration.Type, sb);
+					sb.append(" ");
+					sb.append("this[");
+					first = true;
+					foreach (var p in indexerDeclaration.Parameters) {
+						if (first) {
+							first = false;
+						} else {
+							sb.append(", ");
+						}
+						print(p, sb);
+					}
+					sb.append("] {\r\n");
+					if (indexerDeclaration.GetAccessor != null) {
+						print(indexerDeclaration.GetAccessor, true, indent + 1, sb);
+					}
+					if (indexerDeclaration.SetAccessor != null) {
+						print(indexerDeclaration.SetAccessor, false, indent + 1, sb);
+					}
+					sb.append(buildIndentText(indent + 1));
+					sb.append("}\r\n");
+					break;
+
+				default:
+					throw new RuntimeException("Class member not supported: " + m.TypeMemberKind);
+				}
+			}
+		}
+
+		private void print(AccessorDeclarationNode accessor, boolean getter, int indent, StringBuilder sb) {
+			var indentText = buildIndentText(indent + 1);
+			foreach (var attr in accessor.Annotations) {
+				sb.append(indentText);
+				print(attr, true, sb);
+			}
+			sb.append(indentText);
+			print(accessor.Modifiers, sb);
+			if (getter) {
+				sb.append("get");
+			} else {
+				sb.append("set");
+			}
+			if (accessor.Body == null) {
+				sb.append(";\r\n");
+			} else {
+				sb.append(" ");
+				print(accessor.Body, indent + 1, sb);
+			}
+		}
+
+		private void print(List<TypeParameterConstraintsClauseNode> constraintsClauses, String indentText, StringBuilder sb) {
+			if (constraintsClauses.size() > 0) {
+				foreach (var clause in constraintsClauses) {
+					sb.append("\r\n");
+					sb.append(indentText);
+					sb.append("    where ");
+					sb.append(new String(text, clause.NameOffset, clause.NameLength));
+					sb.append(" : ");
+					boolean first = true;
+					foreach (var c in clause.Constraints) {
+						if (first) {
+							first = false;
+						} else {
+							sb.append(", ");
+						}
+						print(c, sb);
+					}
+				}
+			}
+		}
+
+		private void print(AnnotationSectionNode a, boolean newline, StringBuilder sb) {
+			sb.append("[");
+			foreach (var attr in a.getAnnotations()) {
+				print(attr.Type, sb);
+				if (attr.Initializer != null) {
+					sb.append("(");
+					var first = true;
+					var expr = attr.getInitializer();
+					if (first) {
+						first = false;
+					} else {
+						sb.append(", ");
+					}
+					print(expr, sb);
+					sb.append(")");
+				}
+			}
+			sb.append("]");
+			if (newline) {
+				sb.append("\r\n");
+			}
+		}
+
+		private void print(ParameterNode p, StringBuilder sb) {
+			foreach (var attr in p.Annotations) {
+				print(attr, false, sb);
+			}
+			if (p.Modifier != ParameterModifier.None) {
+				sb.append(p.Modifier.toString().toLowerCase());
+				sb.append(" ");
+			}
+			print(p.Type, sb);
+			sb.append(" ");
+			sb.append(new String(text, p.NameOffset, p.NameLength));
+		}
+
+		private void print(StatementNode s, int indent, StringBuilder sb) {
+			print(s, indent, true, sb);
+		}
+
+		private void print(StatementNode statement, int indent, boolean format, StringBuilder sb) {
+			if (!format) {
+				indent = 0;
+			}
+			var indentText = buildIndentText(indent);
+			switch (statement.StatementKind) {
+			case Empty:
+				sb.append(indentText);
+				sb.append(";\r\n");
+				break;
+
+			case Block:
+				var block = (BlockStatementNode)statement;
+				sb.append("{");
+				if (format) {
+					sb.append("\r\n");
+				} else {
+					sb.append(" ");
+				}
+				foreach (var s in block.getStatements()) {
+					print(s, indent + 1, format, sb);
+					if (!format) {
+						sb.append("; ");
+					}
+				}
+				sb.append(indentText);
+				sb.append("}");
+				if (format) {
+					sb.append("\r\n");
+				}
+				break;
+
+			case Expression:
+				var expression = (ExpressionStatementNode)statement;
+				sb.append(indentText);
+				print(expression.Expression, sb);
+				if (format) {
+					sb.append(";\r\n");
+				}
+				break;
+
+			case Return:
+				var returnStatement = (ReturnStatementNode)statement;
+				sb.append(indentText);
+				sb.append("return");
+				if (returnStatement.Value != null) {
+					sb.append(" ");
+					print(returnStatement.Value, sb);
+				}
+				if (format) {
+					sb.append(";\r\n");
+				}
+				break;
+
+			case Yield:
+				var yieldStatement = (YieldStatementNode)statement;
+				sb.append(indentText);
+				sb.append("yield ");
+				if (yieldStatement.Value == null) {
+					sb.append("break");
+				} else {
+					sb.append("return ");
+					print(yieldStatement.Value, sb);
+				}
+				if (format) {
+					sb.append(";\r\n");
+				}
+				break;
+
+			case LocalDeclaration:
+				var local = (LocalDeclarationStatementNode)statement;
+				sb.append(indentText);
+				if (local.Type == null) {
+					sb.append("var");
+				} else {
+					print(local.Type, sb);
+				}
+				sb.append(" ");
+				boolean first = true;
+				foreach (var decl in local.Declarators) {
+					if (first) {
+						first = false;
+					} else {
+						sb.append(", ");
+					}
+					sb.append(new String(text, decl.NameOffset, decl.NameLength));
+					if (decl.Value != null) {
+						sb.append(" = ");
+						print(decl.Value, sb);
+					}
+				}
+				if (format) {
+					sb.append(";\r\n");
+				}
+				break;
+
+			case If:
+				var ifStatement = (IfStatementNode)statement;
+				sb.append(indentText);
+				sb.append("if (");
+				print(ifStatement.Condition, sb);
+				sb.append(")");
+				if (ifStatement.IfTrue.StatementKind != StatementKind.Block) {
+					sb.append("\r\n");
+					print(ifStatement.IfTrue, indent + 1, sb);
+				} else {
+					sb.append(" ");
+					print(ifStatement.IfTrue, indent, sb);
+				}
+				if (ifStatement.IfFalse != null) {
+					sb.append(indentText);
+					sb.append("else");
+					if (ifStatement.IfFalse.StatementKind != StatementKind.Block) {
+						sb.append("\r\n");
+						print(ifStatement.IfFalse, indent + 1, sb);
+					} else {
+						sb.append(" ");
+						print(ifStatement.IfFalse, indent, sb);
+					}
+				}
+				break;
+
+			case Do:
+				var doStatement = (DoStatementNode)statement;
+				sb.append(indentText);
+				sb.append("do");
+				if (doStatement.Statement.StatementKind != StatementKind.Block) {
+					sb.append("\r\n");
+					print(doStatement.Statement, indent + 1, sb);
+				} else {
+					sb.append(" ");
+					print(doStatement.Statement, indent, sb);
+				}
+				sb.append(indentText);
+				sb.append("while(");
+				print(doStatement.Condition, sb);
+				sb.append(");\r\n");
+				break;
+
+			case Break:
+				sb.append(indentText);
+				sb.append("break");
+				if (format) {
+					sb.append(";\r\n");
+				}
+				break;
+
+			case Continue:
+				sb.append(indentText);
+				sb.append("continue");
+				if (format) {
+					sb.append(";\r\n");
+				}
+				break;
+
+			case Throw:
+				var throwStatement = (ThrowStatementNode)statement;
+				sb.append(indentText);
+				sb.append("throw");
+				if (throwStatement.Exception != null) {
+					sb.append(" ");
+					print(throwStatement.Exception, sb);
+				}
+				if (format) {
+					sb.append(";\r\n");
+				}
+				break;
+
+			case While:
+				var whileStatement = (WhileStatementNode)statement;
+				sb.append(indentText);
+				sb.append("while(");
+				print(whileStatement.Condition, sb);
+				sb.append(")");
+				if (whileStatement.Statement.StatementKind != StatementKind.Block) {
+					sb.append("\r\n");
+					print(whileStatement.Statement, indent + 1, sb);
+				} else {
+					sb.append(" ");
+					print(whileStatement.Statement, indent, sb);
+				}
+				break;
+
+			case Foreach:
+				var foreachStatement = (ForeachStatementNode)statement;
+				sb.append(indentText);
+				sb.append("foreach (");
+				if (foreachStatement.Type != null) {
+					print(foreachStatement.Type, sb);
+					sb.append(" ");
+				} else {
+					sb.append("var ");
+				}
+				sb.append(new String(text, foreachStatement.NameOffset, foreachStatement.NameLength));
+				sb.append(" in ");
+				print(foreachStatement.Source, sb);
+				sb.append(")");
+				if (foreachStatement.Statement.StatementKind != StatementKind.Block) {
+					sb.append("\r\n");
+					print(foreachStatement.Statement, indent + 1, sb);
+				} else {
+					sb.append(" ");
+					print(foreachStatement.Statement, indent, sb);
+				}
+				break;
+
+			case For:
+				var forStatement = (ForStatementNode)statement;
+				sb.append(indentText);
+				sb.append("for (");
+				foreach (var init in forStatement.Initializer) {
+					print(init, 0, false, sb);
+				}
+				sb.append("; ");
+				if (forStatement.Condition != null) {
+					print(forStatement.Condition, sb);
+				}
+				sb.append("; ");
+				foreach (var iter in forStatement.Iterator) {
+					print(iter, 0, false, sb);
+				}
+				sb.append(")");
+				if (forStatement.Statement.StatementKind != StatementKind.Block) {
+					sb.append("\r\n");
+					print(forStatement.Statement, indent + 1, sb);
+				} else {
+					sb.append(" ");
+					print(forStatement.Statement, indent, sb);
+				}
+				break;
+
+			default:
+				throw new RuntimeException("Statement not supported: " + statement.StatementKind);
+			}
+		}
+
+		private void print(ExpressionNode expression, StringBuilder sb) {
+			if (expression.Parenthesized) {
+				sb.append("(");
+			}
+			switch (expression.ExpressionKind) {
+			case Literal:
+				var literal = (LiteralExpressionNode)expression;
+				sb.append(new String(text, literal.ValueOffset, literal.ValueLength));
+				break;
+
+			case SimpleName:
+				var name = (SimpleNameExpressionNode)expression;
+				sb.append(name.Name ?? new String(text, name.NameOffset, name.NameLength));
+				if (name.TypeArguments.size() > 0) {
+					print(name.TypeArguments, sb);
+				}
+				break;
+
+			case Invocation:
+				var invocation = (InvocationExpressionNode)expression;
+				print(invocation.TargetObject, sb);
+				sb.append("(");
+				var first = true;
+				foreach (var arg in invocation.getArguments()) {
+					if (first) {
+						first = false;
+					} else {
+						sb.append(", ");
+					}
+					print(arg, sb);
+				}
+				sb.append(")");
+				break;
+
+			case MemberAccess:
+				var access = (MemberAccessExpressionNode)expression;
+				print(access.TargetObject, sb);
+				sb.append(".");
+				sb.append(access.Member.Name ?? new String(text, access.Member.NameOffset, access.Member.NameLength));
+				if (access.Member.TypeArguments.size() > 0) {
+					print(access.Member.TypeArguments, sb);
+				}
+				break;
+
+			case Assign:
+				var assign = (AssignExpressionNode)expression;
+				print(assign.Left, sb);
+				switch (assign.Operator) {
+				case Assign:
+					sb.append(" = ");
+					break;
+
+				case Or:
+					sb.append(" |= ");
+					break;
+
+				case Add:
+					sb.append(" += ");
+					break;
+
+				case Multiply:
+					sb.append(" *= ");
+					break;
+
+				default:
+					throw new RuntimeException("Assignment not supported: " + assign.getOperator());
+				}
+				print(assign.Right, sb);
+				break;
+
+			case ElementAccess:
+				var elementAccess = (ElementAccessExpressionNode)expression;
+				print(elementAccess.TargetObject, sb);
+				sb.append("[");
+				first = true;
+				foreach (var i in elementAccess.Indexes) {
+					if (first) {
+						first = false;
+					} else {
+						sb.append(", ");
+					}
+					print(i, sb);
+				}
+				sb.append("]");
+				break;
+
+			case Unary:
+				var unary = (UnaryExpressionNode)expression;
+				switch (unary.Operator) {
+				case PostIncrement:
+				case PostDecrement:
+					break;
+
+				case Plus:
+					sb.append("+");
+					break;
+
+				case Minus:
+					sb.append("-");
+					break;
+
+				case Not:
+					sb.append("!");
+					break;
+
+				case Complement:
+					sb.append("~");
+					break;
+
+				case PreIncrement:
+					sb.append("++");
+					break;
+
+				case PreDecrement:
+					sb.append("--");
+					break;
+
+				default:
+					throw new RuntimeException("Unary operator not supported: " + unary.getOperator());
+				}
+				print(unary.Operand, sb);
+				switch (unary.Operator) {
+				case PostIncrement:
+					sb.append("++");
+					break;
+
+				case PostDecrement:
+					sb.append("--");
+					break;
+				}
+				break;
+
+			case Binary:
+				var binary = (BinaryExpressionNode)expression;
+				print(binary.LeftOperand, sb);
+				switch (binary.Operator) {
+				case Add:
+					sb.append(" + ");
+					break;
+
+				case Subtract:
+					sb.append(" - ");
+					break;
+
+				case Multiply:
+					sb.append(" * ");
+					break;
+
+				case Modulo:
+					sb.append(" % ");
+					break;
+
+				case Divide:
+					sb.append(" / ");
+					break;
+
+				case Equal:
+					sb.append(" == ");
+					break;
+
+				case NotEqual:
+					sb.append(" != ");
+					break;
+
+				case LessThan:
+					sb.append(" < ");
+					break;
+
+				case LessThanOrEqual:
+					sb.append(" <= ");
+					break;
+
+				case GreaterThan:
+					sb.append(" > ");
+					break;
+
+				case GreaterThanOrEqual:
+					sb.append(" >= ");
+					break;
+
+				case LeftShift:
+					sb.append(" << ");
+					break;
+
+				case RightShift:
+					sb.append(" >> ");
+					break;
+
+				case UnsignedRightShift:
+					sb.append(" >>> ");
+					break;
+
+				case LogicalAnd:
+					sb.append(" && ");
+					break;
+
+				case LogicalOr:
+					sb.append(" || ");
+					break;
+
+				case And:
+					sb.append(" & ");
+					break;
+
+				case Or:
+					sb.append(" | ");
+					break;
+
+				case NullCoalescing:
+					sb.append(" ?? ");
+					break;
+
+				case Instanceof:
+					sb.append(" is ");
+					break;
+
+				case As:
+					sb.append(" as ");
+					break;
+
+				default:
+					throw new RuntimeException("Binary operator not supported: " + binary.getOperator());
+				}
+				print(binary.RightOperand, sb);
+				break;
+
+			case ObjectCreation:
+				var objectCreation = (ObjectCreationExpressionNode)expression;
+				sb.append("new ");
+				print(objectCreation.Type, sb);
+				if (objectCreation.Arguments.size() > 0 || objectCreation.Initializer == null) {
+					sb.append("(");
+					first = true;
+					foreach (var arg in objectCreation.Arguments) {
+						if (first) {
+							first = false;
+						} else {
+							sb.append(", ");
+						}
+						print(arg, sb);
+					}
+					sb.append(")");
+				}
+				if (objectCreation.Initializer != null) {
+					print(objectCreation.Initializer, sb);
+				}
+				break;
+
+			case ObjectInitializer:
+				var objectInit = (ObjectInitializerExpressionNode)expression;
+				sb.append("{ ");
+				first = true;
+				foreach (var mi in objectInit.getMemberInitializers()) {
+					if (first) {
+						first = false;
+					} else {
+						sb.append(", ");
+					}
+					sb.append(new String(text, mi.NameOffset, mi.NameLength));
+					sb.append(" = ");
+					print(mi.Value, sb);
+				}
+				sb.append(" }");
+				break;
+
+			case ArrayCreation:
+				var arrayCreation = (ArrayCreationExpressionNode)expression;
+				sb.append("new");
+				if (arrayCreation.Type != null) {
+					sb.append(" ");
+					print(arrayCreation.Type, sb);
+				}
+				if (arrayCreation.DimensionExpressions.size() > 0) {
+					sb.append("[");
+					first = true;
+					foreach (var exp in arrayCreation.DimensionExpressions) {
+						if (first) {
+							first = false;
+						} else {
+							sb.append(", ");
+						}
+						print(exp, sb);
+					}
+					sb.append("]");
+				}
+				if (arrayCreation.Dimensions > 0) {
+					sb.append("[");
+					for (int i = 1; i < arrayCreation.Dimensions; i++) {
+						sb.append(",");
+					}
+					sb.append("]");
+				}
+				if (arrayCreation.Initializer != null) {
+					print(arrayCreation.Initializer, sb);
+				}
+				break;
+
+			case ArrayInitializer:
+				var arrayInit = (ArrayInitializerExpressionNode)expression;
+				sb.append("{ ");
+				first = true;
+				foreach (var v in arrayInit.Values) {
+					if (first) {
+						first = false;
+					} else {
+						sb.append(", ");
+					}
+					print(v, sb);
+				}
+				sb.append(" }");
+				break;
+
+			case CollectionInitializer:
+				var collInit = (CollectionInitializerExpressionNode)expression;
+				sb.append("{ ");
+				first = true;
+				foreach (var v in collInit.Values) {
+					if (first) {
+						first = false;
+					} else {
+						sb.append(", ");
+					}
+					sb.append("{ ");
+					var firstExp = true;
+					foreach (var exp in v) {
+						if (firstExp) {
+							firstExp = false;
+						} else {
+							sb.append(", ");
+						}
+						print(exp, sb);
+					}
+					sb.append(" }");
+				}
+				sb.append(" }");
+				break;
+
+			case Lambda:
+				var lambda = (LambdaExpressionNode)expression;
+				if (lambda.Parameters.size() == 1 && lambda.Parameters[0].Type == null) {
+					sb.append(lambda.Parameters[0].Name ?? new String(text, lambda.Parameters[0].NameOffset, lambda.Parameters[0].NameLength));
+				} else {
+					sb.append("(");
+					first = true;
+					foreach (var p in lambda.Parameters) {
+						if (first) {
+							first = false;
+						} else {
+							sb.append(", ");
+						}
+						if (p.Type != null) {
+							print(p.Type, sb);
+							sb.append(" ");
+						}
+						sb.append(p.Name ?? new String(text, p.NameOffset, p.NameLength));
+					}
+					sb.append(")");
+				}
+				sb.append(" => ");
+				print(lambda.Body, 0, false, sb);
+				break;
+				
+			case Typeof:
+				var typeofExp = (TypeofExpressionNode)expression;
+				sb.append("typeof(");
+				print(typeofExp.Type, sb);
+				sb.append(")");
+				break;
+				
+			case AnonymousObjectCreation:
+				var anonymous = (AnonymousObjectCreationExpressionNode)expression;
+				sb.append("new { ");
+				first = true;
+				foreach (var decl in anonymous.MemberDeclarators) {
+					if (first) {
+						first = false;
+					} else {
+						sb.append(", ");
+					}
+					if (decl.NameLength > 0) {
+						sb.append(new String(text, decl.NameOffset, decl.NameLength));
+						sb.append(" = ");
+					}
+					print(decl.Value, sb);
+				}
+				sb.append(" }");
+				break;
+				
+			default:
+				throw new RuntimeException("Expression not supported: " + expression.getExpressionKind());
+			}
+			if (expression.Parenthesized) {
+				sb.append(")");
+			}
+		}
+
+		private void print(TypeReferenceNode typeReference, StringBuilder sb) {
+			switch (typeReference.TypeReferenceKind) {
+			case Int:
+			case Char:
+			case Long:
+			case Short:
+			case Float:
+			case Double:
+			case Boolean:
+			case Byte:
+			case Void:
+				sb.append(typeReference.TypeReferenceKind.toString().toLowerCase());
+				break;
+
+			case SimpleName:
+				var simpleName = (SimpleNameTypeReferenceNode)typeReference;
+				sb.append(new String(text, simpleName.NameOffset, simpleName.NameLength));
+				if (simpleName.TypeArguments.size() > 0) {
+					print(simpleName.TypeArguments, sb);
+				}
+				break;
+
+			case Qualified:
+				var qtype = (QualifiedTypeReferenceNode)typeReference;
+				print(qtype.EnclosingType, sb);
+				sb.append(".");
+				print(qtype.SimpleName, sb);
+				break;
+
+			case Array:
+				var array = (ArrayTypeReferenceNode)typeReference;
+				print(array.ElementType, sb);
+				sb.append("[]");
+				break;
+
+			case Wildcard:
+				sb.append("?");
+				break;
+				
+			case LowerBoundedWildcard:
+				var wildcard = (WildcardTypeReferenceNode)typeReference;
+				print(wildcard.Bound, sb);
+				sb.append(" : ?");
+				break;
+				
+			case UpperBoundedWildcard:
+				wildcard = (WildcardTypeReferenceNode)typeReference;
+				sb.append("? : ");
+				print(wildcard.Bound, sb);
+				break;
+				
+			default:
+				throw new RuntimeException("Unhandled type kind: " + typeReference.TypeReferenceKind);
+			}
+		}
+		
+		private void print(List<? : TypeReferenceNode> typeArgs, StringBuilder sb) {
+			if (typeArgs.size() > 0) {
+				sb.append("<");
+				boolean first = true;
+				foreach (var t in typeArgs) {
+					if (first) {
+						first = false;
+					} else {
+						sb.append(", ");
+					}
+					print(t, sb);
+				}
+				sb.append(">");
+			}
+		}
+
+		private void print(EnumSet<Modifier> modifiers, StringBuilder sb) {
+			foreach (var m in modifiers) {
+				sb.append(m.toString().toLowerCase());
+				sb.append(" ");
+			}
+		}
+
+		private static String buildIndentText(int indent) {
+			var text = new char[indent * 4];
+			for (int i = 0; i < sizeof(text); i++) {
+				text[i] = ' ';
+			}
+			return new String(text);
+		}
+	}
+}

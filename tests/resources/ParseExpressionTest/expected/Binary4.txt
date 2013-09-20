@@ -1,0 +1,1 @@
+(Literal(HexadecimalInteger, [0xff]) RightShift Literal(DecimalInteger, [2]))

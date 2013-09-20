@@ -1,0 +1,583 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+using java.util;
+using stab.query;
+using stab.reflection;
+using stab.tools.helpers;
+using stab.tools.parser;
+using stab.tools.syntaxtree;
+
+package stab.tools.compiler {
+
+    class CompilerContext {
+        HashMap<LocalMemberInfo, FieldInfo> localFields;
+        private CompileErrorId id;
+        private SyntaxNode node;
+        private Object[] arguments;
+    
+        #region Reflection cache
+        private TypeInfo stringBuilderType;
+        private MethodInfo stringBuilderConstructor;
+        private MethodInfo objectToStringMethod;
+        private MethodInfo systemArraycopyMethod;
+        
+        TypeInfo StringBuilderType {
+            get {
+                if (stringBuilderType == null) {
+                    stringBuilderType = this.TypeSystem.getType("java/lang/StringBuilder");
+                }
+                return stringBuilderType;
+            }
+        }
+        
+        MethodInfo StringBuilderConstructor {
+            get {
+                if (stringBuilderConstructor == null) {
+                    stringBuilderConstructor = this.StringBuilderType.getMethod("<init>", Query.empty<TypeInfo>());
+                }
+                return stringBuilderConstructor;
+            }
+        }
+        
+        MethodInfo ObjectToStringMethod {
+            get {
+                if (objectToStringMethod == null) {
+                    objectToStringMethod = this.TypeSystem.ObjectType.getMethod("toString", Query.empty<TypeInfo>());
+                }
+                return objectToStringMethod;
+            }
+        }
+        
+        MethodInfo SystemArraycopyMethod {
+            get {
+                if (systemArraycopyMethod == null) {
+                    var objectType = this.TypeSystem.ObjectType;
+                    var intType = this.TypeSystem.IntType;
+                    var parameters = new ArrayList<TypeInfo> { objectType, intType, objectType, intType, intType };
+                    systemArraycopyMethod = this.TypeSystem.getType("java/lang/System").getMethod("arraycopy", parameters);
+                }
+                return systemArraycopyMethod;
+            }
+        }
+        
+        #endregion
+    
+        CompilerContext(CompilerParameters parameters, CompilerResults results) {
+            this.Parameters = parameters;
+            this.Results = results;
+            this.CompilationUnits = new ArrayList<CompilationUnitNode>();
+            this.TypeBuilders = new ArrayList<TypeBuilder>();
+            this.Iterables = new HashMap<MethodBuilder, TypeBuilder>();
+            this.ConstructorBuilders = new ArrayList<MethodBuilder>();
+            this.CodeValidationContext = new CodeValidationContext(this);
+            this.MethodGenerationContext = new MethodGenerationContext();
+            this.LambdaScopes = new HashMap<MethodBuilder, TypeBuilder>();
+            this.ConstantBuilder = new ConstantBuilder(this);
+            this.PrivateAccessors = new HashMap<Object, MethodInfo>();
+            this.PrivateMutators = new HashMap<Object, MethodInfo>();
+            this.localFields = new HashMap<LocalMemberInfo, FieldInfo>();
+        }
+        
+        CompilerParameters Parameters {
+            get;
+            private set;
+        }
+        
+        CompilerResults Results {
+            get;
+            private set;
+        }
+        
+        List<CompilationUnitNode> CompilationUnits {
+            get;
+            private set;
+        }
+        
+        boolean HasErrors {
+            get {
+                return this.Results.codeErrorManager.HasErrors;
+            }
+        }
+        
+        Library TypeSystem {
+            get;
+            set;
+        }
+        
+        Library AnnotatedTypeSystem {
+            get;
+            set;
+        }
+        
+        MemberResolver MemberResolver {
+            get;
+            set;
+        }
+        
+        char[] Text {
+            get;
+            set;
+        }
+
+        Set<String> Symbols {
+            get;
+            set;
+        }
+        
+        List<TypeBuilder> TypeBuilders {
+            get;
+            private set;
+        }
+        
+        List<MethodBuilder> ConstructorBuilders {
+            get;
+            private set;
+        }
+        
+        HashMap<MethodBuilder, TypeBuilder> Iterables {
+            get;
+            private set;
+        }
+        
+        TypeInfo CurrentType {
+            get;
+            set;
+        }
+        
+        CodeValidationContext CodeValidationContext {
+            get;
+            private set;
+        }
+
+        MethodGenerationContext MethodGenerationContext {
+            get;
+            private set;
+        }
+        
+        HashMap<MethodBuilder, TypeBuilder> LambdaScopes {
+            get;
+            private set;
+        }
+        
+        HashMap<Object, MethodInfo> PrivateAccessors {
+            get;
+            private set;
+        }
+        
+        HashMap<Object, MethodInfo> PrivateMutators {
+            get;
+            private set;
+        }
+        
+        ConstantBuilder ConstantBuilder {
+            get;
+            private set;
+        }
+        
+        TypeInfo getType(String fullName, SyntaxNode node) {
+            if (!this.TypeSystem.typeExists(fullName)) {
+                throw error(CompileErrorId.TypeNotFound, node, fullName.replace('/', '.').replace('$', '.'));
+            }
+            return this.TypeSystem.getType(fullName);
+        }
+        
+        String getText(int offset, int length) {
+            return new String(this.Text, offset, length);
+        }
+        
+        void appendText(StringBuilder sb, int offset, int length) {
+            sb.append(this.Text, offset, length);
+        }
+        
+        String getIdentifier(int offset, int length) {
+            var sb = new StringBuilder();
+            ParserHelper.unescapeIdentifier(sb, this.Text, offset, length);
+            return sb.toString();
+        }
+        
+        void appendIdentifier(StringBuilder sb, int offset, int length) {
+            ParserHelper.unescapeIdentifier(sb, this.Text, offset, length);
+        }
+        
+        FieldInfo getLocalField(TypeBuilder lambdaScope, LocalMemberInfo local) {
+            var result = localFields[local];
+            if (result == null) {
+            	int n = lambdaScope.Fields.count(p => p.Name.startsWith("local"));
+                result = lambdaScope.defineField("local" + n + '$' + local.Name, local.Type);
+                localFields[local] = result;
+            }
+            return result;
+        }
+        
+        void disableErrors() {
+            this.Results.codeErrorManager.disable();
+        }
+
+        void restoreErrors() {
+            this.Results.codeErrorManager.restore();
+        }
+        
+        boolean IsErrorHandlingDisabled {
+            get {
+                return this.Results.codeErrorManager.IsDisabled;
+            }
+        }
+        
+        CodeErrorException error(CompileErrorId id, SyntaxNode node, params Object[] arguments) {
+            addError(id, node, arguments);
+            return new CodeErrorException();
+        }
+        
+        void addError(CompileErrorId id, SyntaxNode node, params Object[] arguments) {
+            addError(0, id, node, arguments);
+        }
+        
+        void addWarning(CompileErrorId id, SyntaxNode node, params Object[] arguments) {
+            addError(1, id, node, arguments);
+        }
+        
+        boolean DisableIgnoredErrorTracking {
+        	get;
+        	set;
+        }
+        
+        boolean addIgnoredError() {
+        	if (this.id != null && !this.IsErrorHandlingDisabled) {
+        		addError(this.id, this.node, this.arguments);
+        		return true;
+        	} else {
+        		return false;
+        	}
+        }
+        
+        void clearIgnoredError() {
+    		this.id = null;
+    		this.node = null;
+    		this.arguments = null;
+        }
+        
+        private void addError(int level, CompileErrorId id, SyntaxNode node, params Object[] arguments) {
+        	if (this.IsErrorHandlingDisabled && !this.DisableIgnoredErrorTracking && level == 0 && this.id == null) {
+        		this.id = id;
+        		this.node = node;
+        		this.arguments = arguments;
+        	}
+            this.Results.codeErrorManager.DisabledWarnings = node.DisabledWarnings;
+            this.Results.codeErrorManager.addError(node.Filename, id.ordinal() + 161, level,
+                Resources.getMessage(id, arguments), node.Line + 1, node.Column + 1);
+        }
+    }
+    
+    class CodeValidationContext {
+        private CompilerContext context;
+        private ArrayList<MethodBuilder> methods;
+        private ArrayList<ArrayList<TypeInfo>> returnTypes;
+        private ArrayList<List<TypeInfo>> lambdaParameters;
+        
+        CodeValidationContext(CompilerContext context) {
+            this.context = context;
+            this.methods = new ArrayList<MethodBuilder>();
+            this.returnTypes = new ArrayList<ArrayList<TypeInfo>>();
+            this.lambdaParameters = new ArrayList<List<TypeInfo>>();
+        }
+        
+        void enterMethod(MethodBuilder methodBuilder) {
+            context.MemberResolver.enterMethod(methodBuilder);
+            this.IsStatic = methodBuilder.IsStatic;
+            methods.add(methodBuilder);
+            this.YieldCount = 0;
+        }
+        
+        void enterLambdaMethod(MethodBuilder methodBuilder) {
+            context.MemberResolver.enterMethod(methodBuilder, true);
+            methods.add(methodBuilder);
+            returnTypes.add(new ArrayList<TypeInfo>());
+        }
+
+        void leaveLambdaMethod() {
+            methods.remove(methods.size() - 1);
+            context.MemberResolver.leaveMethod();
+            returnTypes.remove(returnTypes.size() - 1);
+        }
+        
+        void leaveMethod() {
+            methods.remove(methods.size() - 1);
+            context.MemberResolver.leaveMethod();
+        }
+
+        boolean IsStatic {
+            get;
+            set;
+        }
+        
+        boolean IsInMethod {
+            get {
+                return methods.size() > 0;
+            }
+        }
+        
+        boolean IsInExpressionTree {
+        	get {
+	            return this.CurrentMethod != this.RootMethod && this.CurrentMethod.DeclaringType.FullName.indexOf('#') != -1;
+        	}
+        }
+        
+        boolean IsInNestedMethod {
+            get {
+                return methods.size() > 1;
+            }
+        }
+        
+        boolean IsInLambda {
+            get {
+                return returnTypes.size() > 0 && !this.IsInExpressionTree;
+            }
+        }
+        
+        MethodBuilder RootMethod {
+            get {
+                return methods[0];
+            }
+        }
+        
+        MethodBuilder CurrentMethod {
+            get {
+                return methods[methods.size() - 1];
+            }
+        }
+
+        int YieldCount {
+            get;
+            set;
+        }
+        
+        int LambdaCount {
+            get;
+            set;
+        }
+        
+        void pushLambdaParameters(List<TypeInfo> parameters) {
+            lambdaParameters.add(parameters);
+        }
+        
+        void popLambdaParameters() {
+            lambdaParameters.remove(lambdaParameters.size() - 1);
+        }
+        
+        List<TypeInfo> LambdaParameters {
+            get {
+                return lambdaParameters[lambdaParameters.size() - 1];
+            }
+        }
+        
+        List<TypeInfo> LambdaReturnTypes {
+            get {
+                return returnTypes[returnTypes.size() - 1];
+            }
+        }
+        
+        TypeInfo LambdaReturnType {
+            get;
+            set;
+        }
+    }
+    
+    class MethodGenerationContext {
+        private ArrayList<MethodBuilder> methods;
+        private boolean destructor;
+        private int foreachStatement;
+        private int stringSwitch;
+        private int generatedLocal;
+    
+        MethodGenerationContext() {
+            this.methods = new ArrayList<MethodBuilder>();
+            this.YieldLabels = new ArrayList<LabelMarker>();
+            this.ParametersUsedInLambdas = new HashSet<LocalMemberInfo>();
+            this.ParametersUsedInLambda = new ArrayList<LocalMemberInfo>();
+            this.CatchVariables = new ArrayList<LocalInfo>();
+            this.TreeLocals = new HashMap<LocalMemberInfo, LocalInfo>();
+            this.TreeLabels = new HashMap<StatementNode, LocalInfo>();
+            this.LocalFields = new HashMap<LocalMemberInfo, FieldInfo>();
+            this.Labels = new ArrayList<HashMap<Object, LocalInfo>>();
+        }
+        
+        void initialize(MethodBuilder methodBuilder, TypeBuilder lambdaScope) {
+            this.methods.clear();
+            this.ParametersUsedInLambdas.clear();
+            this.ParametersUsedInLambda.clear();
+            this.CatchVariables.clear();
+            this.TreeLocals.clear();
+            this.TreeLabels.clear();
+            this.LocalFields.clear();
+            this.Labels.clear();
+            
+            this.methods.add(methodBuilder);
+            this.LambdaScope = lambdaScope;
+            this.Generator = methodBuilder.CodeGenerator;
+            this.destructor = methodBuilder.Name.equals("finalize") && !methodBuilder.Parameters.any();
+            this.IsLambdaScopeUsed = false;
+            this.IsLambdaScopeInitialized = false;
+            this.IsLambdaScopeThisInitialized = false;
+            this.IsBuildingString = false;
+            this.foreachStatement = 0;
+            this.YieldCount = 0;
+            this.stringSwitch = 0;
+            this.PreviousLineNumber = 0;
+            this.generatedLocal = 0;
+        }
+        
+        void enterLambda(MethodBuilder method) {
+            this.PreviousLineNumber = 0;
+            this.methods.add(method);
+            this.Generator = method.CodeGenerator;
+        }
+        
+        void leaveLambda() {
+            this.methods.remove(this.methods.size() - 1);
+            this.Generator = this.CurrentMethod.CodeGenerator;
+        }
+        
+        boolean IsInDestructor {
+            get {
+                return destructor && !IsInLambda;
+            }
+        }
+
+        boolean IsInLambda {
+            get {
+                return methods.size() > 1;
+            }
+        }
+        
+        boolean IsInIterable {
+            get {
+                return this.Iterable != null;
+            }
+        }
+        
+        MethodBuilder RootMethod {
+            get {
+                return methods[0];
+            }
+        }
+        
+        MethodBuilder CurrentMethod {
+            get {
+                return methods[methods.size() - 1];
+            }
+        }
+        
+        boolean IsLambdaScopeUsed {
+            get;
+            set;
+        }
+        
+        boolean IsLambdaScopeInitialized {
+            get;
+            set;
+        }
+        
+        boolean IsLambdaScopeThisInitialized {
+            get;
+            set;
+        }
+        
+        TypeBuilder LambdaScope {
+            get;
+            private set;
+        }
+        
+        HashSet<LocalMemberInfo> ParametersUsedInLambdas {
+            get;
+            private set;
+        }
+        
+        ArrayList<LocalMemberInfo> ParametersUsedInLambda {
+            get;
+            private set;
+        }
+        
+        CodeGenerator Generator {
+            get;
+            set;
+        }
+
+        TypeBuilder Iterable {
+            get;
+            set;
+        }
+        
+        List<LabelMarker> YieldLabels {
+            get;
+            private set;
+        }
+        
+        int YieldCount {
+            get;
+            set;
+        }
+        
+        List<LocalInfo> CatchVariables {
+            get;
+            private set;
+        }
+        
+        boolean IsBuildingString {
+            get;
+            set;
+        }
+        
+        int PreviousLineNumber {
+            get;
+            set;
+        }
+        
+        int nextForeachStatement() {
+            return foreachStatement++;
+        }
+        
+        int nextStringSwitch() {
+            return stringSwitch++;
+        }
+        
+        int nextGeneratedLocal() {
+            return generatedLocal++;
+        }
+        
+        Map<LocalMemberInfo, LocalInfo> TreeLocals {
+            get;
+            private set;
+        }
+        
+        Map<StatementNode, LocalInfo> TreeLabels {
+            get;
+            private set;
+        }
+        
+        HashMap<LocalMemberInfo, FieldInfo> LocalFields {
+        	get;
+        	private set;
+        }
+
+        List<HashMap<Object, LocalInfo>> Labels {
+        	get;
+        	private set;
+        }
+        
+    }
+}

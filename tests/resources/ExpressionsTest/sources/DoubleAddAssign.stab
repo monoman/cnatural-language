@@ -1,0 +1,7 @@
+public class DoubleAddAssign {
+	public static boolean test(double arg) {
+		double i = arg;
+		double j = arg += 2;
+		return j == i + 2;
+	}
+}

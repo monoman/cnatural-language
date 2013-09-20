@@ -1,0 +1,7 @@
+stab.tree.ExpressionTree<interface stab.query.FunctionInt> tree =
+	() =>
+    {
+        #Label0#Label#:
+        goto #Label0#Label#;
+
+    }

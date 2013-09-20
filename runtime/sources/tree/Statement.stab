@@ -1,0 +1,151 @@
+/*
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+using java.lang;
+ 
+package stab.tree {
+
+    public enum StatementKind {
+        Break,
+        Block,
+        Continue,
+        Do,
+        Empty,
+        Expression,
+        For,
+        Foreach,
+        Goto,
+		GotoCase,
+        If,
+        Labeled,
+        Return,
+		Switch,
+		Synchronized,
+		Throw,
+		Try,
+		Using,
+        While
+    }
+
+    public abstract class Statement {
+        protected Statement(StatementKind statementKind) {
+            this.StatementKind = statementKind;
+        }
+        
+        public StatementKind StatementKind {
+            get;
+            private set;
+        }
+        
+        public static BlockStatement block(Statement[] statements) {
+            return new BlockStatement(statements);
+        }
+
+        public static Statement makeBreak() {
+            return new SimpleStatement(StatementKind.Break);
+        }
+
+		public static CatchClause makeCatch(VariableExpression variable, BlockStatement body) {
+			return new CatchClause(variable, body);
+		}
+		
+        public static Statement makeContinue() {
+            return new SimpleStatement(StatementKind.Continue);
+        }
+        
+        public static LoopStatement makeDo(Statement body, Expression condition) {
+            return new LoopStatement(StatementKind.Do, condition, body);
+        }
+
+        public static Statement empty() {
+            return new SimpleStatement(StatementKind.Empty);
+        }
+        
+        public static ExpressionStatement expression(Expression expression) {
+            return new ExpressionStatement(expression);
+        }
+        
+        public static GotoStatement makeGoto(Label label) {
+            return new GotoStatement(label);
+        }
+
+		public static GotoCaseStatement gotoCase(SwitchLabel label) {
+			return new GotoCaseStatement(label);
+		}
+		
+        public static Label label(String name) {
+            return new Label(name);
+        }
+        
+        public static LabeledStatement labeled(Label label, Statement statement) {
+            return new LabeledStatement(label, statement);
+        }
+        
+        public static IfStatement makeIf(Expression condition, Statement ifTrue, Statement ifFalse) {
+            return new IfStatement(condition, ifTrue, ifFalse);
+        }
+        
+        public static ForStatement makeFor(Statement[] initializer, Expression condition, Statement[] iterator, Statement body) {
+            return new ForStatement(initializer, condition, iterator, body);
+        }
+        
+        public static ForeachStatement makeForeach(VariableExpression variable, Expression expression, Statement body) {
+            return new ForeachStatement(variable, expression, body);
+        }
+        
+        public static ReturnStatement makeReturn(Expression value) {
+            return new ReturnStatement(value);
+        }
+
+		public static SwitchStatement makeSwitch(Expression expression, SwitchSection[] sections) {
+			return new SwitchStatement(expression, sections);
+		}
+		
+		public static SwitchSection switchSection(SwitchLabel[] labels, Statement[] statements) {
+			return new SwitchSection(labels, statements);
+		}
+		
+		public static SwitchLabel switchLabel(String name, int value, boolean isDefault) {
+			return new SwitchLabel(name, value, isDefault);
+		}
+		
+		public static SynchronizedStatement makeSynchronized(Expression lock, Statement body) {
+			return new SynchronizedStatement(lock, body);
+		}
+		
+		public static ThrowStatement makeThrow(Expression exception) {
+			return new ThrowStatement(exception);
+		}
+
+		public static TryStatement makeTry(BlockStatement body, CatchClause[] catchClauses, BlockStatement finallyBlock) {
+			return new TryStatement(body, catchClauses, finallyBlock);
+		}
+		
+		public static UsingStatement makeUsing(Statement resourceAcquisition, Statement body) {
+			return new UsingStatement(resourceAcquisition, body);
+		}
+        
+        public static LoopStatement makeWhile(Expression condition, Statement body) {
+            return new LoopStatement(StatementKind.While, condition, body);
+        }
+    }
+    
+    class SimpleStatement : Statement {
+        SimpleStatement(StatementKind statementKind)
+            : super(statementKind) {
+        }
+    }
+}
