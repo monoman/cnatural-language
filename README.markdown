@@ -1,8 +1,9 @@
-stab-language
-=============
+The Stab Programming Language
+=============================
+
 A multi-paradigm programming language designed for the Java Virtual Machine
 
-A fork from the original project at https://code.google.com/p/stab-language/, contains all the svn repo except the emdedded eclipse (on eclipse/eclipse)
+A fork from the original project at https://code.google.com/p/stab-language/, contains all the svn repo except the embedded eclipse (on eclipse/eclipse)
 
 To build
 --------
