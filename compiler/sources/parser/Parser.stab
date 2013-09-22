@@ -393,7 +393,16 @@ package stab.tools.parser {
                     case Keyword:
                     case ContextualKeyword:
                         switch (scanner.Keyword) {
-                        case Public:
+                        case Property:
+							if (modifiers.size() == 0) {
+								startPosition = scanner.StartPosition;
+							}
+                            addModifier(modifiers, Modifier.Public);
+                            addModifier(modifiers, Modifier.Property);
+                            nextLexicalUnit(true);
+                            break;
+
+						case Public:
 							if (modifiers.size() == 0) {
 								startPosition = scanner.StartPosition;
 							}
@@ -862,6 +871,23 @@ package stab.tools.parser {
             }
 
             case SemiColon: {
+				if (modifiers.contains(Modifier.Property)) {
+					modifiers.remove(Modifier.Property);
+					var propertyShortDeclaration = new PropertyDeclarationNode { Type = type, NameOffset = sp, NameLength = len,
+							StartPosition = startPosition };
+					if (docCommentEndPosition > 0) {
+						propertyShortDeclaration.DocumentationOffset = docCommentStartPosition;
+						propertyShortDeclaration.DocumentationLength = docCommentEndPosition - docCommentStartPosition;
+						docCommentEndPosition = 0;
+					}
+					setSavedScannerState(propertyShortDeclaration);
+					propertyShortDeclaration.Modifiers.addAll(modifiers);
+					fakeparseShortProperty(propertyShortDeclaration);
+					docCommentEndPosition = 0;
+					propertyShortDeclaration.EndPosition = scanner.EndPosition;
+					nextLexicalUnit(false);
+					return propertyShortDeclaration;
+				}
                 var declaration = new FieldDeclarationNode { Type = type, StartPosition = startPosition };
                 if (docCommentEndPosition > 0) {
                     declaration.DocumentationOffset = docCommentStartPosition;
@@ -1287,6 +1313,17 @@ package stab.tools.parser {
             return true;
         }
     
+	    private void fakeparseShortProperty(IAccessorsOwner declaration) {
+            var accessor = new AccessorDeclarationNode();
+            setScannerState(accessor);
+            declaration.GetAccessor = accessor;
+			accessor.EndPosition = scanner.EndPosition;
+            accessor = new AccessorDeclarationNode();
+            setScannerState(accessor);
+            declaration.SetAccessor = accessor;
+			accessor.EndPosition = scanner.EndPosition;
+		}
+		
         private void parseAccessorDeclaration(IAccessorsOwner declaration, boolean inInterface) {
             var accessor = new AccessorDeclarationNode();
             while (lexicalUnit == LexicalUnit.OpenBracket) {

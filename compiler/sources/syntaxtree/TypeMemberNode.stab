@@ -44,7 +44,8 @@ package stab.tools.syntaxtree {
 		Strictfp,
 		Synchronized,
 		Transient,
-		Volatile
+		Volatile,
+		Property
 	}
 	
 	public interface ITypeMember {
