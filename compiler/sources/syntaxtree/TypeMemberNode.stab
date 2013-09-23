@@ -49,34 +49,17 @@ namespace stab.tools.syntaxtree {
 	}
 	
 	public interface ITypeMember {
-		TypeMemberKind TypeMemberKind {
-			get;
-		}
-		
-        int DocumentationOffset {
-            get;
-            set;
-        }
-		
-        int DocumentationLength {
-            get;
-            set;
-        }
+		TypeMemberKind TypeMemberKind^;
+        int DocumentationOffset;
+        int DocumentationLength;
 	}
 	
 	public interface IInterfaceMember : ITypeMember {
 	}
 	
 	public interface IAccessorsOwner {
-		AccessorDeclarationNode GetAccessor {
-			get;
-			set;
-		}
-		
-		AccessorDeclarationNode SetAccessor {
-			get;
-			set;
-		}
+		AccessorDeclarationNode GetAccessor;
+		AccessorDeclarationNode SetAccessor;
 	}
 	
 	public class AccessorDeclarationNode : SyntaxNode {

@@ -21,62 +21,32 @@ namespace stab.query {
 
 	public interface Lookup<TKey, TElement> : Iterable<Grouping<TKey, TElement>> {
 		boolean contains(TKey key);
-		
-		int Count {
-			get;
-		}
-		
-		Iterable<TElement> this[TKey key] {
-			get;
-		}
+		int Count^;
+		Iterable<TElement> this[TKey key]^;
 	}
 
 	public interface IntLookup<TElement> : Iterable<IntGrouping<TElement>> {
 		boolean contains(int key);
-		
-		int Count {
-			get;
-		}
-		
-		Iterable<TElement> this[int key] {
-			get;
-		}
+		int Count^;
+		Iterable<TElement> this[int key]^;
 	}
 
 	public interface LongLookup<TElement> : Iterable<LongGrouping<TElement>> {
 		boolean contains(long key);
-		
-		int Count {
-			get;
-		}
-		
-		Iterable<TElement> this[long key] {
-			get;
-		}
+		int Count^;
+		Iterable<TElement> this[long key]^;
 	}
 
 	public interface FloatLookup<TElement> : Iterable<FloatGrouping<TElement>> {
 		boolean contains(float key);
-		
-		int Count {
-			get;
-		}
-		
-		Iterable<TElement> this[float key] {
-			get;
-		}
+		int Count^;
+		Iterable<TElement> this[float key]^;
 	}
 
 	public interface DoubleLookup<TElement> : Iterable<DoubleGrouping<TElement>> {
 		boolean contains(double key);
-		
-		int Count {
-			get;
-		}
-		
-		Iterable<TElement> this[double key] {
-			get;
-		}
+		int Count^;
+		Iterable<TElement> this[double key]^;
 	}
 	
 	class DefaultLookup<TKey, TElement> : Lookup<TKey, TElement> {

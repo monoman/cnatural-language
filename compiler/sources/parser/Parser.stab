@@ -741,8 +741,16 @@ namespace stab.tools.parser {
             var typeParameters = new ArrayList<SimpleNameTypeReferenceNode>();
             nextLexicalUnit(true);
             parseTypeParameters(typeParameters);
+			boolean onlyGetter = false;
+			if (lexicalUnit == LexicalUnit.Xor) {
+				onlyGetter = true;
+                nextLexicalUnit(true);			
+			}
             switch (lexicalUnit) {
             case OpenParenthesis:
+				if (onlyGetter) {
+					throw error(ParseErrorId.IdentifierExpected);
+				}
                 var methodDeclaration = new MethodDeclarationNode { IsPartial = partial, ReturnType = type, NameOffset = sp, NameLength = len,
 						StartPosition = startPosition };
                 if (docCommentEndPosition > 0) {
@@ -783,6 +791,9 @@ namespace stab.tools.parser {
                 return methodDeclaration;
 
             case OpenBrace:
+				if (onlyGetter) {
+					throw error(ParseErrorId.IdentifierExpected);
+				}
                 var propertyDeclaration = new PropertyDeclarationNode { Type = type, NameOffset = sp, NameLength = len,
 						StartPosition = startPosition };
                 if (docCommentEndPosition > 0) {
@@ -803,6 +814,9 @@ namespace stab.tools.parser {
                 return propertyDeclaration;
 
             case Assign: {
+				if (onlyGetter) {
+					throw error(ParseErrorId.IdentifierExpected);
+				}
                 var declaration = new FieldDeclarationNode { Type = type, StartPosition = startPosition };
                 if (docCommentEndPosition > 0) {
                     declaration.DocumentationOffset = docCommentStartPosition;
@@ -838,6 +852,9 @@ namespace stab.tools.parser {
             }
 
             case Comma: {
+				if (onlyGetter) {
+					throw error(ParseErrorId.IdentifierExpected);
+				}
                 var declaration = new FieldDeclarationNode { Type = type, StartPosition = startPosition };
                 if (docCommentEndPosition > 0) {
                     declaration.DocumentationOffset = docCommentStartPosition;
@@ -882,7 +899,7 @@ namespace stab.tools.parser {
 					}
 					setSavedScannerState(propertyShortDeclaration);
 					propertyShortDeclaration.Modifiers.addAll(modifiers);
-					fakeparseShortProperty(propertyShortDeclaration, false);
+					fakeParseShortProperty(propertyShortDeclaration, onlyGetter, false);
 					docCommentEndPosition = 0;
 					propertyShortDeclaration.EndPosition = scanner.EndPosition;
 					nextLexicalUnit(false);
@@ -1144,7 +1161,7 @@ namespace stab.tools.parser {
 				setSavedScannerState(propertyShortDeclaration);
 				propertyShortDeclaration.Modifiers.addAll(modifiers);
                 propertyShortDeclaration.Annotations.addAll(annotations);
-				fakeparseShortProperty(propertyShortDeclaration, onlyGetter);
+				fakeParseShortProperty(propertyShortDeclaration, onlyGetter, true);
 				docCommentEndPosition = 0;
 				propertyShortDeclaration.EndPosition = scanner.EndPosition;
 				nextLexicalUnit(false);
@@ -1283,6 +1300,24 @@ namespace stab.tools.parser {
             } else {
                 nextLexicalUnit(true);
             }
+			boolean onlyGetter = false;
+			if (lexicalUnit == LexicalUnit.Xor) {
+				if (!inInterface) {
+					throw error(ParseErrorId.OpenBraceExpected);
+				}
+				onlyGetter = true;
+                nextLexicalUnit(true);			
+			}
+			if (lexicalUnit == LexicalUnit.SemiColon) {
+				if (!inInterface) {
+					throw error(ParseErrorId.OpenBraceExpected);
+				}
+				fakeParseShortProperty(declaration, onlyGetter, inInterface);
+				docCommentEndPosition = 0;
+				declaration.EndPosition = scanner.EndPosition;
+				nextLexicalUnit(false);
+				return declaration;
+			}
             if (lexicalUnit != LexicalUnit.OpenBrace) {
                 throw error(ParseErrorId.OpenBraceExpected);
             }
@@ -1334,14 +1369,16 @@ namespace stab.tools.parser {
             return true;
         }
     
-	    private void fakeparseShortProperty(IAccessorsOwner declaration, boolean onlyGetter) {
+	    private void fakeParseShortProperty(IAccessorsOwner declaration, boolean onlyGetter, boolean inInterface) {
             var accessor = new AccessorDeclarationNode();
             setScannerState(accessor);
             declaration.GetAccessor = accessor;
 			accessor.EndPosition = scanner.EndPosition;
-			if (!onlyGetter) {
+			if ((!onlyGetter) || (!inInterface)) {
 				accessor = new AccessorDeclarationNode();
 				setScannerState(accessor);
+				if (onlyGetter)
+                    accessor.Modifiers.add(Modifier.Private);
 				declaration.SetAccessor = accessor;
 				accessor.EndPosition = scanner.EndPosition;
 			}

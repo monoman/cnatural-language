@@ -4,10 +4,19 @@ public class PropertyInterface : PropertyInterfaceAux {
 		set;
 	}
 	
+	property int SugaredProperty;
+	
+	public int UltraSugaredProperty {
+		get;
+		private set;
+	}
+	
 	public int method() {
 		PropertyInterfaceAux it = this;
-		it.Property = 3;
-		return it.Property;
+		it.Property = 1;
+		it.SugaredProperty = 1;
+		this.UltraSugaredProperty = 1;
+		return it.Property + it.SugaredProperty + it.UltraSugaredProperty;
 	}
 	
 	public static int test() {
@@ -21,5 +30,9 @@ public interface PropertyInterfaceAux {
 		get;
 		set;
 	}
+	
+	int SugaredProperty;
+
+	int UltraSugaredProperty^;
 }
 

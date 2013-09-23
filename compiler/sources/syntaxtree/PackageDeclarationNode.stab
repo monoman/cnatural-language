@@ -26,19 +26,9 @@ namespace stab.tools.syntaxtree {
 	}
 	
 	public interface IPackageMember {
-		PackageMemberKind PackageMemberKind {
-			get;
-		}
-		
-        int DocumentationOffset {
-            get;
-            set;
-        }
-		
-        int DocumentationLength {
-            get;
-            set;
-        }
+		PackageMemberKind PackageMemberKind^;
+        int DocumentationOffset;
+        int DocumentationLength;
 	}
 	
 	public class PackageBodyNode : SyntaxNode {

@@ -3,8 +3,18 @@ interface I : J {
     int this[int i] {
         get;
     }
+    int this[java.lang.String s] {
+        get;
+    }
     int Prop {
         get;
         set;
+    }
+    int Prop2 {
+        get;
+        set;
+    }
+    int Prop3 {
+        get;
     }
 }

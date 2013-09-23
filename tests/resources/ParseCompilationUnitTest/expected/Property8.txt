@@ -1,0 +1,6 @@
+class C {
+    public int Prop {
+        get;
+        private set;
+    }
+}

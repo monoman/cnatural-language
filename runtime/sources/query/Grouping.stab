@@ -20,33 +20,23 @@ using java.util;
 namespace stab.query {
 
     public interface Grouping<TKey, TElement> : Iterable<TElement> {
-        TKey Key {
-            get;
-        }
+        TKey Key^;
     }
 
     public interface IntGrouping<TElement> : Iterable<TElement> {
-        int Key {
-            get;
-        }
+        int Key^;
     }
 
     public interface LongGrouping<TElement> : Iterable<TElement> {
-        long Key {
-            get;
-        }
+        long Key^;
     }
 
     public interface FloatGrouping<TElement> : Iterable<TElement> {
-        float Key {
-            get;
-        }
+        float Key^;
     }
 
     public interface DoubleGrouping<TElement> : Iterable<TElement> {
-        double Key {
-            get;
-        }
+        double Key^;
     }
     
     class DefaultGrouping<TKey, TElement> : Grouping<TKey, TElement> {

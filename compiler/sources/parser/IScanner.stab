@@ -20,49 +20,18 @@ using stab.tools.helpers;
 namespace stab.tools.parser {
 
     public interface IScanner {
-        CodeErrorManager CodeErrorManager {
-            get;
-        }
-    
+        CodeErrorManager CodeErrorManager^;
         String Filename;
-        
         int TabWidth;
-
-        char[] Text {
-            get;
-        }
-        
-        int StartLine {
-            get;
-        }
-        
-        int EndLine {
-            get;
-        }
-        
-        int StartColumn {
-            get;
-        }
-
-        int EndColumn {
-            get;
-        }
-        
-        int StartPosition {
-            get;
-        }
-
-        int EndPosition {
-            get;
-        }
-        
-        int Part {
-            get;
-        }
-
-        Keyword Keyword {
-            get;
-        }
+        char[] Text^;
+        int StartLine^;
+        int EndLine^;
+        int StartColumn^;
+        int EndColumn^;
+        int StartPosition^;
+        int EndPosition^;
+        int Part^;
+        Keyword Keyword^;
 
         RestorePoint createRestorePoint();
         void restore(RestorePoint restorePoint);
