@@ -10,7 +10,7 @@
 #else skipped: false
 ....#if expression: true, skipped: false
 ........----
-........namespace N {
+........namespaces N {
 ........}
 ........----
 ....#end

@@ -4,7 +4,7 @@
 
 #else
 #if (TEST)
-namespace N {
+namespaces N {
 }
 #endif
 #endif
