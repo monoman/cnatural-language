@@ -1,0 +1,6 @@
+interface C {
+    int Prop {
+        get;
+        set;
+    }
+}

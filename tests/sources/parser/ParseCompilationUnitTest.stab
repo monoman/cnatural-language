@@ -134,6 +134,11 @@ package stab.tools.parser.test {
 		}
 		
 		[Test]
+		public void testProperty6() {
+			doTest("Property6");
+		}
+		
+		[Test]
 		public void testIndexer() {
 			doTest("Indexer");
 		}

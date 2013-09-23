@@ -1109,7 +1109,8 @@ package stab.tools.parser {
             int sp = scanner.StartPosition;
             int len = getLexicalUnitLength();
             saveScannerState();
-            if (nextLexicalUnit(true) == LexicalUnit.OpenBrace) {
+			var lexicalUnitShorter = nextLexicalUnit(true);
+            if (lexicalUnitShorter == LexicalUnit.OpenBrace) {
                 var declaration = new PropertyDeclarationNode { Type = type, NameOffset = sp, NameLength = len, StartPosition = startPosition };
                 if (docCommentEndPosition > 0) {
                     declaration.DocumentationOffset = docCommentStartPosition;
@@ -1127,35 +1128,51 @@ package stab.tools.parser {
 				declaration.EndPosition = scanner.EndPosition;
                 nextLexicalUnit(false);
                 return declaration;
-            } else {
-                var declaration = new MethodDeclarationNode { ReturnType = type, NameOffset = sp, NameLength = len, StartPosition = startPosition };
-                if (docCommentEndPosition > 0) {
-                    declaration.DocumentationOffset = docCommentStartPosition;
-                    declaration.DocumentationLength = docCommentEndPosition - docCommentStartPosition;
-                    docCommentEndPosition = 0;
-                }
-                setSavedScannerState(declaration);
-                declaration.Modifiers.addAll(modifiers);
-                declaration.Annotations.addAll(annotations);
-                parseTypeParameters(declaration.TypeParameters);
-                if (lexicalUnit != LexicalUnit.OpenParenthesis) {
-                    throw error(ParseErrorId.OpenParenthesisExpected);
-                }
-                if (nextLexicalUnit(true) != LexicalUnit.CloseParenthesis) {
-                    parseFormalParameters(declaration.Parameters, LexicalUnit.CloseParenthesis);
-                } else {
-                    nextLexicalUnit(true);
-                }
-                if (lexicalUnit == LexicalUnit.Assign) {
-                    nextLexicalUnit(true);
-                    declaration.DefaultValue = parseAnnotationValue();
-                } else {
-                    parseTypeParameterConstraintsClauses(declaration.ConstraintsClauses);
-                }
-                docCommentEndPosition = 0;
-                declaration.EndPosition = parseSemiColon(false, false);
-                return declaration;
-            }
+			} 
+			if (lexicalUnitShorter == LexicalUnit.SemiColon) {
+				var propertyShortDeclaration = new PropertyDeclarationNode { Type = type, NameOffset = sp, NameLength = len,
+						StartPosition = startPosition };
+				if (docCommentEndPosition > 0) {
+					propertyShortDeclaration.DocumentationOffset = docCommentStartPosition;
+					propertyShortDeclaration.DocumentationLength = docCommentEndPosition - docCommentStartPosition;
+					docCommentEndPosition = 0;
+				}
+				setSavedScannerState(propertyShortDeclaration);
+				propertyShortDeclaration.Modifiers.addAll(modifiers);
+                propertyShortDeclaration.Annotations.addAll(annotations);
+				fakeparseShortProperty(propertyShortDeclaration);
+				docCommentEndPosition = 0;
+				propertyShortDeclaration.EndPosition = scanner.EndPosition;
+				nextLexicalUnit(false);
+				return propertyShortDeclaration;
+			}
+			var declaration = new MethodDeclarationNode { ReturnType = type, NameOffset = sp, NameLength = len, StartPosition = startPosition };
+			if (docCommentEndPosition > 0) {
+				declaration.DocumentationOffset = docCommentStartPosition;
+				declaration.DocumentationLength = docCommentEndPosition - docCommentStartPosition;
+				docCommentEndPosition = 0;
+			}
+			setSavedScannerState(declaration);
+			declaration.Modifiers.addAll(modifiers);
+			declaration.Annotations.addAll(annotations);
+			parseTypeParameters(declaration.TypeParameters);
+			if (lexicalUnit != LexicalUnit.OpenParenthesis) {
+				throw error(ParseErrorId.OpenParenthesisExpected);
+			}
+			if (nextLexicalUnit(true) != LexicalUnit.CloseParenthesis) {
+				parseFormalParameters(declaration.Parameters, LexicalUnit.CloseParenthesis);
+			} else {
+				nextLexicalUnit(true);
+			}
+			if (lexicalUnit == LexicalUnit.Assign) {
+				nextLexicalUnit(true);
+				declaration.DefaultValue = parseAnnotationValue();
+			} else {
+				parseTypeParameterConstraintsClauses(declaration.ConstraintsClauses);
+			}
+			docCommentEndPosition = 0;
+			declaration.EndPosition = parseSemiColon(false, false);
+			return declaration;
         }
     
         private void parseFormalParameters(List<ParameterNode> parameters, LexicalUnit endLexicalUnit) {

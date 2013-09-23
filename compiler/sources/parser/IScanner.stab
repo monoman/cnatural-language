@@ -24,20 +24,14 @@ package stab.tools.parser {
             get;
         }
     
-        String Filename {
-            get;
-            set;
-        }
+        String Filename;
         
+        int TabWidth;
+
         char[] Text {
             get;
         }
         
-        int TabWidth {
-            get;
-            set;
-        }
-
         int StartLine {
             get;
         }
