@@ -16,7 +16,7 @@
  */
 using java.lang;
  
-package stab.tree {
+namespace stab.tree {
 
     public enum StatementKind {
         Break,

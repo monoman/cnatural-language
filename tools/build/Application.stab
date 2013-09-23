@@ -19,7 +19,7 @@ using java.lang;
 using java.util;
 using stab.tools.helpers;
 
-package stab.tools.build {
+namespace stab.tools.build {
 
 	public class Application {
 		public static void main(String[] args) {

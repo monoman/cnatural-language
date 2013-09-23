@@ -22,7 +22,7 @@ using org.w3c.dom;
 using stab.query;
 using stab.tools.helpers;
 
-package stab.tools.eclipse {
+namespace stab.tools.eclipse {
 
 	public class ProjectProperties {
 		private final static String EMPTY_DOC = @"<?xml version=""1.0"" encoding=""UTF-8""?><stabProperties><libraries/></stabProperties>";

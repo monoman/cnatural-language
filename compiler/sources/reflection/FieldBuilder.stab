@@ -18,7 +18,7 @@ using java.lang;
 using java.util;
 using org.objectweb.asm;
 
-package stab.reflection {
+namespace stab.reflection {
     
     public class FieldBuilder : FieldInfo {
         public FieldBuilder(TypeInfo declaringType, String name, TypeInfo type)

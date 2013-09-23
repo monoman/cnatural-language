@@ -18,7 +18,7 @@ using java.lang;
 using stab.lang;
 using stab.tools.helpers;
 
-package stab.tools.parser {
+namespace stab.tools.parser {
 
     public enum InputSectionPartKind {
         SourceCode,

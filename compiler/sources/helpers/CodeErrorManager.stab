@@ -19,7 +19,7 @@ using java.util;
 using stab.lang;
 using stab.query;
 
-package stab.tools.helpers {
+namespace stab.tools.helpers {
 
 	public class CodeErrorException : RuntimeException {
 	}

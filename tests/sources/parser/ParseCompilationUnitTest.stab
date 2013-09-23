@@ -21,7 +21,7 @@ using org.junit;
 using stab.tools.helpers;
 using stab.tools.syntaxtree;
 
-package stab.tools.parser.test {
+namespace stab.tools.parser.test {
 	public class ParseCompilationUnitTest {
 		[Test]
 		public void testEmptyClass() {
@@ -31,6 +31,11 @@ package stab.tools.parser.test {
 		[Test]
 		public void testEmptyPackage() {
 			doTest("EmptyPackage");
+		}
+
+		[Test]
+		public void testEmptyNamespace() {
+			doTest("EmptyNamespace");
 		}
 
 		[Test]

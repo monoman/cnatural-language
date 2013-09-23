@@ -16,7 +16,7 @@
  */
 using stab.lang;
 
-package stab.annotated.java.io {
+namespace stab.annotated.java.io {
 	public interface Closeable {
 		[Dispose]
         void close();

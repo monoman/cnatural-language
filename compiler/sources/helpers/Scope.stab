@@ -17,7 +17,7 @@
 using java.lang;
 using java.util;
 
-package stab.tools.helpers {
+namespace stab.tools.helpers {
 	
 	public class Scope<T, U> {
 		private ArrayList<HashMap<T, U>> bindingStack;

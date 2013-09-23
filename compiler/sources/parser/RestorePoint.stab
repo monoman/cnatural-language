@@ -16,7 +16,7 @@
  */
 using stab.lang;
 
-package stab.tools.parser {
+namespace stab.tools.parser {
     
     public class RestorePoint {
         RestorePoint(int startPosition, int textLength, int part, int startLine, int startColumn, int errorCount, IntIterable disabledWarnings) {

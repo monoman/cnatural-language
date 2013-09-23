@@ -18,7 +18,7 @@ using java.lang;
 using org.junit;
 using stab.query;
 
-package stab.tools.helpers.test {
+namespace stab.tools.helpers.test {
 	
 	public class UserDataContainerTest {
 		[Test]

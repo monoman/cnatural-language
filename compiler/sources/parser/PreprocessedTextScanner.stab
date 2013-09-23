@@ -20,7 +20,7 @@ using stab.lang;
 using stab.query;
 using stab.tools.helpers;
 
-package stab.tools.parser {
+namespace stab.tools.parser {
     public class PreprocessedTextScanner : IScanner {
         private String filename;
         private String lineFilename;

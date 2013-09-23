@@ -16,7 +16,7 @@
  */
 using java.lang;
 
-package stab.tools.parser {
+namespace stab.tools.parser {
 
     public class ParserHelper {
         public static int decodeHexadecimalInteger(String value) {

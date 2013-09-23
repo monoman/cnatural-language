@@ -20,7 +20,7 @@ using stab.query;
 using stab.reflection;
 using stab.tools.syntaxtree;
 
-package stab.tools.compiler {
+namespace stab.tools.compiler {
 
     class TargetLabels {
         LabelMarker ifTrue;

@@ -20,7 +20,7 @@ using stab.lang;
 using stab.tools.helpers;
 using stab.tools.syntaxtree;
 
-package stab.tools.parser {
+namespace stab.tools.parser {
 
     public class Parser {
         private IScanner scanner;

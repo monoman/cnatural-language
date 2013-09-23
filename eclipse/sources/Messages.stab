@@ -17,7 +17,7 @@
 using java.lang;
 using org.eclipse.osgi.util;
 
-package stab.tools.eclipse {
+namespace stab.tools.eclipse {
 
 	//
 	// Localized strings

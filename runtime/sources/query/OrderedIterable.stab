@@ -17,7 +17,7 @@
 using java.lang;
 using java.util;
 
-package stab.query {
+namespace stab.query {
 
     public interface OrderedIterable<TSource> : Iterable<TSource> {
         OrderedIterable<TSource> createOrderedIterable<TKey>(FunctionTT<TSource, TKey> keySelector,

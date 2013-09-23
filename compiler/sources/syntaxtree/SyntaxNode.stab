@@ -18,7 +18,7 @@ using java.lang;
 using stab.lang;
 using stab.tools.helpers;
 
-package stab.tools.syntaxtree {
+namespace stab.tools.syntaxtree {
 
 	public abstract class SyntaxNode : UserDataContainer {
 		protected SyntaxNode() {

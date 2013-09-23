@@ -17,7 +17,7 @@
 using java.lang;
 using stab.lang;
 
-package stab.query {
+namespace stab.query {
 
 	public interface Lookup<TKey, TElement> : Iterable<Grouping<TKey, TElement>> {
 		boolean contains(TKey key);

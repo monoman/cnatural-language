@@ -1,17 +1,17 @@
-package p1 {
+namespace p1 {
 	public class Packages2Aux {
 		public static int Field = 1;
 	}
 }
 
-package p2 {
+namespace p2 {
 	public class Packages2Aux {
 		public static int Field = 2;
 	}
 
 }
 
-package p3 {
+namespace p3 {
 	using p1;
 
 	public class Packages2Aux2 {
@@ -22,7 +22,7 @@ package p3 {
 
 }
 
-package p3 {
+namespace p3 {
 	using p2;
 
 	public class Packages2Aux3 {

@@ -20,7 +20,7 @@ using java.util;
 using java.util.zip;
 using stab.query;
 
-package stab.reflection {
+namespace stab.reflection {
 
 	public class TypeLoadException : RuntimeException {
 		public TypeLoadException(String message, String typeName) : super(message) {

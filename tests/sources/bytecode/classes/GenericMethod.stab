@@ -1,4 +1,4 @@
-package stab.bytecode.test.classes {
+namespace stab.bytecode.test.classes {
 	public class GenericMethod {
 		public void method<T>(T t) {
 		}

@@ -18,7 +18,7 @@ using java.lang;
 using java.util;
 using stab.lang;
 
-package stab.query {
+namespace stab.query {
 
     class HashSet<T> : Iterable<T> {
         private int count;

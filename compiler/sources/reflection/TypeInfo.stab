@@ -20,7 +20,7 @@ using org.objectweb.asm;
 using stab.query;
 using stab.tools.helpers;
 
-package stab.reflection {
+namespace stab.reflection {
 
     public enum TypeKind {
         Array,

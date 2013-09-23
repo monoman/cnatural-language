@@ -29,7 +29,7 @@ using stab.tools.parser;
 using stab.tools.syntaxtree;
 using stab.query;
 
-package stab.tools.eclipse.helpers {
+namespace stab.tools.eclipse.helpers {
 
 	public class SourceCompilerParameters {
 		public SourceCompilerParameters() {

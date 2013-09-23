@@ -17,7 +17,7 @@
 using java.lang;
 using java.util;
 
-package stab.lang {
+namespace stab.lang {
 
 	/// <summary>
     /// Provides methods to manipulate a list of ints without boxing / unboxing.

@@ -17,7 +17,7 @@
 using java.lang;
 using java.util;
 
-package stab.query {
+namespace stab.query {
 
     public interface Grouping<TKey, TElement> : Iterable<TElement> {
         TKey Key {

@@ -20,7 +20,7 @@ using stab.query;
 using stab.reflection;
 using stab.tools.helpers;
 
-package stab.tools.compiler {
+namespace stab.tools.compiler {
 
     public class TypeFinder {
         private Node root;

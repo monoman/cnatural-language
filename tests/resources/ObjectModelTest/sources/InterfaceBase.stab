@@ -1,4 +1,4 @@
-package p {
+namespace p {
 
 	public class InterfaceBase : InterfaceBaseAux2 {
 		public int method1() { return 1; }

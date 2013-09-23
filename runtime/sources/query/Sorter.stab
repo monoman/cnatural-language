@@ -14,7 +14,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package stab.query {
+namespace stab.query {
 
 	abstract class Sorter {
 		protected abstract int compare(int item1, int item2);

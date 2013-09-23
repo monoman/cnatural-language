@@ -19,7 +19,7 @@ using java.util;
 using stab.query;
 using stab.tools.helpers;
 
-package stab.tools.parser {
+namespace stab.tools.parser {
 
     public class PreprocessedText {
         PreprocessedText(char[] text, Iterable<InputSectionPart> inputSectionParts) {

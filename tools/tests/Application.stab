@@ -19,7 +19,7 @@ using java.io;
 using org.junit.runner;
 using org.junit.runner.notification;
  
-package stab.tools.tests {
+namespace stab.tools.tests {
 
 	public class Application {
 		public static void main(params String[] args) {

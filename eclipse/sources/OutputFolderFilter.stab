@@ -19,7 +19,7 @@ using org.eclipse.core.resources;
 using org.eclipse.jface.viewers;
 using stab.tools.eclipse.helpers;
 
-package stab.tools.eclipse {
+namespace stab.tools.eclipse {
 
 	//
 	// Filters the output folder in the project view.

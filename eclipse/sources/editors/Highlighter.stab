@@ -30,7 +30,7 @@ using stab.tools.helpers;
 using stab.tools.parser;
 using stab.tools.syntaxtree;
 
-package stab.tools.eclipse.editors {
+namespace stab.tools.eclipse.editors {
 
 	class StyledPosition : Position {
 		private ISharedTextColors sharedTextColors;

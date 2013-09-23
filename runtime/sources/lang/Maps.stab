@@ -17,7 +17,7 @@
 using java.lang;
 using java.util;
  
-package stab.lang {
+namespace stab.lang {
 
 	public interface IntTMap<V> : Map<Integer, V> {
 		boolean containsKey(int key);

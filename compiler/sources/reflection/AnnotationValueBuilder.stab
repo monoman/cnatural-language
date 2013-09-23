@@ -16,7 +16,7 @@
  */
 using java.lang;
 
-package stab.reflection {
+namespace stab.reflection {
 
     public class AnnotationValueBuilder : AnnotationValue {
         public AnnotationValueBuilder(TypeInfo type, boolean runtimeVisible)

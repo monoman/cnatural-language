@@ -18,7 +18,7 @@ using java.lang;
 using java.lang.reflect;
 using stab.query;
  
-package stab.tree {
+namespace stab.tree {
 
     public class NewArrayExpression : Expression {
         NewArrayExpression(Class<?> type, Expression[] dimensions, int uninitializedDimensions, Expression[] elements)

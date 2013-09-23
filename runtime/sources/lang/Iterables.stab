@@ -17,7 +17,7 @@
 using java.lang;
 using java.util;
 
-package stab.lang {
+namespace stab.lang {
 
     /// <summary>
     /// Gives access to an iterator over a collection of boolean values.

@@ -17,7 +17,7 @@
 using java.lang;
 using org.junit;
 
-package stab.tools.compiler.test {
+namespace stab.tools.compiler.test {
 
 	public class ExpressionsErrorTest : ErrorTest {
 		protected override String ResourcesPath {

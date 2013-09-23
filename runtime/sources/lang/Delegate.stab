@@ -18,7 +18,7 @@ using java.lang;
 using java.lang.reflect;
 using java.util;
 
-package stab.lang {
+namespace stab.lang {
 
     /// <summary>
     /// <c>Delegate</c> is the base class for delegate types in the Stab language.

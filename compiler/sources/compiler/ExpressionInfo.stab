@@ -17,7 +17,7 @@
 using java.lang;
 using stab.reflection;
 
-package stab.tools.compiler {
+namespace stab.tools.compiler {
 
     public class ExpressionInfo {
         ExpressionInfo(TypeInfo type) {

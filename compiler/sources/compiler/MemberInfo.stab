@@ -19,7 +19,7 @@ using java.util;
 using stab.query;
 using stab.reflection;
 
-package stab.tools.compiler {
+namespace stab.tools.compiler {
 
     public enum MemberKind {
         Field,

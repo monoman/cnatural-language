@@ -21,7 +21,7 @@ using stab.reflection;
 using stab.tools.compiler;
 using stab.tools.syntaxtree;
 
-package stab.tools.eclipse.helpers {
+namespace stab.tools.eclipse.helpers {
 
 	public class SyntaxTreeHelper {
 		public static Iterable<TypeMemberNode> getTypeMembers(CompilationUnitNode compilationUnit) {

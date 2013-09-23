@@ -1,10 +1,10 @@
-package a {
+namespace a {
     public class A {
         protected void m() {
         }
     }
 }
-package b {
+namespace b {
     class B {
         void n() {
             new C().m();

@@ -19,7 +19,7 @@ using java.util;
 using stab.query;
 using stab.tools.helpers;
 
-package stab.reflection {
+namespace stab.reflection {
 
 	class ReflectionHelper {
 		static String getObjectTypeSignature(TypeInfo type) {

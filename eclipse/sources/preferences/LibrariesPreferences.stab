@@ -31,7 +31,7 @@ using org.eclipse.ui.views.navigator;
 using stab.tools.eclipse.ui;
 using stab.tools.helpers;
 
-package stab.tools.eclipse.preferences {
+namespace stab.tools.eclipse.preferences {
 
 	//
 	// Manages the controls and events of the Libraries table

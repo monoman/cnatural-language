@@ -16,7 +16,7 @@
  */
 using java.lang;
  
-package stab.tree {
+namespace stab.tree {
 
     public class VariableExpression : Expression {
         VariableExpression(ExpressionKind expressionKind, Class<?> type, String name)

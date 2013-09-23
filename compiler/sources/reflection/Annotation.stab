@@ -20,7 +20,7 @@ using org.objectweb.asm;
 
 using AsmType = org.objectweb.asm.Type;
 
-package stab.reflection {
+namespace stab.reflection {
 
     public enum AnnotationArgumentKind {
         Annotation,

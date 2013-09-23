@@ -22,7 +22,7 @@ using java.lang;
 using java.util;
 using javax.imageio;
 
-package stab.samples {
+namespace stab.samples {
     public class Daleks : Frame {
         public static void main(String[] args) {
             var daleks = new Daleks();

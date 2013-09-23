@@ -23,7 +23,7 @@ using stab.query;
 using stab.reflection;
 using stab.tools.compiler;
 
-package stab.tools.eclipse.editors {
+namespace stab.tools.eclipse.editors {
 
 	public class CompletionProposalHelper {
 		private static CompletionProposalComparator completionProposalComparator = new CompletionProposalComparator();

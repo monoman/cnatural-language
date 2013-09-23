@@ -28,7 +28,7 @@ using Document = org.w3c.dom.Document;
 using Element = org.w3c.dom.Element;
 using Node = org.w3c.dom.Node;
  
-package stab.tools.compiler {
+namespace stab.tools.compiler {
 
     class DocumentationBuilder {
         private CompilerContext context;

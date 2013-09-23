@@ -16,7 +16,7 @@
  */
 using java.lang;
 
-package stab.tools.helpers {
+namespace stab.tools.helpers {
 
 	public static class Helper {
 		public static boolean equals(Object obj1, Object obj2) {

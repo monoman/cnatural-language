@@ -16,7 +16,7 @@
  */
 using java.lang;
  
-package stab.tree {
+namespace stab.tree {
 
     public class ConditionalExpression : Expression {
         ConditionalExpression(Class<?> type, Expression condition, Expression ifTrue, Expression ifFalse)

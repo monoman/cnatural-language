@@ -17,7 +17,7 @@
 using java.lang;
 using stab.lang;
 
-package stab.annotated.java.util {
+namespace stab.annotated.java.util {
 	public interface List<E> {
 		[IndexerGet]
 		E get(int index);

@@ -17,7 +17,7 @@
 using java.lang;
 using stab.tools.helpers;
 
-package stab.tools.parser {
+namespace stab.tools.parser {
 
     public class SourceCodeScanner : ScannerBase, IScanner {
 
@@ -504,7 +504,14 @@ package stab.tools.parser {
             case 'n':
                 switch (advance()) {
                 case 'a':
-                    return scanKeyword("ative", Keyword.Native);
+                    switch (advance()) {
+                    case 'm':
+						return scanContextualKeyword("mespace", Keyword.Package);
+                    case 't':
+						return scanKeyword("tive", Keyword.Native);
+                    default:
+                        return scanKeyword("", Keyword.None);
+                    }
                 case 'e':
                     return scanKeyword("ew", Keyword.New);
                 case 'u':

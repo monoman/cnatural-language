@@ -19,7 +19,7 @@ using java.lang.reflect;
 using java.util;
 using stab.lang;
  
-package stab.query {
+namespace stab.query {
 
 	abstract class CollectionBase<E> : Collection<E> {
 		public boolean addAll(Collection<E> c) {

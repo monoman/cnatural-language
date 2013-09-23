@@ -19,7 +19,7 @@ using java.util;
 using org.objectweb.asm;
 using stab.query;
 
-package stab.reflection {
+namespace stab.reflection {
 
     public class TypeBuilder : ObjectTypeInfo {
         boolean created;

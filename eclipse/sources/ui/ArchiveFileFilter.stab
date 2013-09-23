@@ -19,7 +19,7 @@ using org.eclipse.core.resources;
 using org.eclipse.jface.viewers;
 using stab.query;
 
-package stab.tools.eclipse.ui {
+namespace stab.tools.eclipse.ui {
 
  	public class ArchiveFileFilter : ViewerFilter {
  		private Iterable<IResource> excludedFiles;

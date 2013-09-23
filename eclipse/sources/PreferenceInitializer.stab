@@ -18,7 +18,7 @@ using org.eclipse.core.runtime.preferences;
 using org.eclipse.jface.preference;
 using stab.tools.eclipse.editors;
 
-package stab.tools.eclipse {
+namespace stab.tools.eclipse {
 
 	public class PreferenceInitializer : AbstractPreferenceInitializer {
 		

@@ -16,7 +16,7 @@
  */
 using java.util;
 
-package stab.tools.syntaxtree {
+namespace stab.tools.syntaxtree {
 	
 	public class ElementAccessExpressionNode : ExpressionNode {
 		public ElementAccessExpressionNode()

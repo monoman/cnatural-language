@@ -24,7 +24,7 @@ using javax.xml.xpath;
 using org.w3c.dom;
 using org.xml.sax;
 
-package stab.tools.helpers {
+namespace stab.tools.helpers {
     
     public static  class XmlHelper {
         public static Document load(InputStream stream) {

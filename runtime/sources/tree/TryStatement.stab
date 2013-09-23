@@ -17,7 +17,7 @@
  using java.lang;
  using stab.query;
  
-package stab.tree {
+namespace stab.tree {
 
 	public class TryStatement : Statement {
 		TryStatement(BlockStatement body, CatchClause[] catchClauses, BlockStatement finallyBlock)

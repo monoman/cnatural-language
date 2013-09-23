@@ -1,5 +1,5 @@
 using p1;
 
-package p2 {
+namespace p2 {
     using p3 = p4;
 }

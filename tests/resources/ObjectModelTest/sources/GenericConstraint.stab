@@ -1,4 +1,4 @@
-package p {
+namespace p {
 	using java.lang;
 
 	public class GenericConstraint<T> where T : Runnable {

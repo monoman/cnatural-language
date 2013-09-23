@@ -17,7 +17,7 @@
 using java.lang;
 using java.lang.reflect;
  
-package stab.tree {
+namespace stab.tree {
 
     public class FieldExpression : Expression {
         FieldExpression(Field field, Expression target)

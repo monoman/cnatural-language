@@ -17,7 +17,7 @@
 using java.lang;
 using org.objectweb.asm;
 
-package stab.reflection {
+namespace stab.reflection {
     
     public abstract class Instruction {
         final static Instruction Aaload = new SimpleInstruction(Opcode.Aaload);

@@ -18,7 +18,7 @@ using java.lang;
 using java.util;
 using stab.lang;
  
-package stab.query {
+namespace stab.query {
 
 	// ========================================================================
 	// Generic map

@@ -21,7 +21,7 @@ using org.junit;
 using stab.reflection;
 using stab.tools.helpers;
 
-package stab.tools.compiler.test {
+namespace stab.tools.compiler.test {
 
 	public abstract class ErrorTest {
 		private static Library typeSystem;

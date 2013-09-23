@@ -22,7 +22,7 @@ using stab.query;
 using stab.tools.helpers;
 using stab.tree;
 
-package stab.tools.compiler.test {
+namespace stab.tools.compiler.test {
 
 	public class ExpressionTreesTest {
 		[Test]

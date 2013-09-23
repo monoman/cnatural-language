@@ -22,7 +22,7 @@ using org.eclipse.jface.viewers;
 using org.eclipse.ui;
 using stab.tools.eclipse.helpers;
 
-package stab.tools.eclipse {
+namespace stab.tools.eclipse {
 
 	//
 	// The nature for the Stab language

@@ -21,7 +21,7 @@ using stab.query;
 using stab.tools.helpers;
 using stab.tools.parser;
 
-package stab.tools.parser.test {
+namespace stab.tools.parser.test {
 	public class PreprocessorTest {
 		[Test]
 		public void testSimpleSource() {

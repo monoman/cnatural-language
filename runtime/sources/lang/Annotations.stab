@@ -19,7 +19,7 @@ using java.lang.annotation;
 /// <summary>
 /// Contains the types required by the Stab language compiler to compile a program.
 /// </summary>
-package stab.lang {
+namespace stab.lang {
 
     /// <summary>
     /// Indicates to the compiler that a method is the getter of an indexer.

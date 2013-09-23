@@ -24,7 +24,7 @@ using stab.reflection;
 using stab.tools.eclipse.helpers;
 using stab.tools.syntaxtree;
 
-package stab.tools.eclipse {
+namespace stab.tools.eclipse {
 
 	public interface IProjectBuildListener {
 		void projectBuilt(ProjectBuildEvent event);

@@ -1,4 +1,4 @@
-package p {
+namespace p {
 	class C {
 		class D {
 		}

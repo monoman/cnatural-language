@@ -29,7 +29,7 @@ using org.osgi.framework;
 using stab.tools.eclipse.editors;
 using stab.tools.eclipse.helpers;
 
-package stab.tools.eclipse {
+namespace stab.tools.eclipse {
 
 	//
 	// The plug-in entry point

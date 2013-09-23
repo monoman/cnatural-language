@@ -26,7 +26,7 @@ using stab.tools.helpers;
 
 using AsmType = org.objectweb.asm.Type;
 
-package stab.reflection {
+namespace stab.reflection {
 
     class ClassFileType : ClassType {
         private static HashMap<String, NumericTypeKind> TypeKinds;

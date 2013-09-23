@@ -22,7 +22,7 @@ using stab.reflection;
 using stab.tools.helpers;
 using stab.tools.syntaxtree;
 
-package stab.tools.compiler {
+namespace stab.tools.compiler {
 
     class BytecodeGenerator : StatementHandler<Void, Void> {
         private CompilerContext context;

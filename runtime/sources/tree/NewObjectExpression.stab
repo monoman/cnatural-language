@@ -18,7 +18,7 @@ using java.lang;
 using java.lang.reflect;
 using stab.query;
  
-package stab.tree {
+namespace stab.tree {
 
     public class MemberInitializer {
         public MemberInitializer(Member member, Expression[] arguments) {

@@ -1,6 +1,6 @@
 using java.lang;
 
-package stab.bytecode.test.classes {
+namespace stab.bytecode.test.classes {
 
 	[Deprecated]
 	public class Annotation {

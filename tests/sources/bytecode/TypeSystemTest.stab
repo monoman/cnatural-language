@@ -21,7 +21,7 @@ using org.junit;
 using stab.query;
 using stab.tools.helpers;
 
-package stab.reflection.test {
+namespace stab.reflection.test {
 
 	public class TypeSystemTest {
 		private String bin = System.getProperty("user.dir") + "/tests/tests.jar";

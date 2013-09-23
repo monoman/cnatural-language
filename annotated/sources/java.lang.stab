@@ -16,7 +16,7 @@
  */
 using stab.lang;
 
-package stab.annotated.java.lang {
+namespace stab.annotated.java.lang {
 
 	public interface CharSequence {
 		[IndexerGet]

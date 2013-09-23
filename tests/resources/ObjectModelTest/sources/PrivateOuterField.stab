@@ -1,6 +1,6 @@
 using java.lang;
 
-package p.q {
+namespace p.q {
 
 	public class PrivateOuterField<U, V> {
 		public static int test() {

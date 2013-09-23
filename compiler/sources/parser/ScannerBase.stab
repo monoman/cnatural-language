@@ -19,7 +19,7 @@ using java.util;
 using stab.lang;
 using stab.tools.helpers;
 
-package stab.tools.parser {
+namespace stab.tools.parser {
 
     public class ScannerBase {
         protected ScannerBase(CodeErrorManager codeErrorManager, char[] text, int position, int length, int line, int column) {

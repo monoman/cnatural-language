@@ -22,7 +22,7 @@ using java.util.zip;
 using stab.reflection;
 using stab.tools.helpers;
 
-package stab.tools.compiler {
+namespace stab.tools.compiler {
 
     public class Application {
         public static void main(String[] args) {

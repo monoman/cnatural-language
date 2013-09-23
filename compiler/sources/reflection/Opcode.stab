@@ -16,7 +16,7 @@
  */
 using org.objectweb.asm;
 
-package stab.reflection {
+namespace stab.reflection {
 
     public enum Opcode {
         Aaload(Opcodes.AALOAD),
