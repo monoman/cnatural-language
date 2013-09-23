@@ -144,6 +144,11 @@ namespace stab.tools.parser.test {
 		}
 		
 		[Test]
+		public void testProperty7() {
+			doTest("Property7");
+		}
+		
+		[Test]
 		public void testIndexer() {
 			doTest("Indexer");
 		}

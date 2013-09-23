@@ -882,7 +882,7 @@ namespace stab.tools.parser {
 					}
 					setSavedScannerState(propertyShortDeclaration);
 					propertyShortDeclaration.Modifiers.addAll(modifiers);
-					fakeparseShortProperty(propertyShortDeclaration);
+					fakeparseShortProperty(propertyShortDeclaration, false);
 					docCommentEndPosition = 0;
 					propertyShortDeclaration.EndPosition = scanner.EndPosition;
 					nextLexicalUnit(false);
@@ -1129,6 +1129,10 @@ namespace stab.tools.parser {
                 nextLexicalUnit(false);
                 return declaration;
 			} 
+			boolean onlyGetter = (lexicalUnitShorter == LexicalUnit.Xor);
+			if (onlyGetter) {
+				lexicalUnitShorter = nextLexicalUnit(true);
+			}
 			if (lexicalUnitShorter == LexicalUnit.SemiColon) {
 				var propertyShortDeclaration = new PropertyDeclarationNode { Type = type, NameOffset = sp, NameLength = len,
 						StartPosition = startPosition };
@@ -1140,7 +1144,7 @@ namespace stab.tools.parser {
 				setSavedScannerState(propertyShortDeclaration);
 				propertyShortDeclaration.Modifiers.addAll(modifiers);
                 propertyShortDeclaration.Annotations.addAll(annotations);
-				fakeparseShortProperty(propertyShortDeclaration);
+				fakeparseShortProperty(propertyShortDeclaration, onlyGetter);
 				docCommentEndPosition = 0;
 				propertyShortDeclaration.EndPosition = scanner.EndPosition;
 				nextLexicalUnit(false);
@@ -1330,15 +1334,17 @@ namespace stab.tools.parser {
             return true;
         }
     
-	    private void fakeparseShortProperty(IAccessorsOwner declaration) {
+	    private void fakeparseShortProperty(IAccessorsOwner declaration, boolean onlyGetter) {
             var accessor = new AccessorDeclarationNode();
             setScannerState(accessor);
             declaration.GetAccessor = accessor;
 			accessor.EndPosition = scanner.EndPosition;
-            accessor = new AccessorDeclarationNode();
-            setScannerState(accessor);
-            declaration.SetAccessor = accessor;
-			accessor.EndPosition = scanner.EndPosition;
+			if (!onlyGetter) {
+				accessor = new AccessorDeclarationNode();
+				setScannerState(accessor);
+				declaration.SetAccessor = accessor;
+				accessor.EndPosition = scanner.EndPosition;
+			}
 		}
 		
         private void parseAccessorDeclaration(IAccessorsOwner declaration, boolean inInterface) {
