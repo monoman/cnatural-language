@@ -32,35 +32,17 @@ namespace stab.tools.syntaxtree {
 			}
 		}
 		
-		public TypeReferenceNode ReturnType {
-			get;
-			set;
-		}
+		property TypeReferenceNode ReturnType;
 		
-		public int NameOffset {
-			get;
-			set;
-		}
+		property int NameOffset;
 		
-		public int NameLength {
-			get;
-			set;
-		}
+		property int NameLength;
 		
-		public List<SimpleNameTypeReferenceNode> TypeParameters {
-			get;
-			private set;
-		}
+		property List<SimpleNameTypeReferenceNode> TypeParameters^;
 		
-		public List<ParameterNode> Parameters {
-			get;
-			private set;
-		}
+		property List<ParameterNode> Parameters^;
 		
-		public List<TypeParameterConstraintsClauseNode> ConstraintsClauses {
-			get;
-			private set;
-		}
+		property List<TypeParameterConstraintsClauseNode> ConstraintsClauses^;
 	}
 	
 }

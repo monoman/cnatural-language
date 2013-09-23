@@ -22,9 +22,6 @@ namespace stab.tree {
             this.Value = value;
         }
         
-        public Expression Value {
-            get;
-            private set;
-        }
+        property Expression Value^;
     }
 }

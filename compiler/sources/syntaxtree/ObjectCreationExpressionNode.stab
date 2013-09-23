@@ -24,20 +24,11 @@ namespace stab.tools.syntaxtree {
 			this.Arguments = new ArrayList<ExpressionNode>();
 		}
 		
-		public TypeReferenceNode Type {
-			get;
-			set;
-		}
+		property TypeReferenceNode Type;
 		
-		public InitializerExpressionNode Initializer {
-			get;
-			set;
-		}
+		property InitializerExpressionNode Initializer;
 		
-		public List<ExpressionNode> Arguments {
-			get;
-			private set;
-		}
+		property List<ExpressionNode> Arguments^;
 	}
 	
 }

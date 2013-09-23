@@ -41,15 +41,9 @@ namespace stab.tree {
             this.Type = type;
         }
     
-        public ExpressionKind ExpressionKind {
-            get;
-            private set;
-        }
+        property ExpressionKind ExpressionKind^;
         
-        public Class<?> Type {
-            get;
-            private set;
-        }
+        property Class<?> Type^;
         
         public static BinaryExpression binary(Class<?> type, Expression left, BinaryOperator operator, Expression right) {
             return new BinaryExpression(type, operator, left, right);

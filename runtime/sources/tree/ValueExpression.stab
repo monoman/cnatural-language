@@ -24,9 +24,6 @@ namespace stab.tree {
             this.Value = value;
         }
         
-        public Object Value {
-            get;
-            private set;
-        }
+        property Object Value^;
     }
 }

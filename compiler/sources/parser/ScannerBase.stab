@@ -29,35 +29,20 @@ namespace stab.tools.parser {
             this.initialize(position, length, line, column, codeErrorManager.ErrorCount, codeErrorManager.DisabledWarnings);
         }
 
-        public CodeErrorManager CodeErrorManager {
-            get;
-            private set;
-        }
+        property CodeErrorManager CodeErrorManager^;
         
-        public String Filename {
-            get;
-            set;
-        }
+        property String Filename;
         
-        public int TabWidth {
-            get;
-            set;
-        }
+        property int TabWidth;
         
-        public char[] Text {
-            get;
-            private set;
-        }
+        property char[] Text^;
         
         public int Position {
             get;
             protected set;
         }
 
-        public int Length {
-            get;
-            private set;
-        }
+        property int Length^;
 
         public int Line {
             get;

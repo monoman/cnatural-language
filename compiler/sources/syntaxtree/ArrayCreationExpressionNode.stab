@@ -24,25 +24,13 @@ namespace stab.tools.syntaxtree {
 			this.DimensionExpressions = new ArrayList<ExpressionNode>();
 		}
 		
-		public TypeReferenceNode Type {
-			get;
-			set;
-		}
+		property TypeReferenceNode Type;
 		
-		public int Dimensions {
-			get;
-			set;
-		}
+		property int Dimensions;
 		
-		public List<ExpressionNode> DimensionExpressions {
-			get;
-			private set;
-		}
+		property List<ExpressionNode> DimensionExpressions^;
 		
-		public ArrayInitializerExpressionNode Initializer {
-			get;
-			set;
-		}
+		property ArrayInitializerExpressionNode Initializer;
 	}
 	
 	public class ArrayInitializerExpressionNode : ExpressionNode {
@@ -51,10 +39,7 @@ namespace stab.tools.syntaxtree {
 			this.Values = new ArrayList<ExpressionNode>();
 		}
 		
-		public List<ExpressionNode> Values {
-			get;
-			private set;
-		}
+		property List<ExpressionNode> Values^;
 	}
 	
 }

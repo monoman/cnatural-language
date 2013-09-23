@@ -24,15 +24,9 @@ namespace stab.tools.syntaxtree {
 			this.Indexes = new ArrayList<ExpressionNode>();
 		}
 		
-		public ExpressionNode TargetObject {
-			get;
-			set;
-		}
+		property ExpressionNode TargetObject;
 		
-		public List<ExpressionNode> Indexes {
-			get;
-			private set;
-		}
+		property List<ExpressionNode> Indexes^;
 	}
 	
 }

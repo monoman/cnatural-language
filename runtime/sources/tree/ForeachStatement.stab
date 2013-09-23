@@ -24,19 +24,10 @@ namespace stab.tree {
             this.Body = body;
         }
 
-        public VariableExpression Variable {
-            get;
-            private set;
-        }
+        property VariableExpression Variable^;
         
-        public Expression Expression {
-            get;
-            private set;
-        }
+        property Expression Expression^;
         
-        public Statement Body {
-            get;
-            private set;
-        }
+        property Statement Body^;
     }
 }

@@ -68,20 +68,11 @@ namespace stab.tools.syntaxtree {
 			this.Modifiers = EnumSet.noneOf(typeof(Modifier));
 		}
 		
-		public List<AnnotationSectionNode> Annotations {
-			get;
-			private set;
-		}
+		property List<AnnotationSectionNode> Annotations^;
 		
-		public EnumSet<Modifier> Modifiers {
-			get;
-			private set;
-		}
+		property EnumSet<Modifier> Modifiers^;
 		
-		public BlockStatementNode Body {
-			get;
-			set;
-		}
+		property BlockStatementNode Body;
 	}
 	
 	public class TypeParameterConstraintsClauseNode : SyntaxNode {
@@ -89,20 +80,11 @@ namespace stab.tools.syntaxtree {
 			this.Constraints = new ArrayList<TypeReferenceNode>();
 		}
 		
-		public int NameOffset {
-			get;
-			set;
-		}
+		property int NameOffset;
 		
-		public int NameLength {
-			get;
-			set;
-		}
+		property int NameLength;
 		
-		public List<TypeReferenceNode> Constraints {
-			get;
-			private set;
-		}
+		property List<TypeReferenceNode> Constraints^;
 	}
 	
 	public abstract class TypeMemberNode : SyntaxNode, ITypeMember {
@@ -112,31 +94,15 @@ namespace stab.tools.syntaxtree {
 			this.Modifiers = EnumSet.noneOf(typeof(Modifier));
 		}
 		
-		public TypeMemberKind TypeMemberKind {
-			get;
-			private set;
-		}
+		property TypeMemberKind TypeMemberKind^;
 		
-        public int DocumentationOffset {
-            get;
-            set;
-        }
+        property int DocumentationOffset;
 		
-        public int DocumentationLength {
-            get;
-            set;
-        }
+        property int DocumentationLength;
         
-		public List<AnnotationSectionNode> Annotations {
-			get;
-			private set;
-		}
+		property List<AnnotationSectionNode> Annotations^;	
 		
-		
-		public EnumSet<Modifier> Modifiers {
-			get;
-			private set;
-		}
+		property EnumSet<Modifier> Modifiers^;
 	}
 	
 }

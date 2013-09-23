@@ -78,45 +78,21 @@ namespace stab.tools.eclipse {
 			}
 		}
 
-		public IProject Project {
-			get;
-			private set;
-		}
+		property IProject Project^;
 		
-		public ProjectProperties Properties {
-			get;
-			private set;
-		}
+		property ProjectProperties Properties^;
 
-		public DependencyInfo DependencyInfo {
-			get;
-			set;
-		}
+		property DependencyInfo DependencyInfo;
 
-		public String[] ClassPath {
-			get;
-			set;
-		}
+		property String[] ClassPath;
 
-		public Library TypeSystem {
-			get;
-			set;
-		}
+		property Library TypeSystem;
 
-		public Library AnnotatedTypeSystem {
-			get;
-			set;
-		}
+		property Library AnnotatedTypeSystem;
 
-		public Map<String, CompilationUnitNode> CompilationUnits {
-			get;
-			set;
-		}
+		property Map<String, CompilationUnitNode> CompilationUnits;
 
-		public Iterable<String> FilesToCompile {
-			get;
-			set;
-		}
+		property Iterable<String> FilesToCompile;
 
 		public Iterable<IFile> getSourceFiles() {
 			var result = new ArrayList<IFile>();

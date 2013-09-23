@@ -24,25 +24,16 @@ namespace stab.tools.syntaxtree {
 			this.Annotations = new ArrayList<AnnotationCreationNode>();
 		}
 		
-		public List<AnnotationCreationNode> Annotations {
-			get;
-			private set;
-		}
+		property List<AnnotationCreationNode> Annotations^;
 	}
 	
 	public class AnnotationCreationNode : SyntaxNode {
 		public AnnotationCreationNode() {
 		}
 		
-		public TypeReferenceNode Type {
-			get;
-			set;
-		}
+		property TypeReferenceNode Type;
 		
-		public ExpressionNode Initializer {
-			get;
-			set;
-		}
+		property ExpressionNode Initializer;
 	}
 	
 }

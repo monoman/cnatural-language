@@ -24,9 +24,6 @@ namespace stab.tree {
             this.Name = name;
         }
         
-        public String Name {
-            get;
-            private set;
-        }
+        property String Name^;
     }
 }

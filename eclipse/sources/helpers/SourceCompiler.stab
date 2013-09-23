@@ -39,60 +39,27 @@ namespace stab.tools.eclipse.helpers {
 			this.FilesToCompile = new HashSet<String>();
 		}
 	
-		public boolean FullBuild {
-			get;
-			set;
-		}
+		property boolean FullBuild;
 		
-		public boolean ProgressiveBuild {
-			get;
-			set;
-		}
+		property boolean ProgressiveBuild;
 		
-		public boolean GenerateClassFiles {
-			get;
-			set;
-		}
+		property boolean GenerateClassFiles;
 		
-		public ResourceSet<IFile> AllFiles {
-			get;
-			private set;
-		}
+		property ResourceSet<IFile> AllFiles^;
 
-		public Set<String> FilesToCompile {
-			get;
-			private set;
-		}
+		property Set<String> FilesToCompile^;
 		
-		public Set<String> PreprocessorSymbols {
-			get;
-			private set;
-		}
+		property Set<String> PreprocessorSymbols^;
 		
-		public String[] ClassPath {
-			get;
-			set;
-		}
+		property String[] ClassPath;
 		
-		public Library TypeSystem {
-			get;
-			set;
-		}
+		property Library TypeSystem;
 		
-		public String EditedFileName {
-			get;
-			set;
-		}
+		property String EditedFileName;
 		
-		public char[] EditedFileText {
-			get;
-			set;
-		}
+		property char[] EditedFileText;
 		
-		public DependencyInfo DependencyInfo {
-			get;
-			set;
-		}
+		property DependencyInfo DependencyInfo;
 	}
 
 	public class SourceCompilerResults {
@@ -103,50 +70,23 @@ namespace stab.tools.eclipse.helpers {
 			this.CompilationUnits = new HashMap<String, CompilationUnitNode>();
 		}
 	
-		public boolean Failed {
-			get;
-			set;
-		}
+		property boolean Failed;
 		
-		public Map<String, byte[]> ClassFiles {
-			get;
-			private set;
-		}
+		property Map<String, byte[]> ClassFiles^;
 		
-		public List<CodeError> CodeErrors {
-			get;
-			private set;
-		}
+		property List<CodeError> CodeErrors^;
 		
-		public List<String> CompiledFiles {
-			get;
-			private set;
-		}
+		property List<String> CompiledFiles^;
 		
-		public String MissingType {
-			get;
-			set;
-		}
+		property String MissingType;
 		
-		public DependencyInfo DependencyInfo {
-			get;
-			set;
-		}
+		property DependencyInfo DependencyInfo;
 		
-		public Library TypeSystem {
-			get;
-			set;
-		}
+		property Library TypeSystem;
 		
-		public Library AnnotatedTypeSystem {
-			get;
-			set;
-		}
+		property Library AnnotatedTypeSystem;
 		
-		public Map<String, CompilationUnitNode> CompilationUnits {
-			get;
-			private set;
-		}
+		property Map<String, CompilationUnitNode> CompilationUnits^;
 	}
 
 	public class SourceCompiler {

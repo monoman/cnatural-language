@@ -26,15 +26,9 @@ namespace stab.tree {
             this.Arguments = Query.asIterable((Expression[])arguments.clone());
         }
         
-        public Member Member {
-            get;
-            private set;
-        }
+        property Member Member^;
         
-        public Iterable<Expression> Arguments {
-            get;
-            private set;
-        }
+        property Iterable<Expression> Arguments^;
     }
 
     public class NewObjectExpression : Expression {
@@ -46,19 +40,10 @@ namespace stab.tree {
                     : Query.asIterable((MemberInitializer[])initializers.clone());
         }
         
-        public Constructor<?> Constructor {
-            get;
-            private set;
-        }
+        property Constructor<?> Constructor^;
         
-        public Iterable<Expression> Arguments {
-            get;
-            private set;
-        }
+        property Iterable<Expression> Arguments^;
         
-        public Iterable<MemberInitializer> Initializers {
-            get;
-            private set;
-        }
+        property Iterable<MemberInitializer> Initializers^;
     }
 }

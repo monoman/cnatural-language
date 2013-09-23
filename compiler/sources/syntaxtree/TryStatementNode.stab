@@ -24,45 +24,24 @@ namespace stab.tools.syntaxtree {
 			this.CatchClauses = new ArrayList<CatchClauseNode>();
 		}
 		
-		public BlockStatementNode Block {
-			get;
-			set;
-		}
+		property BlockStatementNode Block;
 		
-		public BlockStatementNode Finally {
-			get;
-			set;
-		}
+		property BlockStatementNode Finally;
 		
-		public List<CatchClauseNode> CatchClauses {
-			get;
-			private set;
-		}
+		property List<CatchClauseNode> CatchClauses^;
 	}
 	
 	public class CatchClauseNode : SyntaxNode {
 		public CatchClauseNode() {
 		}
 		
-		public TypeReferenceNode ExceptionType {
-			get;
-			set;
-		}
+		property TypeReferenceNode ExceptionType;
 		
-		public int NameOffset {
-			get;
-			set;
-		}
+		property int NameOffset;
 		
-		public int NameLength {
-			get;
-			set;
-		}
+		property int NameLength;
 		
-		public BlockStatementNode Block {
-			get;
-			set;
-		}
+		property BlockStatementNode Block;
 	}
 	
 }

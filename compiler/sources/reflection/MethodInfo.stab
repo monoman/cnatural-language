@@ -31,15 +31,9 @@ namespace stab.reflection {
             this.Type = type;
         }
         
-        public int Position {
-            get;
-            private set;
-        }
+        property int Position^;
         
-        public TypeInfo Type {
-            get;
-            private set;
-        }
+        property TypeInfo Type^;
         
         public String Name {
             get {
@@ -73,10 +67,7 @@ namespace stab.reflection {
             }
         }
 
-        public String Name {
-            get;
-            private set;
-        }
+        property String Name^;
 
         public virtual Iterable<AnnotationValue> Annotations {
             get {
@@ -195,10 +186,7 @@ namespace stab.reflection {
             }
         }
         
-        public boolean IsExcludedFromCompilation {
-            get;
-            set;
-        }
+        property boolean IsExcludedFromCompilation;
         
         public boolean hasSameParameters(MethodInfo method) {
             if (this.IsVarargs != method.IsVarargs) {

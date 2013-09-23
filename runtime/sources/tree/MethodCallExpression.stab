@@ -28,19 +28,10 @@ namespace stab.tree {
             this.Arguments = Query.asIterable((Expression[])arguments.clone());
         }
         
-        public Method Method {
-            get;
-            private set;
-        }
+        property Method Method^;
         
-        public Expression Target {
-            get;
-            private set;
-        }
+        property Expression Target^;
         
-        public Iterable<Expression> Arguments {
-            get;
-            private set;
-        }
+        property Iterable<Expression> Arguments^;
     }
 }

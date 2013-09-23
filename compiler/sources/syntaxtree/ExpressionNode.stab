@@ -48,15 +48,9 @@ namespace stab.tools.syntaxtree {
 			this.ExpressionKind = expressionKind;
 		}
 		
-		public ExpressionKind ExpressionKind {
-			get;
-			private set;
-		}
+		property ExpressionKind ExpressionKind^;
 		
-		public boolean Parenthesized {
-			get;
-			set;
-		}
+		property boolean Parenthesized;
 	}
 
 	public class ThisAccessExpressionNode : ExpressionNode {

@@ -24,15 +24,9 @@ namespace stab.tools.syntaxtree {
 			this.Declarators = new ArrayList<VariableDeclaratorNode>();
 		}
 		
-		public TypeReferenceNode Type {
-			get;
-			set;
-		}
+		property TypeReferenceNode Type;
 		
-		public List<VariableDeclaratorNode> Declarators {
-			get;
-			private set;
-		}
+		property List<VariableDeclaratorNode> Declarators^;
 	}
 	
 }

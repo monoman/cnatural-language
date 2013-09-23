@@ -32,10 +32,7 @@ namespace stab.tools.compiler {
             this.packages = new ArrayList<String>();
         }
 
-        public TypeFinder TypeFinder {
-            get;
-            private set;
-        }
+        property TypeFinder TypeFinder^;
 
         public MemberInfo resolveTypeName(String packageName, String name) {
             var s = scope;

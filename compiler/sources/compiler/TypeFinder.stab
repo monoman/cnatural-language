@@ -31,10 +31,7 @@ namespace stab.tools.compiler {
             initialize();
         }
 
-        public Library TypeSystem {
-            get;
-            private set;
-        }
+        property Library TypeSystem^;
         
         public boolean packageExists(Iterable<String> packages) {
             Node n = root;

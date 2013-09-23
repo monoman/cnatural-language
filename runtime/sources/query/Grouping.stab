@@ -50,10 +50,7 @@ namespace stab.query {
             #pragma warning restore
         }
 
-        public TKey Key {
-            get;
-            private set;
-        }
+        property TKey Key^;
 
         public Iterator<TElement> iterator() {
             for (int i = 0; i < count; i++) {
@@ -61,10 +58,7 @@ namespace stab.query {
             }
         }
         
-        DefaultGrouping<TKey, TElement> Next {
-            get;
-            set;
-        }
+        property DefaultGrouping<TKey, TElement> Next;
         
         void add(TElement item) {
             if (count == sizeof(array)) {
@@ -89,10 +83,7 @@ namespace stab.query {
             #pragma warning restore
         }
 
-        public int Key {
-            get;
-            private set;
-        }
+        property int Key^;
 
         public Iterator<TElement> iterator() {
             for (int i = 0; i < count; i++) {
@@ -100,10 +91,7 @@ namespace stab.query {
             }
         }
         
-        DefaultIntGrouping<TElement> Next {
-            get;
-            set;
-        }
+        property DefaultIntGrouping<TElement> Next;
         
         void add(TElement item) {
             if (count == sizeof(array)) {
@@ -128,10 +116,7 @@ namespace stab.query {
             #pragma warning restore
         }
 
-        public long Key {
-            get;
-            private set;
-        }
+        property long Key^;
 
         public Iterator<TElement> iterator() {
             for (int i = 0; i < count; i++) {
@@ -139,10 +124,7 @@ namespace stab.query {
             }
         }
         
-        DefaultLongGrouping<TElement> Next {
-            get;
-            set;
-        }
+        property DefaultLongGrouping<TElement> Next;
         
         void add(TElement item) {
             if (count == sizeof(array)) {
@@ -166,10 +148,7 @@ namespace stab.query {
             this.array = new TElement[4];
         }
 
-        public float Key {
-            get;
-            private set;
-        }
+        property float Key^;
 
         public Iterator<TElement> iterator() {
             for (int i = 0; i < count; i++) {
@@ -177,10 +156,7 @@ namespace stab.query {
             }
         }
         
-        DefaultFloatGrouping<TElement> Next {
-            get;
-            set;
-        }
+        property DefaultFloatGrouping<TElement> Next;
         
         void add(TElement item) {
             if (count == sizeof(array)) {
@@ -205,10 +181,7 @@ namespace stab.query {
             #pragma warning restore
         }
 
-        public double Key {
-            get;
-            private set;
-        }
+        property double Key^;
 
         public Iterator<TElement> iterator() {
             for (int i = 0; i < count; i++) {
@@ -216,10 +189,7 @@ namespace stab.query {
             }
         }
         
-        DefaultDoubleGrouping<TElement> Next {
-            get;
-            set;
-        }
+        property DefaultDoubleGrouping<TElement> Next;
         
         void add(TElement item) {
             if (count == sizeof(array)) {

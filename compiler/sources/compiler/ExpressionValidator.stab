@@ -33,15 +33,9 @@ namespace stab.tools.compiler {
             this.MethodResolver = new MethodResolver(this, context);
         }
         
-        StatementValidator StatementValidator {
-            get;
-            set;
-        }
+        property StatementValidator StatementValidator;
         
-        MethodResolver MethodResolver {
-            get;
-            private set;
-        }
+        property MethodResolver MethodResolver^;
         
         boolean handleExpressionNoError(ExpressionNode expression, TypeInfo targetType, boolean nested) {
             try {

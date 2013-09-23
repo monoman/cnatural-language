@@ -26,40 +26,19 @@ namespace stab.tools.syntaxtree {
 			this.ConstraintsClauses = new ArrayList<TypeParameterConstraintsClauseNode>();
 		}
 		
-		public int NameOffset {
-			get;
-			set;
-		}
+		property int NameOffset;
 		
-		public int NameLength {
-			get;
-			set;
-		}
+		property int NameLength;
 
-		public ConstructorInitializerNode Initializer {
-			get;
-			set;
-		}
+		property ConstructorInitializerNode Initializer;
 		
-		public BlockStatementNode Body {
-			get;
-			set;
-		}
+		property BlockStatementNode Body;
 		
-		public List<SimpleNameTypeReferenceNode> TypeParameters {
-			get;
-			private set;
-		}
+		property List<SimpleNameTypeReferenceNode> TypeParameters^;
 		
-		public List<ParameterNode> Parameters {
-			get;
-			private set;
-		}
+		property List<ParameterNode> Parameters^;
 		
-		public List<TypeParameterConstraintsClauseNode> ConstraintsClauses {
-			get;
-			private set;
-		}
+		property List<TypeParameterConstraintsClauseNode> ConstraintsClauses^;
 	}
 	
 	public class ConstructorInitializerNode : SyntaxNode {
@@ -67,14 +46,8 @@ namespace stab.tools.syntaxtree {
 			this.Arguments = new ArrayList<ExpressionNode>();
 		}
 		
-		public boolean IsSuper {
-			get;
-			set;
-		}
+		property boolean IsSuper;
 		
-		public List<ExpressionNode> Arguments {
-			get;
-			private set;
-		}
+		property List<ExpressionNode> Arguments^;
 	}
 }

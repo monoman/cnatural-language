@@ -24,10 +24,7 @@ namespace stab.tools.syntaxtree {
 			this.Statements = new ArrayList<StatementNode>();
 		}
 		
-		public List<StatementNode> Statements {
-			get;
-			private set;
-		}
+		property List<StatementNode> Statements^;
 	}
 	
 }

@@ -26,15 +26,9 @@ namespace stab.tree {
             this.Sections = (sections == null) ? Query.empty<SwitchSection>() : Query.asIterable((SwitchSection[])sections.clone());
 		}
 		
-		public Expression Expression {
-			get;
-			private set;
-		}
+		property Expression Expression^;
 		
-		public Iterable<SwitchSection> Sections {
-			get;
-			private set;
-		}
+		property Iterable<SwitchSection> Sections^;
 	}
 
 	public class SwitchSection {
@@ -43,15 +37,9 @@ namespace stab.tree {
             this.Statements = (statements == null) ? Query.empty<Statement>() : Query.asIterable((Statement[])statements.clone());
 		}
 		
-		public Iterable<SwitchLabel> Labels {
-			get;
-			private set;
-		}
+		property Iterable<SwitchLabel> Labels^;
 		
-		public Iterable<Statement> Statements {
-			get;
-			private set;
-		}
+		property Iterable<Statement> Statements^;
 	}
 
 	public class SwitchLabel {
@@ -61,20 +49,11 @@ namespace stab.tree {
 			this.Default = defaultLabel;
 		}
 	
-		public String Name {
-			get;
-			private set;
-		}
+		property String Name^;
 		
-		public int Value {
-			get;
-			private set;
-		}
+		property int Value^;
 		
-		public boolean Default {
-			get;
-			private set;
-		}
+		property boolean Default^;
 	}
 	
 	public class GotoCaseStatement : Statement {
@@ -83,9 +62,6 @@ namespace stab.tree {
 			this.Label = label;
 		}
 	
-		public SwitchLabel Label {
-			get;
-			private set;
-		}
+		property SwitchLabel Label^;
 	}
 }

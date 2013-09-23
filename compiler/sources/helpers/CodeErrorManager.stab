@@ -34,35 +34,17 @@ namespace stab.tools.helpers {
 			this.Column = column;
 		}
 
-		public String Filename {
-			get;
-			private set;
-		}
+		property String Filename^;
 		
-		public int Id {
-			get;
-			private set;
-		}
+		property int Id^;
 		
-		public int Level {
-			get;
-			private set;
-		}
+		property int Level^;
 		
-		public String Message {
-			get;
-			private set;
-		}
+		property String Message^;
 		
-		public int Line {
-			get;
-			private set;
-		}
+		property int Line^;
 		
-		public int Column {
-			get;
-			private set;
-		}
+		property int Column^;
 	}
 
 

@@ -38,10 +38,7 @@ namespace stab.tools.eclipse.preferences {
 			return adaptable == null ? null : (IProject)adaptable.getAdapter(typeof(IProject));
 		}
 		
-		ArrayList<ProjectLibrary> LibrariesWorkingCopy {
-			get;
-			private set;
-		}
+		property ArrayList<ProjectLibrary> LibrariesWorkingCopy^;
 		
 		protected override Control createContents(Composite parent) {
 			noDefaultAndApplyButton();

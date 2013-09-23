@@ -37,15 +37,9 @@ namespace stab.tools.syntaxtree {
 			this.Members = new ArrayList<IPackageMember>();
 		}
 		
-		public List<UsingDirectiveNode> UsingDirectives {
-			get;
-			private set;
-		}
+		property List<UsingDirectiveNode> UsingDirectives^;
 		
-		public List<IPackageMember> Members {
-			get;
-			private set;
-		}
+		property List<IPackageMember> Members^;
 	}
 	
 	public class PackageDeclarationNode : SyntaxNode, IPackageMember {
@@ -60,45 +54,24 @@ namespace stab.tools.syntaxtree {
 			}
 		}
 		
-        public int DocumentationOffset {
-            get;
-            set;
-        }
+        property int DocumentationOffset;
 		
-        public int DocumentationLength {
-            get;
-            set;
-        }
+        property int DocumentationLength;
         
-		public PackageBodyNode Body {
-			get;
-			set;
-		}
+		property PackageBodyNode Body;
 		
-		public List<AnnotationSectionNode> Annotations {
-			get;
-			private set;
-		}
+		property List<AnnotationSectionNode> Annotations^;
 
-		public List<SourceCodePartNode> Identifiers {
-			get;
-			private set;
-		}
+		property List<SourceCodePartNode> Identifiers^;
 	}
 	
 	public class SourceCodePartNode : SyntaxNode {
 		public SourceCodePartNode() {
 		}
 		
-		public int Offset {
-			get;
-			set;
-		}
+		property int Offset;
 		
-		public int Length {
-			get;
-			set;
-		}
+		property int Length;
 	}
 	
 }

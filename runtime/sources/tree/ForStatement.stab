@@ -28,24 +28,12 @@ namespace stab.tree {
             this.Body = body;
         }
 
-        public Iterable<Statement> Initializer {
-            get;
-            private set;
-        }
+        property Iterable<Statement> Initializer^;
         
-        public Expression Condition {
-            get;
-            private set;
-        }
+        property Expression Condition^;
 
-        public Iterable<Statement> Iterator {
-            get;
-            private set;
-        }
+        property Iterable<Statement> Iterator^;
         
-        public Statement Body {
-            get;
-            private set;
-        }
+        property Statement Body^;
     }
 }

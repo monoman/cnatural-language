@@ -24,24 +24,12 @@ namespace stab.tools.syntaxtree {
 			this.Parameters = new ArrayList<ParameterNode>();
 		}
 		
-		public TypeReferenceNode Type {
-			get;
-			set;
-		}
+		property TypeReferenceNode Type;
 		
-		public AccessorDeclarationNode GetAccessor {
-			get;
-			set;
-		}
+		property AccessorDeclarationNode GetAccessor;
 		
-		public AccessorDeclarationNode SetAccessor {
-			get;
-			set;
-		}
+		property AccessorDeclarationNode SetAccessor;
 
-		public List<ParameterNode> Parameters {
-			get;
-			private set;
-		}
+		property List<ParameterNode> Parameters^;
 	}
 }

@@ -45,10 +45,7 @@ namespace stab.tools.syntaxtree {
 			this.StatementKind = statementKind;
 		}
 		
-		public StatementKind StatementKind {
-			get;
-			private set;
-		}
+		property StatementKind StatementKind^;
 	}
 	
 	public class BreakStatementNode : StatementNode {

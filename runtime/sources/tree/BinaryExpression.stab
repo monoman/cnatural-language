@@ -62,19 +62,10 @@ namespace stab.tree {
             this.Right = right;
         }
         
-        public BinaryOperator Operator {
-            get;
-            private set;
-        }
+        property BinaryOperator Operator^;
         
-        public Expression Left {
-            get;
-            private set;
-        }
+        property Expression Left^;
         
-        public Expression Right {
-            get;
-            private set;
-        }
+        property Expression Right^;
     }
 }

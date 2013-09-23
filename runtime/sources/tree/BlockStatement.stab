@@ -25,9 +25,6 @@ namespace stab.tree {
             this.Statements = (statements == null) ? Query.empty<Statement>() : Query.asIterable((Statement[])statements.clone());
         }
         
-        public Iterable<Statement> Statements {
-            get;
-            private set;
-        }
+        property Iterable<Statement> Statements^;
     }
 }

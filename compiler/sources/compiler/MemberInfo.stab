@@ -404,10 +404,7 @@ namespace stab.tools.compiler {
             this.MemberKind = memberKind;
         }
         
-        public MemberKind MemberKind {
-            get;
-            private set;
-        }
+        property MemberKind MemberKind^;
         
         public abstract String Name { get; }
         
@@ -939,9 +936,6 @@ namespace stab.tools.compiler {
             }
         }
 		
-		public boolean Unused {
-			get;
-			set;
-		}
+		property boolean Unused;
     }
 }

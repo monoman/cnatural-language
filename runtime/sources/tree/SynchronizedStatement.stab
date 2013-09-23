@@ -23,14 +23,8 @@ namespace stab.tree {
 			this.Body = body;
 		}
 		
-		public Expression Lock {
-			get;
-			private set;
-		}
+		property Expression Lock^;
 		
-		public Statement Body {
-			get;
-			private set;
-		}
+		property Statement Body^;
 	}
 }

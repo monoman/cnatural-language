@@ -34,45 +34,14 @@ namespace stab.tools.compiler {
 			this.GenerateClassFiles = true;
         }
 
-        public List<String> ClassPath {
-            get;
-            private set;
-        }
-        
-        public List<String> Symbols {
-            get;
-            private set;
-        }
-        
-        public List<String> AnnotatedLibraryPaths {
-            get;
-            private set;
-        }
-        
-        public String DocumentationPath {
-            get;
-            set;
-        }
-		
-		public Library TypeSystem {
-			get;
-			set;
-		}
-		
-		public Library AnnotatedTypeSystem {
-			get;
-			set;
-		}
-		
-		public boolean GenerateClassFiles {
-			get;
-			set;
-		}
-		
-		public ICompilationProgressTracker ProgressTracker {
-			get;
-			set;
-		}
+        property List<String> ClassPath^;
+        property List<String> Symbols^;
+        property List<String> AnnotatedLibraryPaths^;
+        property String DocumentationPath;
+		property Library TypeSystem;
+		property Library AnnotatedTypeSystem;
+		property boolean GenerateClassFiles;
+		property ICompilationProgressTracker ProgressTracker;
     }
 
 	public interface ICompilationProgressTracker {

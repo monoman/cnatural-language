@@ -24,10 +24,7 @@ namespace stab.tools.syntaxtree {
 			this.MemberDeclarators = new ArrayList<MemberInitializerNode>();
 		}
 		
-		public List<MemberInitializerNode> MemberDeclarators {
-			get;
-			private set;
-		}
+		property List<MemberInitializerNode> MemberDeclarators^;
 	}
 	
 }

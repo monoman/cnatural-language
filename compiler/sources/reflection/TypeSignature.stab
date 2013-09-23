@@ -44,15 +44,9 @@ namespace stab.reflection {
             this.Name = name;
         }
         
-        public TypeSignatureKind TypeSignatureKind {
-            get;
-            private set;
-        }
+        property TypeSignatureKind TypeSignatureKind^;
         
-        public String Name {
-            get;
-            private set;
-        }
+        property String Name^;
         
         public virtual Iterable<TypeSignature> FormalTypeParameterBounds {
             get {

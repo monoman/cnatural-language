@@ -22,9 +22,6 @@ namespace stab.tree {
 			this.Exception = exception;
 		}
 		
-		public Expression Exception {
-			get;
-			private set;
-		}
+		property Expression Exception^;
 	}
 }

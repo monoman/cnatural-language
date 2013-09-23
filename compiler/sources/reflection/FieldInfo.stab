@@ -34,15 +34,9 @@ namespace stab.reflection {
             this.value = value;
         }
         
-        public TypeInfo DeclaringType {
-            get;
-            private set;
-        }
+        property TypeInfo DeclaringType^;
 
-        public String Name {
-            get;
-            private set;
-        }
+        property String Name^;
         
         public TypeInfo Type {
             get {

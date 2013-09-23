@@ -26,14 +26,8 @@ namespace stab.tree {
             this.Target = target;
         }
         
-        public Field Field {
-            get;
-            private set;
-        }
+        property Field Field^;
         
-        public Expression Target {
-            get;
-            private set;
-        }
+        property Expression Target^;
     }
 }

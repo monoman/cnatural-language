@@ -33,45 +33,21 @@ namespace stab.tools.syntaxtree {
 			}
 		}
         
-		public boolean IsEnum {
-			get;
-			set;
-		}
+		property boolean IsEnum;
 		
-		public boolean IsPartial {
-			get;
-			set;
-		}
+		property boolean IsPartial;
 		
-		public int NameOffset {
-			get;
-			set;
-		}
+		property int NameOffset;
 		
-		public int NameLength {
-			get;
-			set;
-		}
+		property int NameLength;
 		
-		public List<SimpleNameTypeReferenceNode> TypeParameters {
-			get;
-			private set;
-		}
+		property List<SimpleNameTypeReferenceNode> TypeParameters^;
 		
-		public List<TypeReferenceNode> ClassBase {
-			get;
-			private set;
-		}
+		property List<TypeReferenceNode> ClassBase^;
 		
-		public List<TypeParameterConstraintsClauseNode> ConstraintsClauses {
-			get;
-			private set;
-		}
+		property List<TypeParameterConstraintsClauseNode> ConstraintsClauses^;
 		
-		public List<ITypeMember> Members {
-			get;
-			private set;
-		}
+		property List<ITypeMember> Members^;
 	}
 
 }

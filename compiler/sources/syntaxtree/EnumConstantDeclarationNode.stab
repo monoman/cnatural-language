@@ -24,20 +24,11 @@ namespace stab.tools.syntaxtree {
 			this.Arguments = new ArrayList<ExpressionNode>();
 		}
 		
-		public int NameOffset {
-			get;
-			set;
-		}
+		property int NameOffset;
 		
-		public int NameLength {
-			get;
-			set;
-		}
+		property int NameLength;
 		
-		public List<ExpressionNode> Arguments {
-			get;
-			private set;
-		}
+		property List<ExpressionNode> Arguments^;
 	}
 	
 }

@@ -25,25 +25,13 @@ namespace stab.tools.syntaxtree {
 			this.TypeArguments = new ArrayList<TypeReferenceNode>();
 		}
 		
-		public int NameOffset {
-			get;
-			set;
-		}
+		property int NameOffset;
 		
-		public int NameLength {
-			get;
-			set;
-		}
+		property int NameLength;
 		
-		public String Name {
-			get;
-			set;
-		}
+		property String Name;
 		
-		public List<TypeReferenceNode> TypeArguments {
-			get;
-			private set;
-		}
+		property List<TypeReferenceNode> TypeArguments^;
 	}
 	
 }

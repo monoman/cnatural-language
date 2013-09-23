@@ -62,15 +62,9 @@ namespace stab.reflection {
             this.TypeKind = typeKind;
         }
 
-		public Library Library {
-			get;
-			private set;
-		}
+		property Library Library^;
         
-        public TypeKind TypeKind {
-            get;
-            private set;
-        }
+        property TypeKind TypeKind^;
         
 		public abstract String DisplayName {
 			get;

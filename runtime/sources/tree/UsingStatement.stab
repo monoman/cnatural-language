@@ -23,15 +23,9 @@
 			this.Body = body;
 		}
 		
-		public Statement ResourceAcquisition {
-			get;
-			private set;
-		}
+		property Statement ResourceAcquisition^;
         
-        public Statement Body {
-            get;
-            private set;
-        }
+        property Statement Body^;
 	}
  }
  

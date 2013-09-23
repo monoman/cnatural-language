@@ -26,19 +26,10 @@ namespace stab.tree {
             this.IfFalse = ifFalse;
         }
         
-        public Expression Condition {
-            get;
-            private set;
-        }
+        property Expression Condition^;
         
-        public Expression IfTrue {
-            get;
-            private set;
-        }
+        property Expression IfTrue^;
         
-        public Expression IfFalse {
-            get;
-            private set;
-        }
+        property Expression IfFalse^;
     }
 }

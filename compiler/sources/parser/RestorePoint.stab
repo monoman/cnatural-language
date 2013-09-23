@@ -29,39 +29,18 @@ namespace stab.tools.parser {
             this.DisabledWarnings = disabledWarnings;
         }
         
-        public int StartPosition {
-            get;
-            private set;
-        }
+        property int StartPosition^;
         
-        public int TextLength {
-            get;
-            private set;
-        }
+        property int TextLength^;
         
-        public int Part {
-            get;
-            private set;
-        }
+        property int Part^;
         
-        public int StartLine {
-            get;
-            private set;
-        }
+        property int StartLine^;
         
-        public int StartColumn {
-            get;
-            private set;
-        }
+        property int StartColumn^;
         
-        public int ErrorCount {
-            get;
-            private set;
-        }
+        property int ErrorCount^;
         
-        public IntIterable DisabledWarnings {
-            get;
-            private set;
-        }
+        property IntIterable DisabledWarnings^;
     }
 }

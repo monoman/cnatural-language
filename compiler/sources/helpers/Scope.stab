@@ -76,15 +76,9 @@ namespace stab.tools.helpers {
 				this.Value = value;
 			}
 			
-			public K Key {
-				get;
-				private set;
-			}
+			property K Key^;
 			
-			public V Value {
-				get;
-				private set;
-			}
+			property V Value^;
 			
 			public override boolean equals(Object obj) {
 				if (obj instanceof Entry<?, ?>) {

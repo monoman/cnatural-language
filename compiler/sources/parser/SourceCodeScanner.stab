@@ -29,10 +29,7 @@ namespace stab.tools.parser {
             : super(codeErrorManager, text, position, length, line, column) {
         }
 
-        public int StartLine {
-            get;
-            private set;
-        }
+        property int StartLine^;
         
         public int EndLine {
             get {
@@ -40,10 +37,7 @@ namespace stab.tools.parser {
             }
         }
         
-        public int StartColumn {
-            get;
-            private set;
-        }
+        property int StartColumn^;
         
         public int EndColumn {
             get {
@@ -51,10 +45,7 @@ namespace stab.tools.parser {
             }
         }
         
-        public int StartPosition {
-            get;
-            private set;
-        }
+        property int StartPosition^;
         
         public int EndPosition {
             get {
@@ -68,10 +59,7 @@ namespace stab.tools.parser {
             }
         }
         
-        public Keyword Keyword {
-            get;
-            private set;
-        }
+        property Keyword Keyword^;
         
         public RestorePoint createRestorePoint() {
             return new RestorePoint(StartPosition, EndOffset - StartPosition + 1, Part, StartLine, StartColumn,

@@ -27,20 +27,11 @@ namespace stab.tools.eclipse {
 	public class ProjectProperties {
 		private final static String EMPTY_DOC = @"<?xml version=""1.0"" encoding=""UTF-8""?><stabProperties><libraries/></stabProperties>";
 		
-		public Iterable<ProjectLibrary> Libraries {
-			get;
-			set;
-		}
+		property Iterable<ProjectLibrary> Libraries;
 		
-		public Iterable<String> PreprocessorSymbols {
-			get;
-			set;
-		}
+		property Iterable<String> PreprocessorSymbols;
 		
-		public String OutputPath {
-			get;
-			set;
-		}
+		property String OutputPath;
 		
 		public boolean load(IFile file) {
 			if (file.exists()) {
@@ -134,14 +125,8 @@ namespace stab.tools.eclipse {
 			this.Enabled = true;
 		}
 
-		public String Path {
-			get;
-			private set;
-		}
+		property String Path^;
 		
-		public boolean Enabled {
-			get;
-			set;
-		}
+		property boolean Enabled;
 	}
 }

@@ -25,15 +25,9 @@ namespace stab.tools.syntaxtree {
 			this.Body = new QueryBodyNode();
 		}
 		
-		public FromQueryBodyClauseNode From {
-			get;
-			private set;
-		}
+		property FromQueryBodyClauseNode From^;
 		
-		public QueryBodyNode Body {
-			get;
-			private set;
-		}
+		property QueryBodyNode Body^;
 	}
 	
 	public enum QueryBodyClauseKind {
@@ -49,10 +43,7 @@ namespace stab.tools.syntaxtree {
 			this.QueryBodyClauseKind = queryBodyClauseKind;
 		}
 	
-		public QueryBodyClauseKind QueryBodyClauseKind {
-			get;
-			private set;
-		}
+		property QueryBodyClauseKind QueryBodyClauseKind^;
 	}
 	
 	public class FromQueryBodyClauseNode : QueryBodyClauseNode {
@@ -60,25 +51,13 @@ namespace stab.tools.syntaxtree {
 			: super(QueryBodyClauseKind.From) {
 		}
 		
-		public TypeReferenceNode Type {
-			get;
-			set;
-		}
+		property TypeReferenceNode Type;
 		
-		public ExpressionNode Origin {
-			get;
-			set;
-		}
+		property ExpressionNode Origin;
 		
-		public int NameOffset {
-			get;
-			set;
-		}
+		property int NameOffset;
 		
-		public int NameLength {
-			get;
-			set;
-		}
+		property int NameLength;
 	}
 
 	public class JoinQueryBodyClauseNode : QueryBodyClauseNode {
@@ -86,45 +65,21 @@ namespace stab.tools.syntaxtree {
 			: super(QueryBodyClauseKind.Join) {
 		}
 		
-		public TypeReferenceNode Type {
-			get;
-			set;
-		}
+		property TypeReferenceNode Type;
 		
-		public int NameOffset {
-			get;
-			set;
-		}
+		property int NameOffset;
 		
-		public int NameLength {
-			get;
-			set;
-		}
+		property int NameLength;
 		
-		public ExpressionNode Origin {
-			get;
-			set;
-		}
+		property ExpressionNode Origin;
 		
-		public ExpressionNode EqualsLeftOperand {
-			get;
-			set;
-		}
+		property ExpressionNode EqualsLeftOperand;
 		
-		public ExpressionNode EqualsRightOperand {
-			get;
-			set;
-		}
+		property ExpressionNode EqualsRightOperand;
 		
-		public int ResultOffset {
-			get;
-			set;
-		}
+		property int ResultOffset;
 		
-		public int ResultLength {
-			get;
-			set;
-		}
+		property int ResultLength;
 	}
 	
 	public class LetQueryBodyClauseNode : QueryBodyClauseNode {
@@ -132,20 +87,11 @@ namespace stab.tools.syntaxtree {
 			: super(QueryBodyClauseKind.Let) {
 		}
 		
-		public int NameOffset {
-			get;
-			set;
-		}
+		property int NameOffset;
 		
-		public int NameLength {
-			get;
-			set;
-		}
+		property int NameLength;
 		
-		public ExpressionNode Value {
-			get;
-			set;
-		}
+		property ExpressionNode Value;
 	}
 	
 	public class OrderbyQueryBodyClauseNode : QueryBodyClauseNode {
@@ -154,25 +100,16 @@ namespace stab.tools.syntaxtree {
 			this.Orderings = new ArrayList<OrderingNode>();
 		}
 		
-		public List<OrderingNode> Orderings {
-			get;
-			private set;
-		}
+		property List<OrderingNode> Orderings^;
 	}
 
 	public class OrderingNode : SyntaxNode {
 		public OrderingNode() {
 		}
 		
-		public boolean Descending {
-			get;
-			set;
-		}
+		property boolean Descending;
 		
-		public ExpressionNode KeySelector {
-			get;
-			set;
-		}
+		property ExpressionNode KeySelector;
 	}
 	
 	public class WhereQueryBodyClauseNode : QueryBodyClauseNode {
@@ -180,10 +117,7 @@ namespace stab.tools.syntaxtree {
 			: super(QueryBodyClauseKind.Where) {
 		}
 		
-		public ExpressionNode Predicat {
-			get;
-			set;
-		}
+		property ExpressionNode Predicat;
 	}
 	
 	public class QueryBodyNode : SyntaxNode {
@@ -191,25 +125,13 @@ namespace stab.tools.syntaxtree {
 			this.Clauses = new ArrayList<QueryBodyClauseNode>();
 		}
 		
-		public ExpressionNode SelectOrGroup {
-			get;
-			set;
-		}
+		property ExpressionNode SelectOrGroup;
 		
-		public ExpressionNode By {
-			get;
-			set;
-		}
+		property ExpressionNode By;
 		
-		public QueryContinuationNode Continuation {
-			get;
-			set;
-		}
+		property QueryContinuationNode Continuation;
 		
-		public List<QueryBodyClauseNode> Clauses {
-			get;
-			set;
-		}
+		property List<QueryBodyClauseNode> Clauses;
 	}
 	
 	public class QueryContinuationNode : SyntaxNode {
@@ -217,19 +139,10 @@ namespace stab.tools.syntaxtree {
 			this.Body = new QueryBodyNode();
 		}
 		
-		public int NameOffset {
-			get;
-			set;
-		}
+		property int NameOffset;
 		
-		public int NameLength {
-			get;
-			set;
-		}
+		property int NameLength;
 		
-		public QueryBodyNode Body {
-			get;
-			private set;
-		}
+		property QueryBodyNode Body^;
 	}
 }

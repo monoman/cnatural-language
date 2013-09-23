@@ -26,14 +26,8 @@ namespace stab.tree {
             this.Body = body;
         }
         
-        public Iterable<VariableExpression> Parameters {
-            get;
-            private set;
-        }
+        property Iterable<VariableExpression> Parameters^;
         
-        public Statement Body {
-            get;
-            private set;
-        }
+        property Statement Body^;
     }
 }
