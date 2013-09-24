@@ -2519,9 +2519,6 @@ namespace stab.tools.compiler {
                 if (info == null) {
                     throw context.error(CompileErrorId.UnexpectedNull, expression);
                 } else {
-                    if (expression.ExpressionKind == ExpressionKind.MemberAccess && info.Members == null) {
-                        throw context.error(CompileErrorId.TypeExpressionNotAllowed, expression);
-                    }
                     if (!ValidationHelper.isAssignable(context, method.ReturnType, expression)) {
                         throw context.error(CompileErrorId.NoImplicitConversion, expression,
                                 BytecodeHelper.getDisplayName(info.Type),

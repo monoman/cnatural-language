@@ -1259,7 +1259,7 @@ namespace stab.tools.compiler {
                 if (!method.IsStatic) {
                     if (isDelegateInvocation) {
                         handleExpression(invocation.TargetObject, null, true);
-                    } else if (invocation.TargetObject.ExpressionKind == ExpressionKind.MemberAccess) {
+                    } else if (invocation.TargetObject.ExpressionKind == ExpressionKind.MemberAccess || invocation.TargetObject.ExpressionKind == ExpressionKind.NullSafeMemberAccess) {
                         var targetTarget = ((MemberAccessExpressionNode)invocation.TargetObject).TargetObject;
                         handleExpression(targetTarget, null, true);
                     } else { // SimpleName
