@@ -16,14 +16,10 @@
  */
 namespace stab.tools.syntaxtree {
 
-	public class MemberAccessExpressionNode : ExpressionNode {
-		public MemberAccessExpressionNode() : super(ExpressionKind.MemberAccess) {}
-		
-		protected MemberAccessExpressionNode(ExpressionKind kind) : super(kind) {}
-		
-		property ExpressionNode TargetObject;
-		
-		property SimpleNameExpressionNode Member;
+	public class NullSafeMemberAccessExpressionNode: MemberAccessExpressionNode {
+		public NullSafeMemberAccessExpressionNode()
+			: super(ExpressionKind.NullSafeMemberAccess) {
+		}	
 	}
 	
 }

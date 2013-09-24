@@ -31,6 +31,7 @@ namespace stab.tools.syntaxtree {
 		Lambda,
 		Literal,
 		MemberAccess,
+		NullSafeMemberAccess,
 		ObjectCreation,
 		ObjectInitializer,
 		Query,

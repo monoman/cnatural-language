@@ -767,7 +767,7 @@ namespace stab.tools.compiler {
             if (!method.IsStatic) {
                 if (BytecodeHelper.isDelegateType(method.DeclaringType) && method.Name.equals("invoke")) {
                     handleExpression(invocation.TargetObject, null, true);
-                } else if (invocation.TargetObject.ExpressionKind == ExpressionKind.MemberAccess) {
+                } else if (invocation.TargetObject.ExpressionKind == ExpressionKind.MemberAccess || invocation.TargetObject.ExpressionKind == ExpressionKind.NullSafeMemberAccess) {
                     var targetTarget = ((MemberAccessExpressionNode)invocation.TargetObject).TargetObject;
                     handleExpression(targetTarget, null, true);
                     BytecodeGenerator.emitGenericCast(context, method.DeclaringType, targetTarget.getUserData(typeof(ExpressionInfo)).Type);

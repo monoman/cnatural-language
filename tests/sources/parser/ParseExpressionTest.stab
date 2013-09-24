@@ -52,6 +52,11 @@ namespace stab.tools.parser.test {
 		}
 		
 		[Test]
+		public void testNullSafeMemberAccess() {
+			doTest("NullSafeMemberAccess");
+		}
+		
+		[Test]
 		public void testName() {
 			doTest("Name");
 		}
@@ -554,6 +559,14 @@ namespace stab.tools.parser.test {
 				sb.append(expressionToString(member.TargetObject));
 				sb.append(").");
 				sb.append(new String(text, member.Member.NameOffset, member.Member.NameLength));
+				break;
+				
+			case NullSafeMemberAccess:
+				var nsmember = (NullSafeMemberAccessExpressionNode)expression;
+				sb.append("(");
+				sb.append(expressionToString(nsmember.TargetObject));
+				sb.append(")?.");
+				sb.append(new String(text, nsmember.Member.NameOffset, nsmember.Member.NameLength));
 				break;
 				
 			case Type:

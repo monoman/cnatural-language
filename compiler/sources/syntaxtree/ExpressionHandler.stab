@@ -66,6 +66,9 @@ namespace stab.tools.syntaxtree {
 			case MemberAccess:
 				return handleMemberAccess((MemberAccessExpressionNode)expression, source, nested);
 
+			case NullSafeMemberAccess:
+				return handleMemberAccess((NullSafeMemberAccessExpressionNode)expression, source, nested);
+
 			case ObjectCreation:
 				return handleObjectCreation((ObjectCreationExpressionNode)expression, source, nested);
 				

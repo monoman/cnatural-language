@@ -1180,6 +1180,16 @@ namespace stab.tools.parser.test {
 				}
 				break;
 
+			case NullSafeMemberAccess:
+				var nsaccess = (NullSafeMemberAccessExpressionNode)expression;
+				print(nsaccess.TargetObject, sb);
+				sb.append("?.");
+				sb.append(nsaccess.Member.Name ?? new String(text, nsaccess.Member.NameOffset, nsaccess.Member.NameLength));
+				if (nsaccess.Member.TypeArguments.size() > 0) {
+					print(nsaccess.Member.TypeArguments, sb);
+				}
+				break;
+
 			case Assign:
 				var assign = (AssignExpressionNode)expression;
 				print(assign.Left, sb);

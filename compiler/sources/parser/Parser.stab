@@ -3190,6 +3190,25 @@ namespace stab.tools.parser {
                 }
                 break;
 
+                case NullSafeMemberAccess: {
+                    nextLexicalUnit(true);
+                    if (!isIdentifier(lexicalUnit)) {
+                        throw error(ParseErrorId.IdentifierExpected);
+                    }
+                    var memberAccess = new NullSafeMemberAccessExpressionNode {
+                        TargetObject = result,
+                        Member = new SimpleNameExpressionNode { NameOffset = scanner.StartPosition, NameLength = getLexicalUnitLength() }
+                    };
+                    copyScannerState(result, memberAccess);
+                    setScannerState(memberAccess.Member);
+                    memberAccess.Member.EndPosition = scanner.EndPosition;
+                    result = memberAccess;
+                    int endPosition = scanner.EndPosition;
+                    nextLexicalUnit(false);
+                    memberAccess.EndPosition = parseTypeArguments(memberAccess.Member.TypeArguments, true, endPosition);
+                }
+                break;
+
                 case OpenParenthesis: {
                     if (result.ExpressionKind == ExpressionKind.Type) {
                         throw error(ParseErrorId.UnexpectedLexicalUnit);
@@ -3265,7 +3284,24 @@ namespace stab.tools.parser {
                 memberAccess.EndPosition = parseTypeArguments(memberAccess.Member.TypeArguments, true, endPosition);
                 break;
 
-            case OpenBracket:
+            case NullSafeMemberAccess:
+                if (!isIdentifier(nextLexicalUnit(true))) {
+                    throw error(ParseErrorId.IdentifierExpected);
+                }
+                var nullSafeMemberAccess = new NullSafeMemberAccessExpressionNode {
+                    TargetObject = superAccess,
+                    Member = new SimpleNameExpressionNode { NameOffset = scanner.StartPosition, NameLength = getLexicalUnitLength() }
+                };
+                copyScannerState(superAccess, nullSafeMemberAccess);
+                copyScannerState(superAccess, nullSafeMemberAccess.Member);
+                nullSafeMemberAccess.Member.EndPosition = scanner.EndPosition;
+                result = nullSafeMemberAccess;
+                int endPosition2 = scanner.EndPosition;
+                nextLexicalUnit(false);
+                nullSafeMemberAccess.EndPosition = parseTypeArguments(nullSafeMemberAccess.Member.TypeArguments, true, endPosition2);
+                break;
+
+			case OpenBracket:
                 nextLexicalUnit(true);
                 var elementAccess = new ElementAccessExpressionNode { TargetObject = superAccess };
                 copyScannerState(superAccess, elementAccess);
