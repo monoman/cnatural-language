@@ -6,7 +6,7 @@ public class GenericConstraints2Aux2<T, S>
 	where T : GenericConstraints2Aux<S>
 	where S : GenericConstraints2Aux<T>
 {
-	public T t;
+	public T t*;
 	
 	public void test1(S s) {
 		t = s.test();
@@ -18,7 +18,7 @@ public class GenericConstraints2Aux2<T, S>
 }
 
 public class GenericConstraints2Aux3 : GenericConstraints2Aux<GenericConstraints2Aux4> {
-	public int value;
+	public int value*;
 	
 	public GenericConstraints2Aux3(int value) {
 		this.value = value;
@@ -30,7 +30,7 @@ public class GenericConstraints2Aux3 : GenericConstraints2Aux<GenericConstraints
 }
 
 public class GenericConstraints2Aux4 : GenericConstraints2Aux<GenericConstraints2Aux3> {
-	public int value;
+	public int value*;
 	
 	public GenericConstraints2Aux4(int value) {
 		this.value = value;

@@ -5,7 +5,7 @@ public class PropertySet {
 		return obj.field;
 	}
 
-	public int field;
+	public int field*;
 	
 	public int Value {
 		set {

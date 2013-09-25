@@ -23,8 +23,8 @@ namespace stab.tree {
             this.Body = body;
         }
         
-        property Expression Condition^;
+        public Expression Condition^;
         
-        property Statement Body^;
+        public Statement Body^;
     }
 }

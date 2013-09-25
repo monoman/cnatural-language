@@ -18,5 +18,5 @@ public class Wildcard3Aux<T> {
 	public Wildcard3Aux(T value) {
 		this.value = value;	
 	}
-	public T value;
+	public T value*;
 }

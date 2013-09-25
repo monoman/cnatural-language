@@ -26,9 +26,9 @@ namespace stab.tools.syntaxtree {
 		
 		property char[] Text^;
 
-		property Set<String> Symbols;
+		public Set<String> Symbols;
 		
-		property PackageBodyNode Body;
+		public PackageBodyNode Body;
 	}
 	
 }

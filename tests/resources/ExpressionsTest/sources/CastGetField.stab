@@ -13,6 +13,6 @@ public class CastGetfieldAux : CastGetfieldAux2 {
 }
 
 public class CastGetfieldAux2 {
-	public float value1;
-	public double value2;
+	public float value1*;
+	public double value2*;
 }

@@ -27,11 +27,11 @@ namespace stab.tree {
 			this.Finally = finallyBlock;
 		}
 		
-		property BlockStatement Body^;
+		public BlockStatement Body^;
 
-		property Iterable<CatchClause> CatchClauses^;
+		public Iterable<CatchClause> CatchClauses^;
 		
-		property BlockStatement Finally^;
+		public BlockStatement Finally^;
 	}
 	
 	public class CatchClause {
@@ -40,8 +40,8 @@ namespace stab.tree {
 			this.Body = body;
 		}
 		
-		property VariableExpression Variable^;
+		public VariableExpression Variable^;
 		
-		property BlockStatement Body^;
+		public BlockStatement Body^;
 	}
 }

@@ -24,9 +24,9 @@ namespace stab.tools.syntaxtree {
 			this.Sections = new ArrayList<SwitchSectionNode>();
 		}
 		
-		property ExpressionNode Selector;
+		public ExpressionNode Selector;
 		
-		property List<SwitchSectionNode> Sections^;
+		public List<SwitchSectionNode> Sections^;
 	}
 	
 	public class SwitchSectionNode : SyntaxNode {
@@ -34,9 +34,9 @@ namespace stab.tools.syntaxtree {
 			this.Statements = new ArrayList<StatementNode>();
 		}
 		
-		property ExpressionNode CaseExpression;
+		public ExpressionNode CaseExpression;
 		
-		property List<StatementNode> Statements^;
+		public List<StatementNode> Statements^;
 	}
 	
 }

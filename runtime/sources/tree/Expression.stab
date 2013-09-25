@@ -41,7 +41,7 @@ namespace stab.tree {
             this.Type = type;
         }
     
-        property ExpressionKind ExpressionKind^;
+        public ExpressionKind ExpressionKind^;
         
         property Class<?> Type^;
         

@@ -1,5 +1,5 @@
 class C {
-    int prop;
+    private int prop;
     int Prop {
         set {
             prop = value;

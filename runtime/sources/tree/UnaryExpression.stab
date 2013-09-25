@@ -39,8 +39,8 @@ namespace stab.tree {
             this.Operand = operand;
         }
         
-        property UnaryOperator Operator^;
+        public UnaryOperator Operator^;
         
-        property Expression Operand^;
+        public Expression Operand^;
     }
 }

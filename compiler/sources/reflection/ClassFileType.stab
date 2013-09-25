@@ -883,7 +883,7 @@ namespace stab.reflection {
                 this.AnnotationArgumentKind = RawAnnotationArgumentKind;
             }
             
-            property AnnotationArgumentKind AnnotationArgumentKind^;
+            public AnnotationArgumentKind AnnotationArgumentKind^;
             
             public virtual Iterable<String> ArgumentNames {
                 get {

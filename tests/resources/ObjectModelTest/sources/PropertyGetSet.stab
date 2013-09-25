@@ -5,7 +5,7 @@ public class PropertyGetSet {
 		return obj.Value;
 	}
 
-	public int field;
+	public int field*;
 	
 	public int Value {
 		get {

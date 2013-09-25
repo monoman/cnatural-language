@@ -25,9 +25,9 @@ namespace stab.tools.syntaxtree {
 			this.Body = new QueryBodyNode();
 		}
 		
-		property FromQueryBodyClauseNode From^;
+		public FromQueryBodyClauseNode From^;
 		
-		property QueryBodyNode Body^;
+		public QueryBodyNode Body^;
 	}
 	
 	public enum QueryBodyClauseKind {
@@ -43,7 +43,7 @@ namespace stab.tools.syntaxtree {
 			this.QueryBodyClauseKind = queryBodyClauseKind;
 		}
 	
-		property QueryBodyClauseKind QueryBodyClauseKind^;
+		public QueryBodyClauseKind QueryBodyClauseKind^;
 	}
 	
 	public class FromQueryBodyClauseNode : QueryBodyClauseNode {
@@ -51,13 +51,13 @@ namespace stab.tools.syntaxtree {
 			: super(QueryBodyClauseKind.From) {
 		}
 		
-		property TypeReferenceNode Type;
+		public TypeReferenceNode Type;
 		
-		property ExpressionNode Origin;
+		public ExpressionNode Origin;
 		
-		property int NameOffset;
+		public int NameOffset;
 		
-		property int NameLength;
+		public int NameLength;
 	}
 
 	public class JoinQueryBodyClauseNode : QueryBodyClauseNode {
@@ -65,21 +65,21 @@ namespace stab.tools.syntaxtree {
 			: super(QueryBodyClauseKind.Join) {
 		}
 		
-		property TypeReferenceNode Type;
+		public TypeReferenceNode Type;
 		
-		property int NameOffset;
+		public int NameOffset;
 		
-		property int NameLength;
+		public int NameLength;
 		
-		property ExpressionNode Origin;
+		public ExpressionNode Origin;
 		
-		property ExpressionNode EqualsLeftOperand;
+		public ExpressionNode EqualsLeftOperand;
 		
-		property ExpressionNode EqualsRightOperand;
+		public ExpressionNode EqualsRightOperand;
 		
-		property int ResultOffset;
+		public int ResultOffset;
 		
-		property int ResultLength;
+		public int ResultLength;
 	}
 	
 	public class LetQueryBodyClauseNode : QueryBodyClauseNode {
@@ -87,11 +87,11 @@ namespace stab.tools.syntaxtree {
 			: super(QueryBodyClauseKind.Let) {
 		}
 		
-		property int NameOffset;
+		public int NameOffset;
 		
-		property int NameLength;
+		public int NameLength;
 		
-		property ExpressionNode Value;
+		public ExpressionNode Value;
 	}
 	
 	public class OrderbyQueryBodyClauseNode : QueryBodyClauseNode {
@@ -100,16 +100,16 @@ namespace stab.tools.syntaxtree {
 			this.Orderings = new ArrayList<OrderingNode>();
 		}
 		
-		property List<OrderingNode> Orderings^;
+		public List<OrderingNode> Orderings^;
 	}
 
 	public class OrderingNode : SyntaxNode {
 		public OrderingNode() {
 		}
 		
-		property boolean Descending;
+		public boolean Descending;
 		
-		property ExpressionNode KeySelector;
+		public ExpressionNode KeySelector;
 	}
 	
 	public class WhereQueryBodyClauseNode : QueryBodyClauseNode {
@@ -117,7 +117,7 @@ namespace stab.tools.syntaxtree {
 			: super(QueryBodyClauseKind.Where) {
 		}
 		
-		property ExpressionNode Predicat;
+		public ExpressionNode Predicat;
 	}
 	
 	public class QueryBodyNode : SyntaxNode {
@@ -125,13 +125,13 @@ namespace stab.tools.syntaxtree {
 			this.Clauses = new ArrayList<QueryBodyClauseNode>();
 		}
 		
-		property ExpressionNode SelectOrGroup;
+		public ExpressionNode SelectOrGroup;
 		
-		property ExpressionNode By;
+		public ExpressionNode By;
 		
-		property QueryContinuationNode Continuation;
+		public QueryContinuationNode Continuation;
 		
-		property List<QueryBodyClauseNode> Clauses;
+		public List<QueryBodyClauseNode> Clauses;
 	}
 	
 	public class QueryContinuationNode : SyntaxNode {
@@ -139,10 +139,10 @@ namespace stab.tools.syntaxtree {
 			this.Body = new QueryBodyNode();
 		}
 		
-		property int NameOffset;
+		public int NameOffset;
 		
-		property int NameLength;
+		public int NameLength;
 		
-		property QueryBodyNode Body^;
+		public QueryBodyNode Body^;
 	}
 }

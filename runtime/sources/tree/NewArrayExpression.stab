@@ -28,10 +28,10 @@ namespace stab.tree {
             this.Elements = (elements == null) ? Query.empty<Expression>() : Query.asIterable((Expression[])elements.clone());
         }
         
-        property Iterable<Expression> Dimensions^;
+        public Iterable<Expression> Dimensions^;
 
-        property int UninitializedDimensions^;
+        public int UninitializedDimensions^;
         
-        property Iterable<Expression> Elements^;
+        public Iterable<Expression> Elements^;
     }
 }

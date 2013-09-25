@@ -24,19 +24,19 @@ namespace stab.tools.syntaxtree {
 			this.Declarators = new ArrayList<VariableDeclaratorNode>();
 		}
 		
-		property TypeReferenceNode Type;
+		public TypeReferenceNode Type;
 		
-		property List<VariableDeclaratorNode> Declarators^;
+		public List<VariableDeclaratorNode> Declarators^;
 	}
 	
 	public class VariableDeclaratorNode : SyntaxNode {
 		public VariableDeclaratorNode() {
 		}
 		
-		property int NameOffset;
+		public int NameOffset;
 		
-		property int NameLength;
+		public int NameLength;
 		
-		property ExpressionNode Value;
+		public ExpressionNode Value;
 	}
 }

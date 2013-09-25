@@ -40,7 +40,7 @@ namespace stab.tools.eclipse.editors {
 			this.sharedTextColors = sharedTextColors;
 		}
 
-		property SemanticStyle SemanticStyle;
+		public SemanticStyle SemanticStyle;
 
 		public Color Foreground {
 			get {
@@ -80,11 +80,11 @@ namespace stab.tools.eclipse.editors {
 			this.Keyword = keyword;
 		}
 		
-		property LexicalUnit LexicalUnit^;
+		public LexicalUnit LexicalUnit^;
 		
-		property Keyword Keyword^;
+		public Keyword Keyword^;
 		
-		property boolean IsUpdated;
+		public boolean IsUpdated;
 	}
 
 	public class Highlighter {
@@ -174,11 +174,11 @@ namespace stab.tools.eclipse.editors {
 			}
 		}
 		
-		property CompilationUnitNode CompilationUnit^;
+		public CompilationUnitNode CompilationUnit^;
 		
-		property Library TypeSystem^;
+		public Library TypeSystem^;
 		
-		property Library AnnotatedTypeSystem^;
+		public Library AnnotatedTypeSystem^;
 		
 		public void update(char[] text, CompilationUnitNode compilationUnit, Library typeSystem, Library annotatedTypeSystem) {
 			if (text != this.Text) {

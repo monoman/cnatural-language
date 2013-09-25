@@ -2,7 +2,7 @@ namespace p {
 	using java.lang;
 
 	public class GenericConstraints<T> where T : Runnable, Cloneable {
-		public T field;
+		public T field*;
 
 		public void method() {
 			field.run();
@@ -17,7 +17,7 @@ namespace p {
 	}
 	
 	public class GenericConstraintsAux : Runnable, Cloneable {
-		public int field;
+		public int field*;
 	
 		public void run() {
 			field = 1;		

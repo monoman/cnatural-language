@@ -57,7 +57,7 @@ namespace stab.tools.eclipse {
 			this.Filename = filename;
 		}
 		
-		property String Filename^;
+		public String Filename^;
 	}
 	
 	//

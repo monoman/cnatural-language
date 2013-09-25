@@ -1,5 +1,5 @@
 namespace stab.bytecode.test.classes {
 	public class SimpleField {
-		public int field;
+		public int field*;
 	}
 }

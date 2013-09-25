@@ -52,7 +52,7 @@ namespace stab.reflection {
     }
 
     public abstract class TypeInfo : UserDataContainer {
-		protected String signature;
+		protected String signature*;
         private TypeInfo lowerBoundedWildcard;
         private TypeInfo upperBoundedWildcard;
         private TypeInfo arrayType;
@@ -62,9 +62,9 @@ namespace stab.reflection {
             this.TypeKind = typeKind;
         }
 
-		property Library Library^;
+		public Library Library^;
         
-        property TypeKind TypeKind^;
+        public TypeKind TypeKind^;
         
 		public abstract String DisplayName {
 			get;
@@ -896,9 +896,9 @@ namespace stab.reflection {
         private String packageName;
         private String name;
         private String descriptor;
-        protected ArrayList<FieldInfo> fields;
-        protected ArrayList<MethodInfo> methods;
-        protected ArrayList<TypeInfo> nestedTypes;
+        protected ArrayList<FieldInfo> fields*;
+        protected ArrayList<MethodInfo> methods*;
+        protected ArrayList<TypeInfo> nestedTypes*;
         
     	protected ObjectTypeInfo(Library library, String fullName)
     			: super(library, TypeKind.Reference) {
@@ -977,9 +977,9 @@ namespace stab.reflection {
     }
     
     abstract class ClassType : ObjectTypeInfo {
-        protected Iterable<TypeInfo> genericArguments;
-        protected TypeInfo baseType;
-        protected Iterable<TypeInfo> interfaces;
+        protected Iterable<TypeInfo> genericArguments*;
+        protected TypeInfo baseType*;
+        protected Iterable<TypeInfo> interfaces*;
         
         protected ClassType(Library library, String fullName)
             : super(library, fullName) {

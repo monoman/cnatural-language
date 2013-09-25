@@ -21,10 +21,10 @@ namespace stab.tools.syntaxtree {
 			: super(TypeMemberKind.Property) {
 		}
 		
-		property TypeReferenceNode Type;
-		property int NameOffset;
-		property int NameLength;
-		property AccessorDeclarationNode GetAccessor;	
-		property AccessorDeclarationNode SetAccessor;
+		public TypeReferenceNode Type;
+		public int NameOffset;
+		public int NameLength;
+		public AccessorDeclarationNode GetAccessor;	
+		public AccessorDeclarationNode SetAccessor;
 	}
 }

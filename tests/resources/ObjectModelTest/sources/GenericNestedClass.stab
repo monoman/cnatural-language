@@ -6,7 +6,7 @@ public class GenericNestedClass {
 	}
 	
 	public class Nested<T> {
-		public T field;
+		public T field*;
 		
 		public Nested(T t) {
 			field = t;

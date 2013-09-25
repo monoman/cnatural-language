@@ -31,19 +31,19 @@ namespace stab.tools.syntaxtree {
 			this.Modifier = ParameterModifier.None;
 		}
 		
-		property List<AnnotationSectionNode> Annotations^;
+		public List<AnnotationSectionNode> Annotations^;
 		
-		property ParameterModifier Modifier;
+		public ParameterModifier Modifier;
 		
-		property TypeReferenceNode Type;
+		public TypeReferenceNode Type;
 		
-		property int NameOffset;
+		public int NameOffset;
 		
-		property int NameLength;
+		public int NameLength;
 		
-		property String Name;
+		public String Name;
 		
-		property boolean Final;
+		public boolean Final;
 	}
 	
 }

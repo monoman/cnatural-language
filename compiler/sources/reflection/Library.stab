@@ -27,7 +27,7 @@ namespace stab.reflection {
 			this.TypeName = typeName;
 		}
 	
-		property String TypeName^;
+		public String TypeName^;
 	}
 
     public class Library {

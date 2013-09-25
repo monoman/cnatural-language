@@ -50,7 +50,7 @@ namespace stab.query {
             #pragma warning restore
         }
 
-        property TKey Key^;
+        public TKey Key^;
 
         public Iterator<TElement> iterator() {
             for (int i = 0; i < count; i++) {
@@ -83,7 +83,7 @@ namespace stab.query {
             #pragma warning restore
         }
 
-        property int Key^;
+        public int Key^;
 
         public Iterator<TElement> iterator() {
             for (int i = 0; i < count; i++) {
@@ -91,7 +91,7 @@ namespace stab.query {
             }
         }
         
-        property DefaultIntGrouping<TElement> Next;
+        public DefaultIntGrouping<TElement> Next;
         
         void add(TElement item) {
             if (count == sizeof(array)) {
@@ -116,7 +116,7 @@ namespace stab.query {
             #pragma warning restore
         }
 
-        property long Key^;
+        public long Key^;
 
         public Iterator<TElement> iterator() {
             for (int i = 0; i < count; i++) {
@@ -124,7 +124,7 @@ namespace stab.query {
             }
         }
         
-        property DefaultLongGrouping<TElement> Next;
+        public DefaultLongGrouping<TElement> Next;
         
         void add(TElement item) {
             if (count == sizeof(array)) {
@@ -148,7 +148,7 @@ namespace stab.query {
             this.array = new TElement[4];
         }
 
-        property float Key^;
+        public float Key^;
 
         public Iterator<TElement> iterator() {
             for (int i = 0; i < count; i++) {
@@ -156,7 +156,7 @@ namespace stab.query {
             }
         }
         
-        property DefaultFloatGrouping<TElement> Next;
+        public DefaultFloatGrouping<TElement> Next;
         
         void add(TElement item) {
             if (count == sizeof(array)) {
@@ -181,7 +181,7 @@ namespace stab.query {
             #pragma warning restore
         }
 
-        property double Key^;
+        public double Key^;
 
         public Iterator<TElement> iterator() {
             for (int i = 0; i < count; i++) {
@@ -189,7 +189,7 @@ namespace stab.query {
             }
         }
         
-        property DefaultDoubleGrouping<TElement> Next;
+        public DefaultDoubleGrouping<TElement> Next;
         
         void add(TElement item) {
             if (count == sizeof(array)) {

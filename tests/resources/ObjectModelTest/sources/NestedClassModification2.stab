@@ -7,7 +7,7 @@ public class NestedClassModification2 {
 	}
 
 	public class Nested {
-		public NestedClassModification2 obj;
+		public NestedClassModification2 obj*;
 		public int test() {
 			obj = new NestedClassModification2();
 			return obj.field++;

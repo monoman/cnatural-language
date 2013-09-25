@@ -41,7 +41,7 @@ namespace stab.tools.syntaxtree {
 			this.TypeReferenceKind = typeReferenceKind;
 		}
 		
-		property TypeReferenceKind TypeReferenceKind^;
+		public TypeReferenceKind TypeReferenceKind^;
 	}
 	
 	public class PrimitiveTypeReferenceNode : TypeReferenceNode {
@@ -55,7 +55,7 @@ namespace stab.tools.syntaxtree {
 			: super(TypeReferenceKind.Array) {
 		}
 		
-		property TypeReferenceNode ElementType;
+		public TypeReferenceNode ElementType;
 	}
 	
 	public class WildcardTypeReferenceNode : TypeReferenceNode {
@@ -63,7 +63,7 @@ namespace stab.tools.syntaxtree {
 			: super(typeReferenceKind) {
 		}
 		
-		property TypeReferenceNode Bound;
+		public TypeReferenceNode Bound;
 	}
 	
 	public class SimpleNameTypeReferenceNode : TypeReferenceNode {
@@ -74,9 +74,9 @@ namespace stab.tools.syntaxtree {
 		
 		property int NameOffset ;
 		
-		property int NameLength;
+		public int NameLength;
 		
-		property List<TypeReferenceNode> TypeArguments^;
+		public List<TypeReferenceNode> TypeArguments^;
 	}
 	
 	public class QualifiedTypeReferenceNode : TypeReferenceNode {
@@ -84,9 +84,9 @@ namespace stab.tools.syntaxtree {
 			: super(TypeReferenceKind.Qualified) {
 		}
 		
-		property TypeReferenceNode EnclosingType;
+		public TypeReferenceNode EnclosingType;
 		
-		property SimpleNameTypeReferenceNode SimpleName;
+		public SimpleNameTypeReferenceNode SimpleName;
 	}
 	
 }

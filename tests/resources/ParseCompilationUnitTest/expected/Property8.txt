@@ -3,4 +3,16 @@ class C {
         get;
         private set;
     }
+    public int Prop2 {
+        get;
+        protected set;
+    }
+    protected int Prop3 {
+        get;
+        set;
+    }
+    protected int Prop4 {
+        get;
+        private set;
+    }
 }

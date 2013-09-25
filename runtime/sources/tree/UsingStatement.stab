@@ -23,9 +23,9 @@
 			this.Body = body;
 		}
 		
-		property Statement ResourceAcquisition^;
+		public Statement ResourceAcquisition^;
         
-        property Statement Body^;
+        public Statement Body^;
 	}
  }
  

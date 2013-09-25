@@ -24,7 +24,7 @@ namespace stab.tools.syntaxtree {
 			this.Statements = new ArrayList<StatementNode>();
 		}
 		
-		property List<StatementNode> Statements^;
+		public List<StatementNode> Statements^;
 	}
 	
 }

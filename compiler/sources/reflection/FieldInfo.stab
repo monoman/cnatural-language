@@ -25,7 +25,7 @@ namespace stab.reflection {
         int modifiers;
         TypeInfo type;
         List<AnnotationValue> annotations;
-        protected Object value;
+        protected Object value*;
         
         FieldInfo(TypeInfo declaringType, int modifiers, String name, Object value) {
             this.DeclaringType = declaringType;
@@ -34,9 +34,9 @@ namespace stab.reflection {
             this.value = value;
         }
         
-        property TypeInfo DeclaringType^;
+        public TypeInfo DeclaringType^;
 
-        property String Name^;
+        public String Name^;
         
         public TypeInfo Type {
             get {

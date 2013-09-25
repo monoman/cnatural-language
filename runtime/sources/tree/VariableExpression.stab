@@ -24,6 +24,6 @@ namespace stab.tree {
             this.Name = name;
         }
         
-        property String Name^;
+        public String Name^;
     }
 }

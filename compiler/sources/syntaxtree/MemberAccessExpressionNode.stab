@@ -21,9 +21,9 @@ namespace stab.tools.syntaxtree {
 		
 		protected MemberAccessExpressionNode(ExpressionKind kind) : super(kind) {}
 		
-		property ExpressionNode TargetObject;
+		public ExpressionNode TargetObject;
 		
-		property SimpleNameExpressionNode Member;
+		public SimpleNameExpressionNode Member;
 	}
 	
 }

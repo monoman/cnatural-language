@@ -22,6 +22,6 @@ namespace stab.tree {
             this.Expression = expression;
         }
         
-        property Expression Expression^;
+        public Expression Expression^;
     }
 }

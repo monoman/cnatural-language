@@ -16,6 +16,7 @@
  */
 using java.lang;
 using java.util;
+using stab.query;
 using stab.lang;
 using stab.tools.helpers;
 using stab.tools.syntaxtree;
@@ -729,7 +730,19 @@ namespace stab.tools.parser {
             }
             return declaration;
         }
-        
+
+		private Modifier checkSetterAccess() {
+			Modifier setterAccess = Modifier.Public;
+			if (lexicalUnit == LexicalUnit.Xor) {
+				setterAccess = Modifier.Private;
+                nextLexicalUnit(true);			
+			} else if (lexicalUnit == LexicalUnit.Plus) {
+				setterAccess = Modifier.Protected;
+                nextLexicalUnit(true);			
+			}
+			return setterAccess;
+		}
+		
         private ITypeMember parseFieldOrPropertyOrMethod(List<AnnotationSectionNode> annotations, EnumSet<Modifier> modifiers,
                 boolean partial, TypeReferenceNode type, int startPosition) {
             if (!isIdentifier(lexicalUnit)) {
@@ -741,14 +754,15 @@ namespace stab.tools.parser {
             var typeParameters = new ArrayList<SimpleNameTypeReferenceNode>();
             nextLexicalUnit(true);
             parseTypeParameters(typeParameters);
-			boolean onlyGetter = false;
-			if (lexicalUnit == LexicalUnit.Xor) {
-				onlyGetter = true;
+			Modifier setterAccess = checkSetterAccess();
+			boolean forceAsField = false;
+			if (lexicalUnit == LexicalUnit.Multiply) {
+				forceAsField = true;
                 nextLexicalUnit(true);			
 			}
             switch (lexicalUnit) {
             case OpenParenthesis:
-				if (onlyGetter) {
+				if (setterAccess != Modifier.Public || forceAsField) {
 					throw error(ParseErrorId.IdentifierExpected);
 				}
                 var methodDeclaration = new MethodDeclarationNode { IsPartial = partial, ReturnType = type, NameOffset = sp, NameLength = len,
@@ -791,7 +805,7 @@ namespace stab.tools.parser {
                 return methodDeclaration;
 
             case OpenBrace:
-				if (onlyGetter) {
+				if (setterAccess != Modifier.Public || forceAsField) {
 					throw error(ParseErrorId.IdentifierExpected);
 				}
                 var propertyDeclaration = new PropertyDeclarationNode { Type = type, NameOffset = sp, NameLength = len,
@@ -814,7 +828,7 @@ namespace stab.tools.parser {
                 return propertyDeclaration;
 
             case Assign: {
-				if (onlyGetter) {
+				if (setterAccess != Modifier.Public || forceAsField) {
 					throw error(ParseErrorId.IdentifierExpected);
 				}
                 var declaration = new FieldDeclarationNode { Type = type, StartPosition = startPosition };
@@ -852,7 +866,7 @@ namespace stab.tools.parser {
             }
 
             case Comma: {
-				if (onlyGetter) {
+				if (setterAccess != Modifier.Public || forceAsField) {
 					throw error(ParseErrorId.IdentifierExpected);
 				}
                 var declaration = new FieldDeclarationNode { Type = type, StartPosition = startPosition };
@@ -888,8 +902,9 @@ namespace stab.tools.parser {
             }
 
             case SemiColon: {
-				if (modifiers.contains(Modifier.Property)) {
-					modifiers.remove(Modifier.Property);
+				if ((modifiers.contains(Modifier.Property) || modifiers.contains(Modifier.Public) || modifiers.contains(Modifier.Protected)) && !forceAsField) {
+					if (modifiers.contains(Modifier.Property))
+						modifiers.remove(Modifier.Property);
 					var propertyShortDeclaration = new PropertyDeclarationNode { Type = type, NameOffset = sp, NameLength = len,
 							StartPosition = startPosition };
 					if (docCommentEndPosition > 0) {
@@ -899,7 +914,7 @@ namespace stab.tools.parser {
 					}
 					setSavedScannerState(propertyShortDeclaration);
 					propertyShortDeclaration.Modifiers.addAll(modifiers);
-					fakeParseShortProperty(propertyShortDeclaration, onlyGetter, false);
+					fakeParseShortProperty(propertyShortDeclaration, setterAccess, false);
 					docCommentEndPosition = 0;
 					propertyShortDeclaration.EndPosition = scanner.EndPosition;
 					nextLexicalUnit(false);
@@ -1146,8 +1161,9 @@ namespace stab.tools.parser {
                 nextLexicalUnit(false);
                 return declaration;
 			} 
-			boolean onlyGetter = (lexicalUnitShorter == LexicalUnit.Xor);
-			if (onlyGetter) {
+			Modifier setterAccess = Modifier.Public;
+			if (lexicalUnitShorter == LexicalUnit.Xor) {
+				setterAccess = Modifier.Private;
 				lexicalUnitShorter = nextLexicalUnit(true);
 			}
 			if (lexicalUnitShorter == LexicalUnit.SemiColon) {
@@ -1161,7 +1177,7 @@ namespace stab.tools.parser {
 				setSavedScannerState(propertyShortDeclaration);
 				propertyShortDeclaration.Modifiers.addAll(modifiers);
                 propertyShortDeclaration.Annotations.addAll(annotations);
-				fakeParseShortProperty(propertyShortDeclaration, onlyGetter, true);
+				fakeParseShortProperty(propertyShortDeclaration, setterAccess, true);
 				docCommentEndPosition = 0;
 				propertyShortDeclaration.EndPosition = scanner.EndPosition;
 				nextLexicalUnit(false);
@@ -1300,19 +1316,19 @@ namespace stab.tools.parser {
             } else {
                 nextLexicalUnit(true);
             }
-			boolean onlyGetter = false;
+			Modifier setterAccess = Modifier.Public;
 			if (lexicalUnit == LexicalUnit.Xor) {
 				if (!inInterface) {
 					throw error(ParseErrorId.OpenBraceExpected);
 				}
-				onlyGetter = true;
+				setterAccess = Modifier.Private;
                 nextLexicalUnit(true);			
 			}
 			if (lexicalUnit == LexicalUnit.SemiColon) {
 				if (!inInterface) {
 					throw error(ParseErrorId.OpenBraceExpected);
 				}
-				fakeParseShortProperty(declaration, onlyGetter, inInterface);
+				fakeParseShortProperty(declaration, setterAccess, inInterface);
 				docCommentEndPosition = 0;
 				declaration.EndPosition = scanner.EndPosition;
 				nextLexicalUnit(false);
@@ -1369,19 +1385,25 @@ namespace stab.tools.parser {
             return true;
         }
     
-	    private void fakeParseShortProperty(IAccessorsOwner declaration, boolean onlyGetter, boolean inInterface) {
+	    private void fakeParseShortProperty(IAccessorsOwner declaration, Modifier setterAccess, boolean inInterface) {
             var accessor = new AccessorDeclarationNode();
             setScannerState(accessor);
             declaration.GetAccessor = accessor;
 			accessor.EndPosition = scanner.EndPosition;
-			if ((!onlyGetter) || (!inInterface)) {
+			if (!inInterface || setterAccess == Modifier.Public) {
 				accessor = new AccessorDeclarationNode();
 				setScannerState(accessor);
-				if (onlyGetter)
-                    accessor.Modifiers.add(Modifier.Private);
+				if (declaration.Modifiers.any(x => isLess(x, setterAccess)))
+					accessor.Modifiers.add(setterAccess);
 				declaration.SetAccessor = accessor;
 				accessor.EndPosition = scanner.EndPosition;
 			}
+		}
+		
+		private static boolean isLess(Modifier m1, Modifier m2) {
+			if (m1 == Modifier.Public && m2 != Modifier.Public)
+				return true;
+			return (m1 == Modifier.Protected && m2 == Modifier.Private);
 		}
 		
         private void parseAccessorDeclaration(IAccessorsOwner declaration, boolean inInterface) {

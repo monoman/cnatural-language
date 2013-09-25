@@ -83,7 +83,7 @@ namespace stab.query {
 	// ========================================================================
 
 	abstract class ListBase<E> : CollectionBase<E>, List<E> {
-		protected int size;
+		protected int size*;
 
 		public void clear() {
 			size = 0;

@@ -93,11 +93,11 @@ namespace stab.tools.compiler {
             this.localFields = new HashMap<LocalMemberInfo, FieldInfo>();
         }
         
-        property CompilerParameters Parameters^;
+        public CompilerParameters Parameters^;
         
-        property CompilerResults Results^;
+        public CompilerResults Results^;
         
-        property List<CompilationUnitNode> CompilationUnits^;
+        public List<CompilationUnitNode> CompilationUnits^;
         
         boolean HasErrors {
             get {
@@ -105,35 +105,35 @@ namespace stab.tools.compiler {
             }
         }
         
-        property Library TypeSystem;
+        public Library TypeSystem;
         
-        property Library AnnotatedTypeSystem;
+        public Library AnnotatedTypeSystem;
         
-        property MemberResolver MemberResolver;
+        public MemberResolver MemberResolver;
         
-        property char[] Text;
+        public char[] Text;
 
-        property Set<String> Symbols;
+        public Set<String> Symbols;
         
-        property List<TypeBuilder> TypeBuilders^;
+        public List<TypeBuilder> TypeBuilders^;
         
-        property List<MethodBuilder> ConstructorBuilders^;
+        public List<MethodBuilder> ConstructorBuilders^;
         
-        property HashMap<MethodBuilder, TypeBuilder> Iterables^;
+        public HashMap<MethodBuilder, TypeBuilder> Iterables^;
         
-        property TypeInfo CurrentType;
+        public TypeInfo CurrentType;
         
-        property CodeValidationContext CodeValidationContext^;
+        public CodeValidationContext CodeValidationContext^;
 
-        property MethodGenerationContext MethodGenerationContext^;
+        public MethodGenerationContext MethodGenerationContext^;
         
-        property HashMap<MethodBuilder, TypeBuilder> LambdaScopes^;
+        public HashMap<MethodBuilder, TypeBuilder> LambdaScopes^;
         
-        property HashMap<Object, MethodInfo> PrivateAccessors^;
+        public HashMap<Object, MethodInfo> PrivateAccessors^;
         
-        property HashMap<Object, MethodInfo> PrivateMutators^;
+        public HashMap<Object, MethodInfo> PrivateMutators^;
         
-        property ConstantBuilder ConstantBuilder^;
+        public ConstantBuilder ConstantBuilder^;
         
         TypeInfo getType(String fullName, SyntaxNode node) {
             if (!this.TypeSystem.typeExists(fullName)) {
@@ -197,7 +197,7 @@ namespace stab.tools.compiler {
             addError(1, id, node, arguments);
         }
         
-        property boolean DisableIgnoredErrorTracking;
+        public boolean DisableIgnoredErrorTracking;
         
         boolean addIgnoredError() {
         	if (this.id != null && !this.IsErrorHandlingDisabled) {
@@ -263,7 +263,7 @@ namespace stab.tools.compiler {
             context.MemberResolver.leaveMethod();
         }
 
-        property boolean IsStatic;
+        public boolean IsStatic;
         
         boolean IsInMethod {
             get {
@@ -301,9 +301,9 @@ namespace stab.tools.compiler {
             }
         }
 
-        property int YieldCount;
+        public int YieldCount;
         
-        property int LambdaCount;
+        public int LambdaCount;
         
         void pushLambdaParameters(List<TypeInfo> parameters) {
             lambdaParameters.add(parameters);
@@ -325,7 +325,7 @@ namespace stab.tools.compiler {
             }
         }
         
-        property TypeInfo LambdaReturnType;
+        public TypeInfo LambdaReturnType;
     }
     
     class MethodGenerationContext {
@@ -413,31 +413,31 @@ namespace stab.tools.compiler {
             }
         }
         
-        property boolean IsLambdaScopeUsed;
+        public boolean IsLambdaScopeUsed;
         
-        property boolean IsLambdaScopeInitialized;
+        public boolean IsLambdaScopeInitialized;
         
-        property boolean IsLambdaScopeThisInitialized;
+        public boolean IsLambdaScopeThisInitialized;
         
-        property TypeBuilder LambdaScope^;
+        public TypeBuilder LambdaScope^;
         
-        property HashSet<LocalMemberInfo> ParametersUsedInLambdas^;
+        public HashSet<LocalMemberInfo> ParametersUsedInLambdas^;
         
-        property ArrayList<LocalMemberInfo> ParametersUsedInLambda^;
+        public ArrayList<LocalMemberInfo> ParametersUsedInLambda^;
         
-        property CodeGenerator Generator;
+        public CodeGenerator Generator;
 
-        property TypeBuilder Iterable;
+        public TypeBuilder Iterable;
         
-        property List<LabelMarker> YieldLabels^;
+        public List<LabelMarker> YieldLabels^;
         
-        property int YieldCount;
+        public int YieldCount;
         
-        property List<LocalInfo> CatchVariables^;
+        public List<LocalInfo> CatchVariables^;
         
-        property boolean IsBuildingString;
+        public boolean IsBuildingString;
         
-        property int PreviousLineNumber;
+        public int PreviousLineNumber;
         
         int nextForeachStatement() {
             return foreachStatement++;
@@ -451,13 +451,13 @@ namespace stab.tools.compiler {
             return generatedLocal++;
         }
         
-        property Map<LocalMemberInfo, LocalInfo> TreeLocals^;
+        public Map<LocalMemberInfo, LocalInfo> TreeLocals^;
         
-        property Map<StatementNode, LocalInfo> TreeLabels^;
+        public Map<StatementNode, LocalInfo> TreeLabels^;
         
-        property HashMap<LocalMemberInfo, FieldInfo> LocalFields^;
+        public HashMap<LocalMemberInfo, FieldInfo> LocalFields^;
 
-        property List<HashMap<Object, LocalInfo>> Labels^;
+        public List<HashMap<Object, LocalInfo>> Labels^;
         
     }
 }

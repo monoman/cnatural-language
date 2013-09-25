@@ -29,7 +29,7 @@ namespace stab.lang {
 		private Class<?> delegateClass;
         
         /// <summary>Used internally be the compiler to implement compound delegates.</summary>
-		protected Delegate[] delegates;
+		protected Delegate[] delegates*;
 		
 		protected Delegate(Object target) {
 			this.target = target;

@@ -6,7 +6,7 @@ public class Constructor2 {
 }
 
 public class Constructor2Aux {
-	public int field;
+	public int field*;
 
 	public Constructor2Aux(int field) {
 		this.field = field;

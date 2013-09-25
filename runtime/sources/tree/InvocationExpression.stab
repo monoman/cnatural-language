@@ -27,9 +27,9 @@ namespace stab.tree {
             this.Arguments = (arguments == null) ? Query.empty<Expression>() : Query.asIterable((Expression[])arguments.clone());
         }
         
-        property Expression Target^;
+        public Expression Target^;
         
-        property Iterable<Expression> Arguments^;
+        public Iterable<Expression> Arguments^;
         
         private static Class<?> getReturnType(Expression delegateExpression) {
             var t = delegateExpression.Type;

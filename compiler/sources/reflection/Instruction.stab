@@ -183,7 +183,7 @@ namespace stab.reflection {
             this.Opcode = opcode;
         }
         
-        property Opcode Opcode^;
+        public Opcode Opcode^;
 
         public virtual int LocalVariable {
             get {

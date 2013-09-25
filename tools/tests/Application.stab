@@ -41,6 +41,19 @@ namespace stab.tools.tests {
 					});
 					return;
 				}
+				case "Parser":
+				{
+					JUnitCore core = new JUnitCore();
+					core.addListener(new TestListener());
+					core.run(new Class<?>[] {
+						Class.forName("stab.tools.parser.test.SourceCodeScannerTest"),
+						Class.forName("stab.tools.parser.test.PreprocessorTest"),
+						Class.forName("stab.tools.parser.test.PreprocessedTextScannerTest"),
+						Class.forName("stab.tools.parser.test.ParseExpressionTest"),
+						Class.forName("stab.tools.parser.test.ParseCompilationUnitTest"),
+					});
+					return;
+				}
 				}
 			}
 		

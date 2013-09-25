@@ -58,6 +58,7 @@ namespace stab.tools.syntaxtree {
 	}
 	
 	public interface IAccessorsOwner {
+		EnumSet<Modifier> Modifiers^;
 		AccessorDeclarationNode GetAccessor;
 		AccessorDeclarationNode SetAccessor;
 	}
@@ -68,11 +69,12 @@ namespace stab.tools.syntaxtree {
 			this.Modifiers = EnumSet.noneOf(typeof(Modifier));
 		}
 		
-		property List<AnnotationSectionNode> Annotations^;
+		public List<AnnotationSectionNode> Annotations^;
 		
-		property EnumSet<Modifier> Modifiers^;
+		public EnumSet<Modifier> Modifiers^;
 		
-		property BlockStatementNode Body;
+		public BlockStatementNode Body;
+		
 	}
 	
 	public class TypeParameterConstraintsClauseNode : SyntaxNode {
@@ -80,11 +82,11 @@ namespace stab.tools.syntaxtree {
 			this.Constraints = new ArrayList<TypeReferenceNode>();
 		}
 		
-		property int NameOffset;
+		public int NameOffset;
 		
-		property int NameLength;
+		public int NameLength;
 		
-		property List<TypeReferenceNode> Constraints^;
+		public List<TypeReferenceNode> Constraints^;
 	}
 	
 	public abstract class TypeMemberNode : SyntaxNode, ITypeMember {
@@ -94,15 +96,15 @@ namespace stab.tools.syntaxtree {
 			this.Modifiers = EnumSet.noneOf(typeof(Modifier));
 		}
 		
-		property TypeMemberKind TypeMemberKind^;
+		public TypeMemberKind TypeMemberKind^;
 		
-        property int DocumentationOffset;
+        public int DocumentationOffset;
 		
-        property int DocumentationLength;
+        public int DocumentationLength;
         
-		property List<AnnotationSectionNode> Annotations^;	
+		public List<AnnotationSectionNode> Annotations^;	
 		
-		property EnumSet<Modifier> Modifiers^;
+		public EnumSet<Modifier> Modifiers^;
 	}
 	
 }

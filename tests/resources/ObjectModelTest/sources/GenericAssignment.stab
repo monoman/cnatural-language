@@ -7,7 +7,7 @@ public class GenericAssignment<T> where T : Exception {
 		return obj.e != null;
 	}
 
-	public Exception e;
+	public Exception e*;
 	
 	public void setT(T t) {
 		e = t;

@@ -4,7 +4,7 @@ public class PropertyInterface : PropertyInterfaceAux {
 		set;
 	}
 	
-	property int SugaredProperty;
+	public int SugaredProperty;
 	
 	public int UltraSugaredProperty {
 		get;

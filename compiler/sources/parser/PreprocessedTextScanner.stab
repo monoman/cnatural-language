@@ -34,9 +34,9 @@ namespace stab.tools.parser {
 			this.tabWidth = 4;
         }
         
-        property CodeErrorManager CodeErrorManager^;
+        public CodeErrorManager CodeErrorManager^;
         
-        property PreprocessedText PreprocessedText^;
+        public PreprocessedText PreprocessedText^;
         
         public String Filename {
             get {
@@ -110,7 +110,7 @@ namespace stab.tools.parser {
             }
         }
 
-        property int Part^;
+        public int Part^;
         
         public RestorePoint createRestorePoint() {
             return new RestorePoint(StartPosition, Scanner.EndOffset - StartPosition + 1, Part, StartLine, StartColumn,

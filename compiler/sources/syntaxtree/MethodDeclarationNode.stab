@@ -26,23 +26,23 @@ namespace stab.tools.syntaxtree {
 			this.ConstraintsClauses = new ArrayList<TypeParameterConstraintsClauseNode>();
 		}
 		
-		property boolean IsPartial;
+		public boolean IsPartial;
 		
-		property TypeReferenceNode ReturnType;
+		public TypeReferenceNode ReturnType;
 		
-		property int NameOffset;
+		public int NameOffset;
 		
-		property int NameLength;
+		public int NameLength;
 		
-		property BlockStatementNode Body;
+		public BlockStatementNode Body;
 		
-		property List<SimpleNameTypeReferenceNode> TypeParameters^;
+		public List<SimpleNameTypeReferenceNode> TypeParameters^;
 		
-		property List<ParameterNode> Parameters^;
+		public List<ParameterNode> Parameters^;
 		
-		property List<TypeParameterConstraintsClauseNode> ConstraintsClauses^;
+		public List<TypeParameterConstraintsClauseNode> ConstraintsClauses^;
 		
-		property ExpressionNode DefaultValue;
+		public ExpressionNode DefaultValue;
 	}
 	
 }

@@ -30,7 +30,7 @@ namespace stab.tools.syntaxtree {
 			this.Values = new ArrayList<List<ExpressionNode>>();
 		}
 		
-		property List<List<ExpressionNode>> Values^;
+		public List<List<ExpressionNode>> Values^;
 	}
 	
 	public class ObjectInitializerExpressionNode : InitializerExpressionNode {
@@ -39,18 +39,18 @@ namespace stab.tools.syntaxtree {
 			this.MemberInitializers = new ArrayList<MemberInitializerNode>();
 		}
 		
-		property List<MemberInitializerNode> MemberInitializers^;
+		public List<MemberInitializerNode> MemberInitializers^;
 	}
 	
 	public class MemberInitializerNode : SyntaxNode {
 		public MemberInitializerNode() {
 		}
 		
-		property int NameOffset;
+		public int NameOffset;
 		
-		property int NameLength;
+		public int NameLength;
 		
-		property ExpressionNode Value;
+		public ExpressionNode Value;
 	}
 	
 }

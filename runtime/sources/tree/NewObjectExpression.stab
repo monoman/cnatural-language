@@ -26,9 +26,9 @@ namespace stab.tree {
             this.Arguments = Query.asIterable((Expression[])arguments.clone());
         }
         
-        property Member Member^;
+        public Member Member^;
         
-        property Iterable<Expression> Arguments^;
+        public Iterable<Expression> Arguments^;
     }
 
     public class NewObjectExpression : Expression {
@@ -42,8 +42,8 @@ namespace stab.tree {
         
         property Constructor<?> Constructor^;
         
-        property Iterable<Expression> Arguments^;
+        public Iterable<Expression> Arguments^;
         
-        property Iterable<MemberInitializer> Initializers^;
+        public Iterable<MemberInitializer> Initializers^;
     }
 }

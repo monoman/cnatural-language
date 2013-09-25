@@ -41,13 +41,13 @@ namespace stab.tools.parser {
             this.Line = line;
         }
 
-        property InputSectionPartKind InputSectionPartKind^;
+        public InputSectionPartKind InputSectionPartKind^;
         
-        property int Position^;
+        public int Position^;
         
-        property int Length^;
+        public int Length^;
         
-        property int Line^;
+        public int Line^;
         
         public virtual Iterable<InputSectionPart> InputSectionParts {
             get {

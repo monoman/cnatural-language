@@ -31,9 +31,9 @@ namespace stab.reflection {
             this.Type = type;
         }
         
-        property int Position^;
+        public int Position^;
         
-        property TypeInfo Type^;
+        public TypeInfo Type^;
         
         public String Name {
             get {
@@ -53,7 +53,7 @@ namespace stab.reflection {
     }
 
     public abstract class MethodInfo : UserDataContainer {
-        protected String signature;
+        protected String signature*;
         TypeInfo declaringType;
         
         protected MethodInfo(TypeInfo declaringType, String name) {
@@ -67,7 +67,7 @@ namespace stab.reflection {
             }
         }
 
-        property String Name^;
+        public String Name^;
 
         public virtual Iterable<AnnotationValue> Annotations {
             get {
@@ -186,7 +186,7 @@ namespace stab.reflection {
             }
         }
         
-        property boolean IsExcludedFromCompilation;
+        public boolean IsExcludedFromCompilation;
         
         public boolean hasSameParameters(MethodInfo method) {
             if (this.IsVarargs != method.IsVarargs) {

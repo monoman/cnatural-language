@@ -29,8 +29,8 @@ namespace stab.query {
     }
     
     abstract class OrderedEnumerable<TSource> : OrderedIterable<TSource> {
-        protected Iterable<TSource> source;
-        protected boolean descending;
+        protected Iterable<TSource> source*;
+        protected boolean descending*;
 
         OrderedEnumerable(Iterable<TSource> source, boolean descending) {
             if (source == null) {

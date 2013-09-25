@@ -150,11 +150,11 @@ namespace stab.tools.eclipse.editors {
 			this.PreferenceKeyPrefix = getClass().getName() + "." + name() + ".";
 		}
 
-		property String PreferenceKeyPrefix^;
+		public String PreferenceKeyPrefix^;
 		
-		property RGB DefaultForeground^;
+		public RGB DefaultForeground^;
 		
-		property RGB DefaultBackground^;
+		public RGB DefaultBackground^;
 		
 		public RGB Foreground {
 			get {

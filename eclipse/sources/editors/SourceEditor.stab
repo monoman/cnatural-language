@@ -72,9 +72,9 @@ namespace stab.tools.eclipse.editors {
 			super.dispose();
 		}
 	
-		property boolean IsActive^;
+		public boolean IsActive^;
 	
-		property Highlighter Highlighter^;
+		public Highlighter Highlighter^;
 	
 		IFile getFile() {
 			var editorInput = getEditorInput() as IFileEditorInput;

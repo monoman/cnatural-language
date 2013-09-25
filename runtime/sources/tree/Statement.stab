@@ -45,7 +45,7 @@ namespace stab.tree {
             this.StatementKind = statementKind;
         }
         
-        property StatementKind StatementKind^;
+        public StatementKind StatementKind^;
         
         public static BlockStatement block(Statement[] statements) {
             return new BlockStatement(statements);

@@ -30,9 +30,9 @@ namespace stab.tools.eclipse.editors {
 			this.EndToken = end;
 		}
 	
-		property Token StartToken^;
+		public Token StartToken^;
 		
-		property Token EndToken^;
+		public Token EndToken^;
 		
 		boolean containsOffset(int offset) {
 			if (this.StartToken.IsUpdated) {

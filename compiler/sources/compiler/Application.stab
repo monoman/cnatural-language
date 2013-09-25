@@ -44,30 +44,11 @@ namespace stab.tools.compiler {
         }
         
         private class OptionInfo {
-            Option Option {
-                get;
-                set;
-            }
-        
-            String Name {
-                get;
-                set;
-            }
-
-            String ShortForm {
-                get;
-                set;
-            }
-            
-            String Arguments {
-                get;
-                set;
-            }
-            
-            String Description {
-                get;
-                set;
-            }
+            Option Option;       
+            String Name;
+            String ShortForm;
+            String Arguments;
+            String Description;
         }
 
         private final static List<OptionInfo> OptionInfos;

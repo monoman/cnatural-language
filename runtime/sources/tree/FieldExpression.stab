@@ -26,8 +26,8 @@ namespace stab.tree {
             this.Target = target;
         }
         
-        property Field Field^;
+        public Field Field^;
         
-        property Expression Target^;
+        public Expression Target^;
     }
 }

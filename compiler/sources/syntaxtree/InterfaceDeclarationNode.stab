@@ -33,18 +33,18 @@ namespace stab.tools.syntaxtree {
 			}
 		}
 		
-		property boolean IsPartial;
+		public boolean IsPartial;
 		
-		property int NameOffset;
+		public int NameOffset;
 		
-		property int NameLength;
+		public int NameLength;
 		
-		property List<SimpleNameTypeReferenceNode> TypeParameters^;
+		public List<SimpleNameTypeReferenceNode> TypeParameters^;
 		
-		property List<TypeReferenceNode> InterfaceBase^;
+		public List<TypeReferenceNode> InterfaceBase^;
 		
-		property List<TypeParameterConstraintsClauseNode> ConstraintsClauses^;
+		public List<TypeParameterConstraintsClauseNode> ConstraintsClauses^;
 
-		property List<IInterfaceMember> Members^;
+		public List<IInterfaceMember> Members^;
 	}
 }

@@ -25,7 +25,7 @@ namespace stab.tools.compiler.test {
 
 	public abstract class ErrorTest {
 		private static Library typeSystem;
-		protected CompilerParameters parameters;
+		protected CompilerParameters parameters*;
 		
 		[After]
 		public void after() {

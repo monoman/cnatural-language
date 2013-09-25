@@ -27,9 +27,9 @@ namespace stab.tools.parser {
             this.InputSectionParts = inputSectionParts;
         }
 
-        property char[] Text^;
+        public char[] Text^;
 
-        property Iterable<InputSectionPart> InputSectionParts^;
+        public Iterable<InputSectionPart> InputSectionParts^;
     }
     
     public class Preprocessor {
@@ -58,7 +58,7 @@ namespace stab.tools.parser {
             }
         }
         
-        property HashSet<String> Symbols^;
+        public HashSet<String> Symbols^;
 
         public final PreprocessedText preprocess() {
             var parts = new ArrayList<InputSectionPart>();

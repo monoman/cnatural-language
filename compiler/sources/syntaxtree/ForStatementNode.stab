@@ -25,13 +25,13 @@ namespace stab.tools.syntaxtree {
 			this.Iterator = new ArrayList<StatementNode>();
 		}
 		
-		property ExpressionNode Condition;
+		public ExpressionNode Condition;
 		
-		property StatementNode Statement;
+		public StatementNode Statement;
 		
-		property List<StatementNode> Initializer^;
+		public List<StatementNode> Initializer^;
 		
-		property List<StatementNode> Iterator^;
+		public List<StatementNode> Iterator^;
 	}
 	
 }

@@ -24,8 +24,8 @@ namespace stab.tools.syntaxtree {
 			this.Parameters = new ArrayList<ParameterNode>();
 		}
 		
-		property StatementNode Body;
+		public StatementNode Body;
 		
-		property List<ParameterNode> Parameters^;
+		public List<ParameterNode> Parameters^;
 	}
 }

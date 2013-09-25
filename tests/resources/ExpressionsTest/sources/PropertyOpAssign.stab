@@ -1,5 +1,5 @@
 public class PropertyOpAssign {
-	property int Value^;
+	public int Value^;
 	
 	public int method(int n) {
 		Value = n;

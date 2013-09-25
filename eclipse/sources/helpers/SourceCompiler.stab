@@ -39,27 +39,27 @@ namespace stab.tools.eclipse.helpers {
 			this.FilesToCompile = new HashSet<String>();
 		}
 	
-		property boolean FullBuild;
+		public boolean FullBuild;
 		
-		property boolean ProgressiveBuild;
+		public boolean ProgressiveBuild;
 		
-		property boolean GenerateClassFiles;
+		public boolean GenerateClassFiles;
 		
-		property ResourceSet<IFile> AllFiles^;
+		public ResourceSet<IFile> AllFiles^;
 
-		property Set<String> FilesToCompile^;
+		public Set<String> FilesToCompile^;
 		
-		property Set<String> PreprocessorSymbols^;
+		public Set<String> PreprocessorSymbols^;
 		
 		property String[] ClassPath;
 		
-		property Library TypeSystem;
+		public Library TypeSystem;
 		
-		property String EditedFileName;
+		public String EditedFileName;
 		
 		property char[] EditedFileText;
 		
-		property DependencyInfo DependencyInfo;
+		public DependencyInfo DependencyInfo;
 	}
 
 	public class SourceCompilerResults {
@@ -70,21 +70,21 @@ namespace stab.tools.eclipse.helpers {
 			this.CompilationUnits = new HashMap<String, CompilationUnitNode>();
 		}
 	
-		property boolean Failed;
+		public boolean Failed;
 		
 		property Map<String, byte[]> ClassFiles^;
 		
-		property List<CodeError> CodeErrors^;
+		public List<CodeError> CodeErrors^;
 		
-		property List<String> CompiledFiles^;
+		public List<String> CompiledFiles^;
 		
-		property String MissingType;
+		public String MissingType;
 		
-		property DependencyInfo DependencyInfo;
+		public DependencyInfo DependencyInfo;
 		
-		property Library TypeSystem;
+		public Library TypeSystem;
 		
-		property Library AnnotatedTypeSystem;
+		public Library AnnotatedTypeSystem;
 		
 		property Map<String, CompilationUnitNode> CompilationUnits^;
 	}
