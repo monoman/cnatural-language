@@ -135,7 +135,7 @@ namespace stab.tools.parser.test {
 
 		private void doTest(String test) {
 			var userDir = System.getProperty("user.dir");
-			var sourcePath = PathHelper.combine(PathHelper.combine(userDir, "tests/resources/PreprocessorTest/sources"), test + ".stab");
+			var sourcePath = PathHelper.combine(PathHelper.combine(userDir, "tests/resources/PreprocessorTest/sources"), test + ".stab.cs");
 			var fileReader = new FileReader(sourcePath);
 			var code = readToEnd(fileReader);
 			var preprocessor = new Preprocessor(new CodeErrorManager(), code.toCharArray());

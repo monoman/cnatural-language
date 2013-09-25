@@ -99,7 +99,7 @@ namespace stab.tools.eclipse {
 			try {
 				this.Project.accept(p => {
 					if (p.getType() == IResource.FILE) {
-						if (p.getName().endsWith(".stab")) {
+						if (p.getName().endsWith(".stab") || p.getName().endsWith(".stab.cs")) {
 							result.add((IFile)p.requestResource());
 						}
 						return false;

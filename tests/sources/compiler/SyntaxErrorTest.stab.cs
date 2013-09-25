@@ -29,70 +29,70 @@ namespace stab.tools.compiler.test {
 		[Test]
 		public void unclosedClassBrace() {
 			doTest("UnclosedClassBrace",
-				new String[]{ "UnclosedClassBrace.stab (2, 1) error 30: } expected" },
+				new String[]{ "UnclosedClassBrace.stab.cs (2, 1) error 30: } expected" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void topLevelIdentifier() {
 			doTest("TopLevelIdentifier",
-				new String[]{ "TopLevelIdentifier.stab (1, 1) error 33: A package does not directly contain members such as fields or methods" },
+				new String[]{ "TopLevelIdentifier.stab.cs (1, 1) error 33: A package does not directly contain members such as fields or methods" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void unamedPackage() {
 			doTest("UnamedPackage",
-				new String[]{ "UnamedPackage.stab (2, 9) error 27: Identifier expected" },
+				new String[]{ "UnamedPackage.stab.cs (2, 9) error 27: Identifier expected" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void packageModifier() {
 			doTest("PackageModifier",
-				new String[]{ "PackageModifier.stab (2, 8) error 28: A package declaration cannot have modifiers" },
+				new String[]{ "PackageModifier.stab.cs (2, 8) error 28: A package declaration cannot have modifiers" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void noClassKeyword() {
 			doTest("NoClassKeyword",
-				new String[]{ "NoClassKeyword.stab (2, 16) error 31: 'class', 'interface' or 'enum' expected" },
+				new String[]{ "NoClassKeyword.stab.cs (2, 16) error 31: 'class', 'interface' or 'enum' expected" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void duplicatePublicModifier() {
 			doTest("DuplicatePublicModifier",
-				new String[]{ "DuplicatePublicModifier.stab (1, 8) error 34: Duplicate 'public' modifier" },
+				new String[]{ "DuplicatePublicModifier.stab.cs (1, 8) error 34: Duplicate 'public' modifier" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void malformedChar() {
 			doTest("MalformedChar",
-				new String[]{ "MalformedChar.stab (2, 14) error 11: Malformed literal character" },
+				new String[]{ "MalformedChar.stab.cs (2, 14) error 11: Malformed literal character" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void malformedString() {
 			doTest("MalformedString",
-				new String[]{ "MalformedString.stab (4, 16) error 12: Missing literal string closing \"" },
+				new String[]{ "MalformedString.stab.cs (4, 16) error 12: Missing literal string closing \"" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void error() {
 			doTest("Error",
-				new String[]{ "Error.stab (1) error 1: #error: 'Test error'" },
+				new String[]{ "Error.stab.cs (1) error 1: #error: 'Test error'" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void semicolonInsteadOfComma() {
 			doTest("SemicolonInsteadOfComma",
-				new String[]{ "SemicolonInsteadOfComma.stab (2, 12) error 24: ) expected" },
+				new String[]{ "SemicolonInsteadOfComma.stab.cs (2, 12) error 24: ) expected" },
 				new String[] {});
 		}
 	}

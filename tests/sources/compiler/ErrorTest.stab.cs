@@ -40,7 +40,7 @@ namespace stab.tools.compiler.test {
 			var userDir = System.getProperty("user.dir");
 			var resourcesPath = PathHelper.combine(userDir, PathHelper.combine("tests/resources", this.ResourcesPath));
 			var sourcesPath = PathHelper.combine(resourcesPath, "sources");
-			var path = PathHelper.combine(sourcesPath, PathHelper.getFileName(className.replace('.', '/')) + ".stab");
+			var path = PathHelper.combine(sourcesPath, PathHelper.getFileName(className.replace('.', '/')) + ".stab.cs");
 
 			var compiler = new Compiler();
 			if (this.parameters == null) {

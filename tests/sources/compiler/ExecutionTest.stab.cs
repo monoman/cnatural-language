@@ -48,7 +48,7 @@ namespace stab.tools.compiler.test {
 			var generatedPath = PathHelper.combine(resourcesPath, "generated");
             var files = new File[sizeof(classNames)];
             for (int i = 0; i < sizeof(files); i++) {
-                files[i] = new File(PathHelper.combine(sourcesPath, PathHelper.getFileName(classNames[i].replace('.', '/')) + ".stab"));
+                files[i] = new File(PathHelper.combine(sourcesPath, PathHelper.getFileName(classNames[i].replace('.', '/')) + ".stab.cs"));
             }
 			
 			var compiler = new Compiler();

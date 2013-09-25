@@ -118,7 +118,7 @@ namespace stab.tools.syntaxtree.test {
 		
 		private void doTest(String test) {
 			var userDir = System.getProperty("user.dir");
-			var sourcePath = PathHelper.combine(PathHelper.combine(userDir, "tests/resources/QueryTranslatorTest/sources"), test + ".stab");
+			var sourcePath = PathHelper.combine(PathHelper.combine(userDir, "tests/resources/QueryTranslatorTest/sources"), test + ".stab.cs");
 			var fileReader = new FileReader(sourcePath);
 			var code = readToEnd(fileReader);
 			var text = code.toCharArray();
@@ -133,12 +133,12 @@ namespace stab.tools.syntaxtree.test {
 			if (!generatedDir.exists()) {
 				generatedDir.mkdir();
 			}
-			var fileWriter = new FileWriter(PathHelper.combine(generatedPath, test + ".stab"));
+			var fileWriter = new FileWriter(PathHelper.combine(generatedPath, test + ".stab.cs"));
 			fileWriter.write(result);
 			fileWriter.close();
 			
 			var expectedPath = PathHelper.combine(userDir, "tests/resources/QueryTranslatorTest/expected");
-			var expectedFile = new File(PathHelper.combine(expectedPath, test + ".stab"));
+			var expectedFile = new File(PathHelper.combine(expectedPath, test + ".stab.cs"));
 			Assert.assertTrue("Expected file not found: " + expectedFile, expectedFile.exists());
 			fileReader = new FileReader(expectedFile);
 			var reference = readToEnd(fileReader);

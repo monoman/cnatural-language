@@ -32,11 +32,11 @@ namespace stab.tools.eclipse.editors {
 		private static final ICompletionProposal[] EMPTY_PROPOSALS = CompletionProposalHelper.createEmpty();
 		private static final Iterable<String> STATEMENT_TEXTS = new ArrayList<String> {
 			"bool", "boolean", "byte", "char", "do", "double", "float", "for", "foreach", "if", "int",
-			"long", "new", "return", "short", "super", "synchronized", "this", "using", "while" };
+			"long", "new", "return", "short", "string", "super", "synchronized", "this", "using", "while" };
 		private static final Iterable<String> EXPRESSION_TEXTS = new ArrayList<String> {
 			"false", "instanceof", "new", "null", "sizeof", "super", "this", "true", "typeof" };
 		private static final Iterable<String> TYPE_TEXTS = new ArrayList<String> {
-			"bool", "boolean", "byte", "char", "double", "float", "int", "long", "short" };
+			"bool", "boolean", "byte", "char", "delegate", "double", "float", "int", "long", "short", "string" };
 	
 		private SourceEditor editor;
 		private ISourceViewer sourceViewer;

@@ -29,106 +29,106 @@ namespace stab.tools.compiler.test {
 		[Test]
 		public void labelOutsideScope() {
 			doTest("LabelOutsideScope", new String[]{ 
-				"LabelOutsideScope.stab (4, 13) error 273: No such label 'label' within the scope of the goto statement" },
+				"LabelOutsideScope.stab.cs (4, 13) error 273: No such label 'label' within the scope of the goto statement" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void whileNull() {
 			doTest("WhileNull", new String[]{ 
-				"WhileNull.stab (3, 16) error 234: Cannot implicitly convert type '<null>' to 'boolean'" },
+				"WhileNull.stab.cs (3, 16) error 234: Cannot implicitly convert type '<null>' to 'boolean'" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void definiteAssignment() {
 			doTest("DefiniteAssignment", new String[]{ 
-				"DefiniteAssignment.stab (3, 9) error 283: Variable 'i' is used but never initialized" },
+				"DefiniteAssignment.stab.cs (3, 9) error 283: Variable 'i' is used but never initialized" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void definiteAssignment2() {
 			doTest("DefiniteAssignment2", new String[]{ 
-				"DefiniteAssignment2.stab (4, 13) error 269: Use of unassigned local variable 'i'" },
+				"DefiniteAssignment2.stab.cs (4, 13) error 269: Use of unassigned local variable 'i'" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void definiteAssignment3() {
 			doTest("DefiniteAssignment3", new String[]{ 
-				"DefiniteAssignment3.stab (6, 13) error 269: Use of unassigned local variable 'i'" },
+				"DefiniteAssignment3.stab.cs (6, 13) error 269: Use of unassigned local variable 'i'" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void definiteAssignment4() {
 			doTest("DefiniteAssignment4", new String[]{ 
-				"DefiniteAssignment4.stab (10, 20) error 269: Use of unassigned local variable 'i'" },
+				"DefiniteAssignment4.stab.cs (10, 20) error 269: Use of unassigned local variable 'i'" },
 				new String[] {
-				"DefiniteAssignment4.stab (13, 9) warning 289: Unreachable statement" });
+				"DefiniteAssignment4.stab.cs (13, 9) warning 289: Unreachable statement" });
 		}
 		
 		[Test]
 		public void definiteAssignment5() {
 			doTest("DefiniteAssignment5", new String[]{ 
-				"DefiniteAssignment5.stab (13, 16) error 269: Use of unassigned local variable 'i'" },
+				"DefiniteAssignment5.stab.cs (13, 16) error 269: Use of unassigned local variable 'i'" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void definiteAssignment6() {
 			doTest("DefiniteAssignment6", new String[]{ 
-				"DefiniteAssignment6.stab (22, 16) error 269: Use of unassigned local variable 'result'" },
+				"DefiniteAssignment6.stab.cs (22, 16) error 269: Use of unassigned local variable 'result'" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void definiteAssignment7() {
 			doTest("DefiniteAssignment7", new String[]{ 
-				"DefiniteAssignment7.stab (7, 17) error 269: Use of unassigned local variable 'b'" },
+				"DefiniteAssignment7.stab.cs (7, 17) error 269: Use of unassigned local variable 'b'" },
 				new String[] {});
 		}
         
 		[Test]
 		public void varArrayInitializer() {
 			doTest("VarArrayInitializer", new String[]{ 
-				"VarArrayInitializer.stab (3, 9) error 306: Cannot initialize implicitly-typed variable with an array initializer" },
+				"VarArrayInitializer.stab.cs (3, 9) error 306: Cannot initialize implicitly-typed variable with an array initializer" },
 				new String[] {});
 		}
         
 		[Test]
 		public void localWildcard() {
 			doTest("LocalWildcard", new String[]{ 
-				"LocalWildcard.stab (5, 24) error 324: Cannot create an instance of the type 'java.util.HashSet<?>'" },
+				"LocalWildcard.stab.cs (5, 24) error 324: Cannot create an instance of the type 'java.util.HashSet<?>'" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void genericExceptionHandler() {
 			doTest("GenericExceptionHandler", new String[]{ 
-				"GenericExceptionHandler.stab (5, 18) error 326: Cannot use the type parameter 'T' in a catch clause" },
+				"GenericExceptionHandler.stab.cs (5, 18) error 326: Cannot use the type parameter 'T' in a catch clause" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void enumSwitchDuplicateCase() {
 			doTest("EnumSwitchDuplicateCase", new String[]{ 
-				"EnumSwitchDuplicateCase.stab (8, 9) error 190: The same case already occurs in the 'switch' statement" },
+				"EnumSwitchDuplicateCase.stab.cs (8, 9) error 190: The same case already occurs in the 'switch' statement" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void enumConstantArgument() {
 			doTest("EnumConstantArgument", new String[]{ 
-				"EnumConstantArgument.stab (2, 5) error 230: Type 'E' does not contain an accessible constructor with the specified arguments" },
+				"EnumConstantArgument.stab.cs (2, 5) error 230: Type 'E' does not contain an accessible constructor with the specified arguments" },
 				new String[] {});
 		}
 
 		[Test]
 		public void foreachVarRedefinition() {
 			doTest("ForeachVarRedefinition", new String[]{ 
-				"ForeachVarRedefinition.stab (4, 9) error 282: A variable named 'i' is already defined in this scope" },
+				"ForeachVarRedefinition.stab.cs (4, 9) error 282: A variable named 'i' is already defined in this scope" },
 				new String[] {});
 		}
 		

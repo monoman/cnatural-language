@@ -211,8 +211,11 @@ namespace stab.tools.build {
 				foreach (var file in files) {
 					if (file.isDirectory()) {
 						addSourceFiles(file, args);
-					} else if (PathHelper.getExtension(file.getName()).equals(".stab")) {
-						args.add(file.getAbsolutePath());
+					} else {
+						String filename = file.getName();
+						if (filename.endsWith(".stab") || filename.endsWith(".stab.cs")) {
+							args.add(file.getAbsolutePath());
+						}
 					}
 				}
 			}

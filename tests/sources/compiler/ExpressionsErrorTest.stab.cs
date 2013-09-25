@@ -28,174 +28,174 @@ namespace stab.tools.compiler.test {
 		
 		[Test]
 		public void byteToChar() {
-			doTest("ByteToChar", new String[]{ "ByteToChar.stab (5, 13) error 234: Cannot implicitly convert type 'byte' to 'char'" },
+			doTest("ByteToChar", new String[]{ "ByteToChar.stab.cs (5, 13) error 234: Cannot implicitly convert type 'byte' to 'char'" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void divideByZeroConstant() {
-			doTest("DivideByZeroConstant", new String[]{ "DivideByZeroConstant.stab (2, 17) error 189: Division by constant zero" },
+			doTest("DivideByZeroConstant", new String[]{ "DivideByZeroConstant.stab.cs (2, 17) error 189: Division by constant zero" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void abstractTypeCreation() {
 			doTest("AbstractTypeCreation", new String[]{
-				"AbstractTypeCreation.stab (3, 19) error 162: Cannot create an instance of the abstract type 'C'" },
+				"AbstractTypeCreation.stab.cs (3, 19) error 162: Cannot create an instance of the abstract type 'C'" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void nullAssign() {
 			doTest("NullAssign", new String[]{
-				"NullAssign.stab (3, 9) error 203: The left-hand side of an assignment must be a variable, property or indexer" },
+				"NullAssign.stab.cs (3, 9) error 203: The left-hand side of an assignment must be a variable, property or indexer" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void primitiveGenericArgument() {
 			doTest("PrimitiveGenericArgument", new String[]{
-				"PrimitiveGenericArgument.stab (5, 21) error 250: A primitive type cannot be used as generic parameter" },
+				"PrimitiveGenericArgument.stab.cs (5, 21) error 250: A primitive type cannot be used as generic parameter" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void divideByZeroConstant2() {
-			doTest("DivideByZeroConstant2", new String[]{ "DivideByZeroConstant2.stab (3, 18) error 189: Division by constant zero" },
+			doTest("DivideByZeroConstant2", new String[]{ "DivideByZeroConstant2.stab.cs (3, 18) error 189: Division by constant zero" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void typeofGeneric() {
 			doTest("TypeofGeneric", new String[]{
-				"TypeofGeneric.stab (5, 22) error 267: Cannot get the runtime class of type variable 'T'" },
+				"TypeofGeneric.stab.cs (5, 22) error 267: Cannot get the runtime class of type variable 'T'" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void typeofGeneric2() {
 			doTest("TypeofGeneric2", new String[]{
-				"TypeofGeneric2.stab (5, 22) error 266: Cannot get the runtime class of generic type 'C<T>'" },
+				"TypeofGeneric2.stab.cs (5, 22) error 266: Cannot get the runtime class of generic type 'C<T>'" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void nullInt() {
 			doTest("NullInt", new String[]{
-				"NullInt.stab (2, 17) error 234: Cannot implicitly convert type '<null>' to 'int'" },
+				"NullInt.stab.cs (2, 17) error 234: Cannot implicitly convert type '<null>' to 'int'" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void nullInt2() {
 			doTest("NullInt2", new String[]{
-				"NullInt2.stab (3, 17) error 234: Cannot implicitly convert type '<null>' to 'int'" },
+				"NullInt2.stab.cs (3, 17) error 234: Cannot implicitly convert type '<null>' to 'int'" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void nonStaticFromNested() {
 			doTest("NonStaticFromNested", new String[]{
-				"NonStaticFromNested.stab (5, 22) error 276: The name 'field' cannot be resolved in this context" },
+				"NonStaticFromNested.stab.cs (5, 22) error 276: The name 'field' cannot be resolved in this context" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void conditional() {
 			doTest("Conditional", new String[]{
-				"Conditional.stab (3, 18) error 234: Cannot implicitly convert type 'int' to 'char'" },
+				"Conditional.stab.cs (3, 18) error 234: Cannot implicitly convert type 'int' to 'char'" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void methodAsMember() {
 			doTest("MethodAsMember", new String[]{
-				"MethodAsMember.stab (10, 12) error 290: Method reference cannot be used here" },
+				"MethodAsMember.stab.cs (10, 12) error 290: Method reference cannot be used here" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void methodMemberAccess() {
 			doTest("MethodMemberAccess", new String[]{
-				"MethodMemberAccess.stab (4, 9) error 307: The expression does not give access to a member 'x'" },
+				"MethodMemberAccess.stab.cs (4, 9) error 307: The expression does not give access to a member 'x'" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void lambdaSuperCall() {
 			doTest("LambdaSuperCall", new String[]{
-				"LambdaSuperCall.stab (10, 21) error 311: Access to a member through the 'super' keyword from lambda expressions, expression trees, and iterator blocks is forbidden" },
+				"LambdaSuperCall.stab.cs (10, 21) error 311: Access to a member through the 'super' keyword from lambda expressions, expression trees, and iterator blocks is forbidden" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void expressionTreeAssign() {
 			doTest("ExpressionTreeAssign", new String[]{
-				"ExpressionTreeAssign.stab (10, 36) error 312: Cannot modify a variable defined outside the current scope from an expression tree" },
+				"ExpressionTreeAssign.stab.cs (10, 36) error 312: Cannot modify a variable defined outside the current scope from an expression tree" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void nullMemberAccess() {
 			doTest("NullMemberAccess", new String[]{
-				"NullMemberAccess.stab (5, 16) error 322: Cannot access members of 'null'" },
+				"NullMemberAccess.stab.cs (5, 16) error 322: Cannot access members of 'null'" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void enumEquals() {
 			doTest("EnumEquals", new String[]{
-				"EnumEquals.stab (6, 16) error 175: Operator '==' cannot be applied to operand of type 'C.E1' and 'C.E2'" },
+				"EnumEquals.stab.cs (6, 16) error 175: Operator '==' cannot be applied to operand of type 'C.E1' and 'C.E2'" },
 				new String[] {});
 		}
 		
 		[Test]
 		public void genericSubtract() {
 			doTest("GenericSubtract", new String[]{
-				"GenericSubtract.stab (3, 16) error 175: Operator '-' cannot be applied to operand of type 'T' and 'U'",
-				"GenericSubtract.stab (3, 16) error 234: Cannot implicitly convert type 'T' to 'int'" },
+				"GenericSubtract.stab.cs (3, 16) error 175: Operator '-' cannot be applied to operand of type 'T' and 'U'",
+				"GenericSubtract.stab.cs (3, 16) error 234: Cannot implicitly convert type 'T' to 'int'" },
 				new String[] {});
 		}
 
 		[Test]
 		public void stringSubtract() {
 			doTest("StringSubtract", new String[]{
-				"StringSubtract.stab (6, 16) error 175: Operator '-' cannot be applied to operand of type 'java.lang.String' and 'int'" },
+				"StringSubtract.stab.cs (6, 16) error 175: Operator '-' cannot be applied to operand of type 'java.lang.String' and 'int'" },
 				new String[] {});
 		}
 
 		[Test]
 		public void equalsOperator() {
 			doTest("EqualsOperator", new String[]{
-				"EqualsOperator.stab (5, 13) error 175: Operator '==' cannot be applied to operand of type 'java.lang.Object' and 'int'" },
+				"EqualsOperator.stab.cs (5, 13) error 175: Operator '==' cannot be applied to operand of type 'java.lang.Object' and 'int'" },
 				new String[] {});
 		}
 
 		[Test]
 		public void arrayInitializer() {
 			doTest("ArrayInitializer", new String[]{
-				"ArrayInitializer.stab (5, 27) error 328: Cannot implicitly convert all the elements of the array initializer to 'java.lang.Class<?>'" },
+				"ArrayInitializer.stab.cs (5, 27) error 328: Cannot implicitly convert all the elements of the array initializer to 'java.lang.Class<?>'" },
 				new String[] {});
 		}
 
 		[Test]
 		public void noMethod() {
 			doTest("NoMethod", new String[]{
-				"NoMethod.stab (11, 12) error 329: The method 'C.m(java.lang.String)' is not applicable for the arguments (int)" },
+				"NoMethod.stab.cs (11, 12) error 329: The method 'C.m(java.lang.String)' is not applicable for the arguments (int)" },
 				new String[] {});
 		}
 
 		[Test]
 		public void longEqualsNull() {
 			doTest("LongEqualsNull", new String[]{
-				"LongEqualsNull.stab (4, 13) error 175: Operator '==' cannot be applied to operand of type 'long' and '<null>'" },
+				"LongEqualsNull.stab.cs (4, 13) error 175: Operator '==' cannot be applied to operand of type 'long' and '<null>'" },
 				new String[] {});
 		}
 
 		[Test]
 		public void arrayIndexType() {
 			doTest("ArrayIndexType", new String[]{
-				"ArrayIndexType.stab (4, 19) error 234: Cannot implicitly convert type 'java.lang.String' to 'int'" },
+				"ArrayIndexType.stab.cs (4, 19) error 234: Cannot implicitly convert type 'java.lang.String' to 'int'" },
 				new String[] {});
 		}
 	}
