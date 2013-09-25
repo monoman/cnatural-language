@@ -84,13 +84,13 @@ namespace stab.tools.eclipse {
 
 		public DependencyInfo DependencyInfo;
 
-		property String[] ClassPath;
+		public String[] ClassPath;
 
 		public Library TypeSystem;
 
 		public Library AnnotatedTypeSystem;
 
-		property Map<String, CompilationUnitNode> CompilationUnits;
+		public Map<String, CompilationUnitNode> CompilationUnits;
 
 		public Iterable<String> FilesToCompile;
 

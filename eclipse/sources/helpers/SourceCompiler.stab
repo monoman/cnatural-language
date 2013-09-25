@@ -51,13 +51,13 @@ namespace stab.tools.eclipse.helpers {
 		
 		public Set<String> PreprocessorSymbols^;
 		
-		property String[] ClassPath;
+		public String[] ClassPath;
 		
 		public Library TypeSystem;
 		
 		public String EditedFileName;
 		
-		property char[] EditedFileText;
+		public char[] EditedFileText;
 		
 		public DependencyInfo DependencyInfo;
 	}
@@ -72,7 +72,7 @@ namespace stab.tools.eclipse.helpers {
 	
 		public boolean Failed;
 		
-		property Map<String, byte[]> ClassFiles^;
+		public Map<String, byte[]> ClassFiles^;
 		
 		public List<CodeError> CodeErrors^;
 		
@@ -86,7 +86,7 @@ namespace stab.tools.eclipse.helpers {
 		
 		public Library AnnotatedTypeSystem;
 		
-		property Map<String, CompilationUnitNode> CompilationUnits^;
+		public Map<String, CompilationUnitNode> CompilationUnits^;
 	}
 
 	public class SourceCompiler {

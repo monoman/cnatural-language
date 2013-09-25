@@ -24,10 +24,8 @@ namespace stab.tools.syntaxtree {
 			this.Text = text;
 		}
 		
-		property char[] Text^;
-
+		public char[] Text^;
 		public Set<String> Symbols;
-		
 		public PackageBodyNode Body;
 	}
 	

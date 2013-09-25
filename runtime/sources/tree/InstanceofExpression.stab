@@ -27,6 +27,6 @@ namespace stab.tree {
         
         public Expression Operand^;
         
-        property Class<?> TypeOperand^;
+        public Class<?> TypeOperand^;
     }
 }

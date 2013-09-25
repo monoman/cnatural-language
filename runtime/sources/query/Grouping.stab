@@ -58,7 +58,7 @@ namespace stab.query {
             }
         }
         
-        property DefaultGrouping<TKey, TElement> Next;
+        public DefaultGrouping<TKey, TElement> Next;
         
         void add(TElement item) {
             if (count == sizeof(array)) {

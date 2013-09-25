@@ -394,15 +394,6 @@ namespace stab.tools.parser {
                     case Keyword:
                     case ContextualKeyword:
                         switch (scanner.Keyword) {
-                        case Property:
-							if (modifiers.size() == 0) {
-								startPosition = scanner.StartPosition;
-							}
-                            addModifier(modifiers, Modifier.Public);
-                            addModifier(modifiers, Modifier.Property);
-                            nextLexicalUnit(true);
-                            break;
-
 						case Public:
 							if (modifiers.size() == 0) {
 								startPosition = scanner.StartPosition;
@@ -902,9 +893,7 @@ namespace stab.tools.parser {
             }
 
             case SemiColon: {
-				if ((modifiers.contains(Modifier.Property) || modifiers.contains(Modifier.Public) || modifiers.contains(Modifier.Protected)) && !forceAsField) {
-					if (modifiers.contains(Modifier.Property))
-						modifiers.remove(Modifier.Property);
+				if ((modifiers.contains(Modifier.Public) || modifiers.contains(Modifier.Protected)) && !forceAsField) {
 					var propertyShortDeclaration = new PropertyDeclarationNode { Type = type, NameOffset = sp, NameLength = len,
 							StartPosition = startPosition };
 					if (docCommentEndPosition > 0) {

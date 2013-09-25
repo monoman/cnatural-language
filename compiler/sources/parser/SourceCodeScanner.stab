@@ -543,14 +543,7 @@ namespace stab.tools.parser {
                     case 'i':
                         return scanKeyword("ivate", Keyword.Private);
                     case 'o':
-						switch (advance()) {
-						case 'p':
-							return scanContextualKeyword("perty", Keyword.Property);
-						case 't':
-							return scanKeyword("tected", Keyword.Protected);
-                        default:
-                            return scanKeyword("", Keyword.None);
-						}
+						return scanKeyword("otected", Keyword.Protected);
                     default:
                         return scanKeyword("", Keyword.None);
                     }

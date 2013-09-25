@@ -27,7 +27,6 @@ namespace stab.tree {
         }
         
         public Member Member^;
-        
         public Iterable<Expression> Arguments^;
     }
 
@@ -40,10 +39,8 @@ namespace stab.tree {
                     : Query.asIterable((MemberInitializer[])initializers.clone());
         }
         
-        property Constructor<?> Constructor^;
-        
+        public Constructor<?> Constructor^;
         public Iterable<Expression> Arguments^;
-        
         public Iterable<MemberInitializer> Initializers^;
     }
 }

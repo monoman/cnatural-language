@@ -67,7 +67,6 @@ namespace stab.tools.parser {
         Params,
         Partial,
         Private,
-		Property,
         Protected,
         Public,
         Return,

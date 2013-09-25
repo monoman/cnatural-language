@@ -166,7 +166,7 @@ namespace stab.tools.eclipse.editors {
 			return prev;
 		}
 		
-		property char[] Text^;
+		public char[] Text^;
 		
 		public List<Token> Tokens {
 			get {

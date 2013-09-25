@@ -43,7 +43,7 @@ namespace stab.tree {
     
         public ExpressionKind ExpressionKind^;
         
-        property Class<?> Type^;
+        public Class<?> Type^;
         
         public static BinaryExpression binary(Class<?> type, Expression left, BinaryOperator operator, Expression right) {
             return new BinaryExpression(type, operator, left, right);
