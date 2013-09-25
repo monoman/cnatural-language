@@ -155,7 +155,7 @@ namespace stab.reflection {
             return declareLocal(type, name, false);
         }
 
-        public LocalInfo declareLocal(TypeInfo type, String name, boolean mark) {
+        public LocalInfo declareLocal(TypeInfo type, String name, bool mark) {
             checkCreated();
             var currentScope = this.scopes[this.scopes.size() - 1];
             var result = new LocalInfo(type, name, currentScope.localIndex, null, currentScope.endLabel);

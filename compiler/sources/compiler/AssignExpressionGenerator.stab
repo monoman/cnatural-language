@@ -25,7 +25,7 @@ namespace stab.tools.compiler {
     class AssignExpressionGenerator : ExpressionHandler<ExpressionNode, Void> {
         private CompilerContext context;
         private ExpressionGenerator expressionGenerator;
-        private boolean postAssign;
+        private bool postAssign;
         private AssignOperator operator;
         private ExpressionInfo rightInfo;
         private ExpressionNode rightExpression;
@@ -102,7 +102,7 @@ namespace stab.tools.compiler {
             }
         }
         
-        protected override Void handleElementAccess(ElementAccessExpressionNode elementAccess, ExpressionNode root, boolean nested) {
+        protected override Void handleElementAccess(ElementAccessExpressionNode elementAccess, ExpressionNode root, bool nested) {
             initialize(root);
             if (operator == AssignOperator.Assign) {
                 handleElementAccessAssign(elementAccess, nested);
@@ -112,7 +112,7 @@ namespace stab.tools.compiler {
             return null;
         }
         
-        protected override Void handleMemberAccess(MemberAccessExpressionNode memberAccess, ExpressionNode root, boolean nested) {
+        protected override Void handleMemberAccess(MemberAccessExpressionNode memberAccess, ExpressionNode root, bool nested) {
             initialize(root);
             if (operator == AssignOperator.Assign) {
                 handleMemberAccessAssign(memberAccess, nested);
@@ -122,7 +122,7 @@ namespace stab.tools.compiler {
             return null;
         }
 
-        protected override Void handleSimpleName(SimpleNameExpressionNode simpleName, ExpressionNode root, boolean nested) {
+        protected override Void handleSimpleName(SimpleNameExpressionNode simpleName, ExpressionNode root, bool nested) {
             initialize(root);
             if (operator == AssignOperator.Assign) {
                 handleSimpleNameAssign(simpleName, nested);
@@ -132,7 +132,7 @@ namespace stab.tools.compiler {
             return null;
         }
         
-        private void handleSimpleNameAssign(SimpleNameExpressionNode simpleName, boolean nested) {
+        private void handleSimpleNameAssign(SimpleNameExpressionNode simpleName, bool nested) {
             var generator = context.MethodGenerationContext.Generator;
             var member = simpleName.getUserData(typeof(ExpressionInfo)).Member;
             
@@ -167,7 +167,7 @@ namespace stab.tools.compiler {
             }
         }
 
-        private void emitRightExpression(boolean isStatic, MethodInfo localMethod, TypeInfo type, boolean nested) {
+        private void emitRightExpression(bool isStatic, MethodInfo localMethod, TypeInfo type, bool nested) {
             var generator = context.MethodGenerationContext.Generator;
             if (isStatic) {
                 expressionGenerator.handleExpression(rightExpression, null, true);
@@ -189,7 +189,7 @@ namespace stab.tools.compiler {
             }
         }
 
-        private void emitLocalAssign(SimpleNameExpressionNode simpleName, TypeInfo type, LocalInfo local, boolean nested) {
+        private void emitLocalAssign(SimpleNameExpressionNode simpleName, TypeInfo type, LocalInfo local, bool nested) {
             var generator = context.MethodGenerationContext.Generator;
             expressionGenerator.handleExpression(rightExpression, null, true);
             BytecodeGenerator.emitConversion(context, local.Type, rightExpression);
@@ -226,7 +226,7 @@ namespace stab.tools.compiler {
             generator.emit(opcode, local);
         }
 
-        private void handleSimpleNameOperationAssign(SimpleNameExpressionNode simpleName, boolean nested) {
+        private void handleSimpleNameOperationAssign(SimpleNameExpressionNode simpleName, bool nested) {
             var generator = context.MethodGenerationContext.Generator;
             var member = simpleName.getUserData(typeof(ExpressionInfo)).Member;
             
@@ -266,7 +266,7 @@ namespace stab.tools.compiler {
             }
         }
 
-        private void emitLocalOperationAssign(LocalInfo local, boolean nested) {
+        private void emitLocalOperationAssign(LocalInfo local, bool nested) {
             var generator = context.MethodGenerationContext.Generator;
             if (local.Type.IsBoolean) {
                 emitLoad(nested, Opcode.Iload, local, false);
@@ -435,7 +435,7 @@ namespace stab.tools.compiler {
             }
         }
         
-        private void handleMemberAccessAssign(MemberAccessExpressionNode memberAccess, boolean nested) {
+        private void handleMemberAccessAssign(MemberAccessExpressionNode memberAccess, bool nested) {
             var generator = context.MethodGenerationContext.Generator;
             var member = memberAccess.getUserData(typeof(ExpressionInfo)).Member;
             
@@ -497,7 +497,7 @@ namespace stab.tools.compiler {
             }
         }
         
-        private void handleMemberAccessOperationAssign(MemberAccessExpressionNode memberAccess, boolean nested) {
+        private void handleMemberAccessOperationAssign(MemberAccessExpressionNode memberAccess, bool nested) {
             var generator = context.MethodGenerationContext.Generator;
             var member = memberAccess.getUserData(typeof(ExpressionInfo)).Member;
 
@@ -525,7 +525,7 @@ namespace stab.tools.compiler {
             }
         }
         
-        private void emitFieldOperationAssign(FieldInfo field, boolean nested) {
+        private void emitFieldOperationAssign(FieldInfo field, bool nested) {
             var generator = context.MethodGenerationContext.Generator;
             CompilerHelper.emitFieldAccess(context, field);
             BytecodeGenerator.emitGenericCast(context, field.Type, field.DeclaringType.OriginalTypeDefinition.getField(field.Name).Type);
@@ -533,7 +533,7 @@ namespace stab.tools.compiler {
             CompilerHelper.emitFieldModification(context, field);
         }
         
-        private void emitPropertyOperationAssign(MethodInfo getMethod, MethodInfo setMethod, boolean nested) {
+        private void emitPropertyOperationAssign(MethodInfo getMethod, MethodInfo setMethod, bool nested) {
             var generator = context.MethodGenerationContext.Generator;
             CompilerHelper.emitPropertyAccess(context, getMethod);
             BytecodeGenerator.emitGenericCast(context, getMethod.ReturnType, getMethod.OriginalMethodDefinition.ReturnType);
@@ -541,7 +541,7 @@ namespace stab.tools.compiler {
             CompilerHelper.emitPropertyOrIndexerModification(context, setMethod);
         }
 
-        private void emitFieldOrPropertyOperation(CodeGenerator generator, TypeInfo type, boolean nested, boolean isStatic) {
+        private void emitFieldOrPropertyOperation(CodeGenerator generator, TypeInfo type, bool nested, bool isStatic) {
             if (type.IsBoolean) {
                 emitUnbox(nested, context.TypeSystem.BooleanType, isStatic, false);
                 if (rightExpression == null) {
@@ -694,7 +694,7 @@ namespace stab.tools.compiler {
             }
         }
         
-        private void handleElementAccessAssign(ElementAccessExpressionNode elementAccess, boolean nested) {
+        private void handleElementAccessAssign(ElementAccessExpressionNode elementAccess, bool nested) {
             var generator = context.MethodGenerationContext.Generator;
             var tinfo = elementAccess.TargetObject.getUserData(typeof(ExpressionInfo));
             var ttype = tinfo.Type;
@@ -810,7 +810,7 @@ namespace stab.tools.compiler {
             }
         }
         
-        private void handleElementAccessOperationAssign(ElementAccessExpressionNode elementAccess, boolean nested) {
+        private void handleElementAccessOperationAssign(ElementAccessExpressionNode elementAccess, bool nested) {
             var generator = context.MethodGenerationContext.Generator;
             var tinfo = elementAccess.TargetObject.getUserData(typeof(ExpressionInfo));
             var ttype = tinfo.Type;
@@ -912,7 +912,7 @@ namespace stab.tools.compiler {
                     }
                     BytecodeGenerator.emitStringBuilderAppend(context, null);
                     var isString = rightInfo != null && rightInfo.Type == stringType;
-                    boolean isStringAdd = rightExpression.ExpressionKind == ExpressionKind.Binary && isString;
+                    bool isStringAdd = rightExpression.ExpressionKind == ExpressionKind.Binary && isString;
                     context.MethodGenerationContext.IsBuildingString = isStringAdd;
                     expressionGenerator.handleExpression(rightExpression, null, true);
                     if (!isStringAdd || (isString && rightInfo.IsConstant)) {
@@ -1278,7 +1278,7 @@ namespace stab.tools.compiler {
             }
         }
 
-        private void emitUnbox(boolean nested, TypeInfo type, boolean isStatic, boolean category2) {
+        private void emitUnbox(bool nested, TypeInfo type, bool isStatic, bool category2) {
             var generator = context.MethodGenerationContext.Generator;
             switch (boxingKind) {
             case Box:
@@ -1301,7 +1301,7 @@ namespace stab.tools.compiler {
             }
         }
 
-        private void emitBox(boolean nested, TypeInfo type, boolean isStatic, boolean category2) {
+        private void emitBox(bool nested, TypeInfo type, bool isStatic, bool category2) {
             var generator = context.MethodGenerationContext.Generator;
             switch (boxingKind) {
             case Box:
@@ -1324,7 +1324,7 @@ namespace stab.tools.compiler {
             }
         }
         
-        private void emitAload(boolean nested, Opcode opcode, TypeInfo type, boolean category2) {
+        private void emitAload(bool nested, Opcode opcode, TypeInfo type, bool category2) {
             var generator = context.MethodGenerationContext.Generator;
             switch (boxingKind) {
             case Box:
@@ -1350,7 +1350,7 @@ namespace stab.tools.compiler {
             }
         }
         
-        private void emitAstore(boolean nested, Opcode opcode, TypeInfo type, boolean category2) {
+        private void emitAstore(bool nested, Opcode opcode, TypeInfo type, bool category2) {
             var generator = context.MethodGenerationContext.Generator;
             switch (boxingKind) {
             case Box:
@@ -1376,7 +1376,7 @@ namespace stab.tools.compiler {
             }
         }
 
-        private void emitLoad(boolean nested, Opcode opcode, LocalInfo local, boolean category2) {
+        private void emitLoad(bool nested, Opcode opcode, LocalInfo local, bool category2) {
             var generator = context.MethodGenerationContext.Generator;
             switch (boxingKind) {
             case Box:
@@ -1402,7 +1402,7 @@ namespace stab.tools.compiler {
             }
         }
         
-        private void emitStore(boolean nested, Opcode opcode, LocalInfo local, boolean category2) {
+        private void emitStore(bool nested, Opcode opcode, LocalInfo local, bool category2) {
             var generator = context.MethodGenerationContext.Generator;
             switch (boxingKind) {
             case Box:

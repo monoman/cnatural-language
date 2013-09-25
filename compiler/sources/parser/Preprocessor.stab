@@ -66,7 +66,7 @@ namespace stab.tools.parser {
             return new PreprocessedText(this.Text, parts);
         }
 
-        private int parseSource(int position, boolean skippedSection, ArrayList<InputSectionPart> parts, boolean fail) {
+        private int parseSource(int position, bool skippedSection, ArrayList<InputSectionPart> parts, bool fail) {
             int line = scanner.Line;
             nextLexicalUnit(skippedSection);
             for (; ; ) {
@@ -135,7 +135,7 @@ namespace stab.tools.parser {
             }
         }
         
-        private int parseDefinition(int position, boolean skippedSection, boolean define, ArrayList<InputSectionPart> parts) {
+        private int parseDefinition(int position, bool skippedSection, bool define, ArrayList<InputSectionPart> parts) {
             parseWhitespace(skippedSection);
             String symbol;
             int symbolOffset = scanner.Position;
@@ -202,7 +202,7 @@ namespace stab.tools.parser {
             return position;
         }
 
-        private int parseRegion(int position, boolean skippedSection, ArrayList<InputSectionPart> parts) {
+        private int parseRegion(int position, bool skippedSection, ArrayList<InputSectionPart> parts) {
             var smessage = "";
             if (nextLexicalUnit(skippedSection) == PreprocessorLexicalUnit.WhiteSpace) {
                 int messageOffset = scanner.Position;
@@ -231,7 +231,7 @@ namespace stab.tools.parser {
             return position;
         }
         
-        private int parseDiagnostic(int position, boolean skippedSection, boolean error, ArrayList<InputSectionPart> parts) {
+        private int parseDiagnostic(int position, bool skippedSection, bool error, ArrayList<InputSectionPart> parts) {
             if (skippedSection) {
                 int p = ignoreDirective(position);
                 parts.add(new DiagnosticSectionPart(position, p - position, scanner.Line, error, ""));
@@ -252,7 +252,7 @@ namespace stab.tools.parser {
             return position;
         }
         
-        private int parseLine(int position, boolean skippedSection, ArrayList<InputSectionPart> parts) {
+        private int parseLine(int position, bool skippedSection, ArrayList<InputSectionPart> parts) {
             if (skippedSection) {
                 int p = ignoreDirective(position);
                 parts.add(new LineSectionPart(position, p - position, scanner.Line, false));
@@ -309,7 +309,7 @@ namespace stab.tools.parser {
             return position;
         }
 
-        private int parsePragma(int position, boolean skippedSection, ArrayList<InputSectionPart> parts) {
+        private int parsePragma(int position, bool skippedSection, ArrayList<InputSectionPart> parts) {
             if (skippedSection) {
                 int p = ignoreDirective(position);
                 parts.add(new PragmaSectionPart(position, p - position, scanner.Line, false, Query.emptyInt()));
@@ -387,7 +387,7 @@ namespace stab.tools.parser {
             return position;
         }
 
-        private int parseConditional(int position, boolean skippedSection, ArrayList<InputSectionPart> parts) {
+        private int parseConditional(int position, bool skippedSection, ArrayList<InputSectionPart> parts) {
             var sectionFound = false;
             do {
                 var lu = lexicalUnit;
@@ -440,18 +440,18 @@ namespace stab.tools.parser {
             return position;
         }
 
-        private boolean parseExpression(int position, boolean skippedSection) {
+        private bool parseExpression(int position, bool skippedSection) {
             return parseOrExpression(position, skippedSection);
         }
 
-        private boolean parseOrExpression(int position, boolean skippedSection) {
+        private bool parseOrExpression(int position, bool skippedSection) {
             var leftEval = parseAndExpression(position, skippedSection);
             for (; ; ) {
                 if (lexicalUnit == PreprocessorLexicalUnit.WhiteSpace) {
                     position = scanner.Position;
                     nextLexicalUnit(skippedSection);
                 }
-                boolean rightEval = false;
+                bool rightEval = false;
                 if (lexicalUnit == PreprocessorLexicalUnit.Or) {
                     position = scanner.Position;
                     if (nextLexicalUnit(skippedSection) == PreprocessorLexicalUnit.WhiteSpace) {
@@ -466,14 +466,14 @@ namespace stab.tools.parser {
             }
         }
 
-        private boolean parseAndExpression(int position, boolean skippedSection) {
-            boolean leftEval = parseEqualityExpression(position, skippedSection);
+        private bool parseAndExpression(int position, bool skippedSection) {
+            bool leftEval = parseEqualityExpression(position, skippedSection);
             for (;;) {
                 if (lexicalUnit == PreprocessorLexicalUnit.WhiteSpace) {
                     position = scanner.Position;
                     nextLexicalUnit(skippedSection);
                 }
-                boolean rightEval = false;
+                bool rightEval = false;
                 if (lexicalUnit == PreprocessorLexicalUnit.And) {
                     position = scanner.Position;
                     if (nextLexicalUnit(skippedSection) == PreprocessorLexicalUnit.WhiteSpace) {
@@ -488,14 +488,14 @@ namespace stab.tools.parser {
             }
         }
 
-        private boolean parseEqualityExpression(int position, boolean skippedSection) {
+        private bool parseEqualityExpression(int position, bool skippedSection) {
             var leftEval = parseUnaryExpression(position, skippedSection);
             for (; ; ) {
                 if (lexicalUnit == PreprocessorLexicalUnit.WhiteSpace) {
                     position = scanner.Position;
                     nextLexicalUnit(skippedSection);
                 }
-                boolean rightEval = false;
+                bool rightEval = false;
                 switch (lexicalUnit) {
                 case Equal:
                     position = scanner.Position;
@@ -523,7 +523,7 @@ namespace stab.tools.parser {
             }
         }
         
-        private boolean parseUnaryExpression(int position, boolean skippedSection) {
+        private bool parseUnaryExpression(int position, bool skippedSection) {
             var negate = false;
             while (lexicalUnit == PreprocessorLexicalUnit.Not) {
                 negate = !negate;
@@ -533,11 +533,11 @@ namespace stab.tools.parser {
                     nextLexicalUnit(skippedSection);
                 }
             }
-            boolean eval = parsePrimaryExpression(position, skippedSection);
+            bool eval = parsePrimaryExpression(position, skippedSection);
             return (negate) ? !eval : eval;
         }
 
-        private boolean parsePrimaryExpression(int position, boolean skippedSection) {
+        private bool parsePrimaryExpression(int position, bool skippedSection) {
             var result = false;
             switch (lexicalUnit) {
             case Symbol:
@@ -585,7 +585,7 @@ namespace stab.tools.parser {
             }
         }
 
-        private void parseNewLine(boolean advance) {
+        private void parseNewLine(bool advance) {
             if (advance) {
                 nextLexicalUnit(false);
             }
@@ -598,13 +598,13 @@ namespace stab.tools.parser {
             checkWhitespaceOrNewLine();
         }
 
-        private void parseOptionalWhitespace(boolean skippedSection) {
+        private void parseOptionalWhitespace(bool skippedSection) {
             if (nextLexicalUnit(skippedSection) == PreprocessorLexicalUnit.WhiteSpace) {
                 nextLexicalUnit(skippedSection);
             }
         }
 
-        private void parseWhitespace(boolean skippedSection) {
+        private void parseWhitespace(bool skippedSection) {
             if (nextLexicalUnit(skippedSection) != PreprocessorLexicalUnit.WhiteSpace) {
                 throw scanner.error(ParseErrorId.WhitespaceExpected);
             }
@@ -678,7 +678,7 @@ namespace stab.tools.parser {
             }
         }
         
-        private boolean isIdentifier(String identifier, int offset, int length) {
+        private bool isIdentifier(String identifier, int offset, int length) {
             if (identifier.length() != length) {
                 return false;
             }
@@ -690,7 +690,7 @@ namespace stab.tools.parser {
             return true;
         }
         
-        private PreprocessorLexicalUnit nextLexicalUnit(boolean skippedSection) {
+        private PreprocessorLexicalUnit nextLexicalUnit(bool skippedSection) {
             return lexicalUnit = scanner.nextLexicalUnit(skippedSection);
         }
     }

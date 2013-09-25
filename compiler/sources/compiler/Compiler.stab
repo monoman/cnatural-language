@@ -40,7 +40,7 @@ namespace stab.tools.compiler {
         public String DocumentationPath;
 		public Library TypeSystem;
 		public Library AnnotatedTypeSystem;
-		public boolean GenerateClassFiles;
+		public bool GenerateClassFiles;
 		public ICompilationProgressTracker ProgressTracker;
     }
 
@@ -1298,7 +1298,7 @@ namespace stab.tools.compiler {
             return null;
         }
 
-        private boolean isCompatible(MethodInfo method, String name, List<String> typeParameters, List<ParameterNode> parameters) {
+        private bool isCompatible(MethodInfo method, String name, List<String> typeParameters, List<ParameterNode> parameters) {
             if (!method.Name.equals(name)) {
                 return false;
             }
@@ -1318,7 +1318,7 @@ namespace stab.tools.compiler {
             return true;
         }
 
-        private void defineClassMethod(MethodDeclarationNode methodDeclaration, boolean partial, TypeBuilder typeBuilder) {
+        private void defineClassMethod(MethodDeclarationNode methodDeclaration, bool partial, TypeBuilder typeBuilder) {
             var name = context.getIdentifier(methodDeclaration.NameOffset, methodDeclaration.NameLength);
             if (name.equals("finalize") && methodDeclaration.Parameters.size() == 0) {
                 context.addError(CompileErrorId.FinalizeMethodOverride, methodDeclaration);
@@ -2091,7 +2091,7 @@ namespace stab.tools.compiler {
             }
         }
 
-        private void generateAnnotations(PackageBodyNode packageBody, boolean annotationTypesOnly) {
+        private void generateAnnotations(PackageBodyNode packageBody, bool annotationTypesOnly) {
             var packageInfo = packageBody.getUserData(typeof(PackageInfo));
             context.MemberResolver.usingDirective(packageInfo.memberInfos, packageInfo.packages, packageInfo.packageAliases);
 
@@ -2115,7 +2115,7 @@ namespace stab.tools.compiler {
             }
         }
                 
-        private void generateAnnotations(PackageDeclarationNode packageDeclaration, boolean annotationTypesOnly) {
+        private void generateAnnotations(PackageDeclarationNode packageDeclaration, bool annotationTypesOnly) {
             if (packageDeclaration.Body != null) {
                 foreach (var identifier in packageDeclaration.Identifiers) {
                     context.MemberResolver.enterPackage(context.getIdentifier(identifier.Offset, identifier.Length));
@@ -2147,7 +2147,7 @@ namespace stab.tools.compiler {
                 }
             }
         }
-        private void generateClassAnnotations(ClassDeclarationNode classDeclaration, boolean annotationTypesOnly) {
+        private void generateClassAnnotations(ClassDeclarationNode classDeclaration, bool annotationTypesOnly) {
             var typeBuilder = classDeclaration.getUserData(typeof(TypeBuilder));
             if (!annotationTypesOnly) {
                 validateAnnotationSection(classDeclaration.Annotations, ElementType.TYPE);
@@ -2202,7 +2202,7 @@ namespace stab.tools.compiler {
             }
         }
 
-        private void generateInterfaceAnnotations(InterfaceDeclarationNode interfaceDeclaration, boolean annotationTypesOnly) {
+        private void generateInterfaceAnnotations(InterfaceDeclarationNode interfaceDeclaration, bool annotationTypesOnly) {
             var typeBuilder = interfaceDeclaration.getUserData(typeof(TypeBuilder));
             var isAnnotation = typeBuilder.Interfaces.any(p => p.FullName.equals("java/lang/annotation/Annotation"));
             if (annotationTypesOnly) {
@@ -2247,7 +2247,7 @@ namespace stab.tools.compiler {
             }
         }
 
-        private void generateDestructorAnnotations(DestructorDeclarationNode destructorDeclaration, boolean annotationTypesOnly) {
+        private void generateDestructorAnnotations(DestructorDeclarationNode destructorDeclaration, bool annotationTypesOnly) {
             if (annotationTypesOnly) {
                 return;
             }
@@ -2257,7 +2257,7 @@ namespace stab.tools.compiler {
             setExceptions(methodBuilder, destructorDeclaration);
         }
 
-        private void generateConstructorAnnotations(ConstructorDeclarationNode constructorDeclaration, boolean annotationTypesOnly) {
+        private void generateConstructorAnnotations(ConstructorDeclarationNode constructorDeclaration, bool annotationTypesOnly) {
             if (annotationTypesOnly) {
                 return;
             }
@@ -2278,7 +2278,7 @@ namespace stab.tools.compiler {
             setExceptions(methodBuilder, constructorDeclaration);
         }
 
-        private void generateEnumConstantAnnotations(EnumConstantDeclarationNode enumConstant, boolean annotationTypesOnly) {
+        private void generateEnumConstantAnnotations(EnumConstantDeclarationNode enumConstant, bool annotationTypesOnly) {
             if (annotationTypesOnly) {
                 return;
             }
@@ -2287,7 +2287,7 @@ namespace stab.tools.compiler {
             bytecodeGenerator.generateAnnotationsBytecode(enumConstant.Annotations, field);
         }
 
-        private void generateIndexerAnnotations(IndexerDeclarationNode indexerDeclaration, boolean annotationTypesOnly) {
+        private void generateIndexerAnnotations(IndexerDeclarationNode indexerDeclaration, bool annotationTypesOnly) {
             if (annotationTypesOnly) {
                 return;
             }
@@ -2334,7 +2334,7 @@ namespace stab.tools.compiler {
             }
         }
 
-        private void generatePropertyAnnotations(PropertyDeclarationNode propertyDeclaration, boolean annotationTypesOnly) {
+        private void generatePropertyAnnotations(PropertyDeclarationNode propertyDeclaration, bool annotationTypesOnly) {
             if (annotationTypesOnly) {
                 return;
             }
@@ -2372,7 +2372,7 @@ namespace stab.tools.compiler {
         }
 
                 
-        private void generateInterfaceMethodAnnotations(MethodDeclarationNode methodDeclaration, boolean annotationTypesOnly) {
+        private void generateInterfaceMethodAnnotations(MethodDeclarationNode methodDeclaration, bool annotationTypesOnly) {
             if (annotationTypesOnly) {
                 return;
             }
@@ -2391,7 +2391,7 @@ namespace stab.tools.compiler {
             setExceptions(methodBuilder, methodDeclaration);
         }
 
-        private void generateDelegateAnnotations(DelegateDeclarationNode delegateDeclaration, boolean annotationTypesOnly) {
+        private void generateDelegateAnnotations(DelegateDeclarationNode delegateDeclaration, bool annotationTypesOnly) {
             if (annotationTypesOnly) {
                 return;
             }
@@ -2406,7 +2406,7 @@ namespace stab.tools.compiler {
             }
         }
 
-        private void generateMethodAnnotations(MethodDeclarationNode methodDeclaration, boolean annotationTypesOnly) {
+        private void generateMethodAnnotations(MethodDeclarationNode methodDeclaration, bool annotationTypesOnly) {
             if (annotationTypesOnly) {
                 return;
             }
@@ -2437,7 +2437,7 @@ namespace stab.tools.compiler {
             setExceptions(methodBuilder, methodDeclaration);
         }
         
-        private void generateFieldAnnotations(FieldDeclarationNode fieldDeclaration, boolean annotationTypesOnly) {
+        private void generateFieldAnnotations(FieldDeclarationNode fieldDeclaration, bool annotationTypesOnly) {
             if (annotationTypesOnly) {
                 return;
             }
@@ -3128,7 +3128,7 @@ namespace stab.tools.compiler {
             }
         }
         
-        private void validateControlFlow(MethodBuilder methodBuilder, BlockStatementNode body, boolean insertReturn) {
+        private void validateControlFlow(MethodBuilder methodBuilder, BlockStatementNode body, bool insertReturn) {
             var uninitializedLocals = this.reachabilityChecker.checkMethod(methodBuilder, body, insertReturn);
             foreach (var li in uninitializedLocals) {
                 if (li.assignmentCount > 0) {

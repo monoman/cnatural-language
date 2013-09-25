@@ -1,5 +1,5 @@
 public class ShortArithmetic {
-	public static boolean test() {
+	public static bool test() {
 		short v = (short)0xffff;
 		return ++v == 0;
 	}

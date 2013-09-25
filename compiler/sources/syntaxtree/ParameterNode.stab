@@ -43,7 +43,7 @@ namespace stab.tools.syntaxtree {
 		
 		public String Name;
 		
-		public boolean Final;
+		public bool Final;
 	}
 	
 }

@@ -60,13 +60,13 @@ namespace stab.tools.eclipse.editors {
 			}
 		}
 		
-		public boolean Underline {
+		public bool Underline {
 			get {
 				return this.SemanticStyle.Underline;
 			}
 		}
 		
-		public boolean Strikethrough {
+		public bool Strikethrough {
 			get {
 				return this.SemanticStyle.Strikethrough;
 			}
@@ -84,7 +84,7 @@ namespace stab.tools.eclipse.editors {
 		
 		public Keyword Keyword^;
 		
-		public boolean IsUpdated;
+		public bool IsUpdated;
 	}
 
 	public class Highlighter {
@@ -207,7 +207,7 @@ namespace stab.tools.eclipse.editors {
 			}
 		}
 
-		private void initialize(char[] text, boolean invalidate) {
+		private void initialize(char[] text, bool invalidate) {
 			Environment.trace(this, "initialization");
 			var t0 = System.nanoTime();
 
@@ -607,7 +607,7 @@ namespace stab.tools.eclipse.editors {
 			Environment.trace(this, "update done in " + ((System.nanoTime() - t0) / 1e6) + "ms");
 		}
 		
-		private static boolean sameToken(Token t1, Token t2) {
+		private static bool sameToken(Token t1, Token t2) {
 			if (t1.offset != t2.offset) {
 				return false;
 			}
@@ -651,7 +651,7 @@ namespace stab.tools.eclipse.editors {
 
 		private class TextListener : IDocumentListener, ITextPresentationListener {
 			private Highlighter highlighter;
-			private boolean suspendTextPresentationUpdate;
+			private bool suspendTextPresentationUpdate;
 		
 			TextListener(Highlighter highlighter) {
 				this.highlighter = highlighter;

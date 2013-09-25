@@ -1,5 +1,5 @@
 public class LogicalAndIf {
-	public static boolean test(int a, int b) {
+	public static bool test(int a, int b) {
 		if (a > 0 && b > 0) {
 			return true;
 		} else {

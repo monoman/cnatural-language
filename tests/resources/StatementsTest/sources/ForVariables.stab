@@ -1,5 +1,5 @@
 public class ForVariables {
-	public static boolean test() {
+	public static bool test() {
 		var v1 = 0;
 		var v2 = 0;
 		var v3 = 0;

@@ -5,7 +5,7 @@ public class FieldAnnotation {
 	[Deprecated]
 	public int field*;
 	
-	public static boolean test() {
+	public static bool test() {
 		Class<?> c = typeof(FieldAnnotation);
 		Field f = c.getField("field");
 		return f.getAnnotation(typeof(Deprecated)) != null;

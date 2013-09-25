@@ -392,14 +392,14 @@ namespace stab.tools.eclipse.helpers {
 				this.statementHandler = statementHandler ?? new StatementDependenciesHandler(this);
 			}
 			
-			protected override Void handleAnonymousObjectCreation(AnonymousObjectCreationExpressionNode anonymousObject, Set<TypeInfo> dependencies, boolean nested) {
+			protected override Void handleAnonymousObjectCreation(AnonymousObjectCreationExpressionNode anonymousObject, Set<TypeInfo> dependencies, bool nested) {
 				foreach (MemberInitializerNode mi in anonymousObject.getMemberDeclarators()) {
 					handleExpression(mi.getValue(), dependencies, nested);
 				}
 				return null;
 			}
 	
-			protected override Void handleArrayCreation(ArrayCreationExpressionNode arrayCreation, Set<TypeInfo> dependencies, boolean nested) {
+			protected override Void handleArrayCreation(ArrayCreationExpressionNode arrayCreation, Set<TypeInfo> dependencies, bool nested) {
 				var info = arrayCreation.getUserData(typeof(ExpressionInfo));
 				addDependencies(info.Type, dependencies);
 				foreach (var e in arrayCreation.DimensionExpressions) {
@@ -411,40 +411,40 @@ namespace stab.tools.eclipse.helpers {
 				return null;
 			}
 			
-			protected override Void handleArrayInitializer(ArrayInitializerExpressionNode arrayInitializer, Set<TypeInfo> dependencies, boolean nested) {
+			protected override Void handleArrayInitializer(ArrayInitializerExpressionNode arrayInitializer, Set<TypeInfo> dependencies, bool nested) {
 				foreach (var e in arrayInitializer.Values) {
 					handleExpression(e, dependencies, true);
 				}
 				return null;
 			}
 			
-			protected override Void handleAssign(AssignExpressionNode assign, Set<TypeInfo> dependencies, boolean nested) {
+			protected override Void handleAssign(AssignExpressionNode assign, Set<TypeInfo> dependencies, bool nested) {
 				handleExpression(assign.Left, dependencies, true);
 				handleExpression(assign.Right, dependencies, true);
 				return null;
 			}
 			
-			protected override Void handleBinary(BinaryExpressionNode binary, Set<TypeInfo> dependencies, boolean nested) {
+			protected override Void handleBinary(BinaryExpressionNode binary, Set<TypeInfo> dependencies, bool nested) {
 				handleExpression(binary.LeftOperand, dependencies, true);
 				handleExpression(binary.RightOperand, dependencies, true);
 				return null;
 			}
 			
-			protected override Void handleCast(CastExpressionNode cast, Set<TypeInfo> dependencies, boolean nested) {
+			protected override Void handleCast(CastExpressionNode cast, Set<TypeInfo> dependencies, bool nested) {
 				var info = cast.getUserData(typeof(ExpressionInfo));
 				addDependencies(info.Type, dependencies);
 				handleExpression(cast.Expression, dependencies, true);
 				return null;
 			}
 	
-			protected override Void handleConditional(ConditionalExpressionNode conditional, Set<TypeInfo> dependencies, boolean nested) {
+			protected override Void handleConditional(ConditionalExpressionNode conditional, Set<TypeInfo> dependencies, bool nested) {
 				handleExpression(conditional.Condition, dependencies, true);
 				handleExpression(conditional.IfTrue, dependencies, true);
 				handleExpression(conditional.IfFalse, dependencies, true);
 				return null;
 			}
 			
-			protected override Void handleElementAccess(ElementAccessExpressionNode elementAccess, Set<TypeInfo> dependencies, boolean nested) {
+			protected override Void handleElementAccess(ElementAccessExpressionNode elementAccess, Set<TypeInfo> dependencies, bool nested) {
 				handleExpression(elementAccess.TargetObject, dependencies, true);
 				foreach (var e in elementAccess.Indexes) {
 					handleExpression(e, dependencies, true);
@@ -452,7 +452,7 @@ namespace stab.tools.eclipse.helpers {
 				return null;
 			}
 			
-			protected override Void handleInvocation(InvocationExpressionNode invocation, Set<TypeInfo> dependencies, boolean nested) {
+			protected override Void handleInvocation(InvocationExpressionNode invocation, Set<TypeInfo> dependencies, bool nested) {
 				handleExpression(invocation.TargetObject, dependencies, nested);
 				foreach (var e in invocation.Arguments) {
 					handleExpression(e, dependencies, true);
@@ -460,7 +460,7 @@ namespace stab.tools.eclipse.helpers {
 				return null;
 			}
 			
-			protected override Void handleLambda(LambdaExpressionNode lambda, Set<TypeInfo> dependencies, boolean nested) {
+			protected override Void handleLambda(LambdaExpressionNode lambda, Set<TypeInfo> dependencies, bool nested) {
 				var m = lambda.getUserData(typeof(MethodInfo));
 				foreach (var p in m.Parameters) {
 					addDependencies(p.Type, dependencies);
@@ -469,7 +469,7 @@ namespace stab.tools.eclipse.helpers {
 				return null;
 			}
 	
-			protected override Void handleMemberAccess(MemberAccessExpressionNode memberAccess, Set<TypeInfo> dependencies, boolean nested) {
+			protected override Void handleMemberAccess(MemberAccessExpressionNode memberAccess, Set<TypeInfo> dependencies, bool nested) {
 				var info = memberAccess.getUserData(typeof(ExpressionInfo));
 				var member = info.getMember();
 				handleExpression(memberAccess.TargetObject, dependencies, nested);
@@ -482,7 +482,7 @@ namespace stab.tools.eclipse.helpers {
 				return null;
 			}
 			
-			protected override Void handleObjectCreation(ObjectCreationExpressionNode objectCreation, Set<TypeInfo> dependencies, boolean nested) {
+			protected override Void handleObjectCreation(ObjectCreationExpressionNode objectCreation, Set<TypeInfo> dependencies, bool nested) {
 				var info = objectCreation.getUserData(typeof(ExpressionInfo));
 				addDependencies(info.Type, dependencies);
 				foreach (var e in objectCreation.Arguments) {
@@ -494,21 +494,21 @@ namespace stab.tools.eclipse.helpers {
 				return null;
 			}
 	
-			protected override Void handleCollectionInitializer(CollectionInitializerExpressionNode initializer, Set<TypeInfo> dependencies, boolean nested) {
+			protected override Void handleCollectionInitializer(CollectionInitializerExpressionNode initializer, Set<TypeInfo> dependencies, bool nested) {
 				foreach (var e in initializer.Values.selectMany(p => p)) {
 					handleExpression(e, dependencies, true);
 				}
 				return null;
 			}
 	
-			protected override Void handleObjectInitializer(ObjectInitializerExpressionNode initializer, Set<TypeInfo> dependencies, boolean nested) {
+			protected override Void handleObjectInitializer(ObjectInitializerExpressionNode initializer, Set<TypeInfo> dependencies, bool nested) {
 				foreach (var init in initializer.MemberInitializers) {
 					handleExpression(init.Value, dependencies, true);
 				}
 				return null;
 			}
 	
-			protected override Void handleSimpleName(SimpleNameExpressionNode simpleName, Set<TypeInfo> dependencies, boolean nested) {
+			protected override Void handleSimpleName(SimpleNameExpressionNode simpleName, Set<TypeInfo> dependencies, bool nested) {
 				var info = simpleName.getUserData(typeof(ExpressionInfo));
 				var member = info.Member;
 				if (member != null && member.MemberKind == MemberKind.Type) {
@@ -517,23 +517,23 @@ namespace stab.tools.eclipse.helpers {
 				return null;
 			}
 			
-			protected override Void handleSizeof(SizeofExpressionNode sizeofExpression, Set<TypeInfo> dependencies, boolean nested) {
+			protected override Void handleSizeof(SizeofExpressionNode sizeofExpression, Set<TypeInfo> dependencies, bool nested) {
 				handleExpression(sizeofExpression.Expression, dependencies, nested);
 				return null;
 			}
 	
-			protected override Void handleType(TypeExpressionNode type, Set<TypeInfo> dependencies, boolean nested) {
+			protected override Void handleType(TypeExpressionNode type, Set<TypeInfo> dependencies, bool nested) {
 				var info = type.getUserData(typeof(ExpressionInfo));
 				addDependencies(info.Type, dependencies);
 				return null;
 			}
 			
-			protected override Void handleTypeof(TypeofExpressionNode typeofExpression, Set<TypeInfo> dependencies, boolean nested) {
+			protected override Void handleTypeof(TypeofExpressionNode typeofExpression, Set<TypeInfo> dependencies, bool nested) {
 				addDependencies(typeofExpression.getUserData(typeof(TypeInfo)), dependencies);
 				return null;
 			}
 			
-			protected override Void handleUnary(UnaryExpressionNode unary, Set<TypeInfo> dependencies, boolean nested) {
+			protected override Void handleUnary(UnaryExpressionNode unary, Set<TypeInfo> dependencies, bool nested) {
 				handleExpression(unary.Operand, dependencies, true);
 				return null;
 			}

@@ -42,7 +42,7 @@ public class GenericConstraints2Aux4 : GenericConstraints2Aux<GenericConstraints
 }
 
 public class GenericConstraints2 {
-	public static boolean test() {
+	public static bool test() {
 		var obj = new GenericConstraints2Aux2<GenericConstraints2Aux3, GenericConstraints2Aux4>();
 		var obj1 = new GenericConstraints2Aux4(123);
 		obj.test1(obj1);

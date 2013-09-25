@@ -70,7 +70,7 @@ namespace stab.lang {
         /// <summary>
         /// <see cref="Object.equals"/>
         /// </summary>
-		public override boolean equals(Object obj) {
+		public override bool equals(Object obj) {
 			if (obj == null || !(obj instanceof Delegate)) {
 				return false;
 			}

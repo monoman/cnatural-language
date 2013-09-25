@@ -42,13 +42,13 @@ namespace stab.query {
             #pragma warning restore
 		}
 	
-		public boolean containsKey(Object o) {
+		public bool containsKey(Object o) {
 			#pragma warning disable 270
 			return keys.contains((K)o);
             #pragma warning restore
 		}
 
-		public boolean containsValue(Object o) {
+		public bool containsValue(Object o) {
 			foreach (var i in keys.slots()) {
 				var value = values[i];
 				if (value == null) {
@@ -77,7 +77,7 @@ namespace stab.query {
 			}
 		}
 	
-		public boolean isEmpty() {
+		public bool isEmpty() {
 			return keys.count() == 0;
 		}
 		
@@ -142,7 +142,7 @@ namespace stab.query {
 				this.map = map;
 			}
 		
-			public boolean add(U u) {
+			public bool add(U u) {
 				throw new UnsupportedOperationException();
 			}
 			
@@ -150,11 +150,11 @@ namespace stab.query {
 				map.clear();
 			}
 			
-			public boolean contains(Object o) {
+			public bool contains(Object o) {
 				return map.containsValue(o);
 			}
 			
-			public boolean isEmpty() {
+			public bool isEmpty() {
 				return map.isEmpty();
 			}
 			
@@ -164,7 +164,7 @@ namespace stab.query {
 				}
 			}
 			
-			public boolean remove(Object o) {
+			public bool remove(Object o) {
 				foreach (var i in map.keys.slots()) {
 					var value = map.values[i];
 					if (value == null) {
@@ -180,7 +180,7 @@ namespace stab.query {
 				return false;
 			}
 			
-			public boolean retainAll(Collection<?> c) {
+			public bool retainAll(Collection<?> c) {
 				var result = false;
 				var set = c.toSet<?>();
 				foreach (var v in this.toList()) {
@@ -214,7 +214,7 @@ namespace stab.query {
 			this.tester = tester;
 		}
 		
-		public boolean add(T t) {
+		public bool add(T t) {
 			throw new UnsupportedOperationException();
 		}
 		
@@ -222,11 +222,11 @@ namespace stab.query {
 			map.clear();
 		}
 		
-		public boolean contains(Object o) {
+		public bool contains(Object o) {
 			return map.containsKey(o);
 		}
 		
-		public boolean isEmpty() {
+		public bool isEmpty() {
 			return map.isEmpty();
 		}
 		
@@ -236,13 +236,13 @@ namespace stab.query {
 			}
 		}
 		
-		public boolean remove(Object o) {
+		public bool remove(Object o) {
 			int size = map.size();
 			map.remove(o);
 			return size != map.size();
 		}
 		
-		public boolean retainAll(Collection<?> c) {
+		public bool retainAll(Collection<?> c) {
 			var result = false;
 			var set = c.toSet<?>(tester);
 			foreach (var k in keys.toList()) {
@@ -272,7 +272,7 @@ namespace stab.query {
 			this.tester = tester;
 		}
 		
-		public boolean add(Map.Entry<T, U> e) {
+		public bool add(Map.Entry<T, U> e) {
 			int size = map.size();
 			var value = map.put(e.Key, e.Value);
 			if (size != map.size()) {
@@ -289,7 +289,7 @@ namespace stab.query {
 			map.clear();
 		}
 		
-		public boolean contains(Object o) {
+		public bool contains(Object o) {
 			if (o instanceof Map.Entry<?, ?>) {
 				var e = (Map.Entry<T, U>)o;
 				return map.containsKey(e.Key) && map.containsValue(e.Value);
@@ -297,7 +297,7 @@ namespace stab.query {
 			return false;
 		}
 		
-		public boolean isEmpty() {
+		public bool isEmpty() {
 			return map.size() == 0;
 		}
 		
@@ -307,7 +307,7 @@ namespace stab.query {
 			}
 		}
 		
-		public boolean remove(Object o) {
+		public bool remove(Object o) {
 			if (o instanceof Map.Entry<?, ?>) {
 				var e = (Map.Entry<T, U>)o;
 				var value = map[e.Key];
@@ -326,7 +326,7 @@ namespace stab.query {
 			return false;
 		}
 		
-		public boolean retainAll(Collection<?> c) {
+		public bool retainAll(Collection<?> c) {
 			var result = false;
 			var set = c.toSet<?>();
 			foreach (var e in this.toList()) {
@@ -368,7 +368,7 @@ namespace stab.query {
 				return map.put(key, value);
 			}
 			
-			public override boolean equals(Object o) {
+			public override bool equals(Object o) {
 				if (o instanceof Map.Entry<?, ?>) {
 					var e = (Map.Entry<T, U>)o;
 					var value = getValue();
@@ -410,13 +410,13 @@ namespace stab.query {
 			values = new int[7];
 		}
 
-		public boolean containsKey(Object o) {
+		public bool containsKey(Object o) {
 			#pragma warning disable 270
 			return keys.contains((K)o);
             #pragma warning restore
 		}
 
-		public boolean containsValue(Object o) {
+		public bool containsValue(Object o) {
 			var v = o as Integer;
 			if (v != null) {
 				return containsValue(v.intValue());
@@ -434,7 +434,7 @@ namespace stab.query {
             #pragma warning restore
 		}
 		
-		public boolean isEmpty() {
+		public bool isEmpty() {
 			return keys.count() == 0;
 		}
 
@@ -464,7 +464,7 @@ namespace stab.query {
 		
 		// TIntMap
 
-		public boolean containsValue(int value) {
+		public bool containsValue(int value) {
 			foreach (var i in keys.slots()) {
 				if (values[i] == value) {
 					return true;
@@ -531,7 +531,7 @@ namespace stab.query {
 				this.map = map;
 			}
 			
-			public boolean add(Integer u) {
+			public bool add(Integer u) {
 				throw new UnsupportedOperationException();
 			}
 			
@@ -539,15 +539,15 @@ namespace stab.query {
 				map.clear();
 			}
 			
-			public boolean contains(Object o) {
+			public bool contains(Object o) {
 				return map.containsValue(o);
 			}
 			
-			public boolean isEmpty() {
+			public bool isEmpty() {
 				return map.isEmpty();
 			}
 			
-			public boolean remove(Object o) {
+			public bool remove(Object o) {
 				var l = o as Integer;
 				if (l != null) {
 					return removeItem(l.intValue());
@@ -555,7 +555,7 @@ namespace stab.query {
 				return false;
 			}
 			
-			public boolean retainAll(Collection<?> c) {
+			public bool retainAll(Collection<?> c) {
 				var result = false;
 				var set = c.toSet<?>();
 				foreach (var v in this.toList()) {
@@ -574,19 +574,19 @@ namespace stab.query {
 			
 			// IntCollection
 		
-			public boolean add(int v) {
+			public bool add(int v) {
 				throw new UnsupportedOperationException();
 			}
 			
-			public boolean addAll(IntCollection c) {
+			public bool addAll(IntCollection c) {
 				throw new UnsupportedOperationException();
 			}
 			
-			public boolean contains(int v) {
+			public bool contains(int v) {
 				return map.containsValue(v);
 			}
 			
-			public boolean containsAll(IntCollection c) {
+			public bool containsAll(IntCollection c) {
 				foreach (var v in c) {
 					if (!contains(v)) {
 						return false;
@@ -601,7 +601,7 @@ namespace stab.query {
 				}
 			}
 			
-			public boolean removeItem(int v) {
+			public bool removeItem(int v) {
 				foreach (var i in map.keys.slots()) {
 					var value = map.values[i];
 					if (value == v) {
@@ -612,7 +612,7 @@ namespace stab.query {
 				return false;
 			}
 			
-			public boolean removeAll(IntCollection c) {
+			public bool removeAll(IntCollection c) {
 				var result = false;
 				foreach (var v in c) {
 					if (removeItem(v)) {
@@ -622,7 +622,7 @@ namespace stab.query {
 				return result;
 			}
 			
-			public boolean retainAll(IntCollection c) {
+			public bool retainAll(IntCollection c) {
 				var result = false;
 				var set = c.toSet();
 				foreach (var v in this.toList()) {
@@ -669,7 +669,7 @@ namespace stab.query {
             #pragma warning restore
 		}
 		
-		public boolean containsKey(Object o) {
+		public bool containsKey(Object o) {
 			var k = o as Integer;
 			if (k != null) {
 				return containsKey(k.intValue());
@@ -677,7 +677,7 @@ namespace stab.query {
 			return false;
 		}
 		
-		public boolean containsValue(Object o) {
+		public bool containsValue(Object o) {
 			foreach (var i in keys.slots()) {
 				var value = values[i];
 				if (value == null) {
@@ -703,7 +703,7 @@ namespace stab.query {
 			return null;
 		}
 		
-		public boolean isEmpty() {
+		public bool isEmpty() {
 			return keys.count() == 0;
 		}
 
@@ -738,7 +738,7 @@ namespace stab.query {
 		
 		// IntTMap
 
-		public boolean containsKey(int key) {
+		public bool containsKey(int key) {
 			return keys.contains(key);
 		}
 		
@@ -804,7 +804,7 @@ namespace stab.query {
 			
 			// Collection<Int>
 			
-			public boolean add(Integer t) {
+			public bool add(Integer t) {
 				throw new UnsupportedOperationException();
 			}
 			
@@ -812,21 +812,21 @@ namespace stab.query {
 				map.clear();
 			}
 			
-			public boolean contains(Object o) {
+			public bool contains(Object o) {
 				return map.containsKey(o);
 			}
 			
-			public boolean isEmpty() {
+			public bool isEmpty() {
 				return map.isEmpty();
 			}
 			
-			public boolean remove(Object o) {
+			public bool remove(Object o) {
 				int size = map.size();
 				map.remove(o);
 				return size != map.size();
 			}
 			
-			public boolean retainAll(Collection<?> c) {
+			public bool retainAll(Collection<?> c) {
 				var result = false;
 				var set = c.toSet<?>();
 				foreach (var k in map.keys.toList()) {
@@ -844,11 +844,11 @@ namespace stab.query {
 			
 			// IntSet
 			
-			public boolean add(int l) {
+			public bool add(int l) {
 				throw new UnsupportedOperationException();
 			}
 			
-			public boolean addAll(IntCollection c) {
+			public bool addAll(IntCollection c) {
 				var result = false;
 				foreach (var i in c) {
 					result = true;
@@ -857,11 +857,11 @@ namespace stab.query {
 				return result;
 			}
 			
-			public boolean contains(int l) {
+			public bool contains(int l) {
 				return map.keys.contains(l);
 			}
 			
-			public boolean containsAll(IntCollection c) {
+			public bool containsAll(IntCollection c) {
 				foreach (var l in c) {
 					if (!contains(l)) {
 						return false;
@@ -876,13 +876,13 @@ namespace stab.query {
 				}
 			}
 			
-			public boolean removeItem(int l) {
+			public bool removeItem(int l) {
 				var size = map.size();
 				map.remove(l);
 				return size != map.size();
 			}
 			
-			public boolean removeAll(IntCollection c) {
+			public bool removeAll(IntCollection c) {
 				var result = false;
 				foreach (var l in c) {
 					if (removeItem(l)) {
@@ -892,7 +892,7 @@ namespace stab.query {
 				return result;
 			}
 			
-			public boolean retainAll(IntCollection c) {
+			public bool retainAll(IntCollection c) {
 				var result = false;
 				var set = c.toSet<?>();
 				foreach (var k in map.keys.toList()) {
@@ -925,7 +925,7 @@ namespace stab.query {
 				this.map = map;
 			}
 		
-			public boolean add(U u) {
+			public bool add(U u) {
 				throw new UnsupportedOperationException();
 			}
 			
@@ -933,11 +933,11 @@ namespace stab.query {
 				map.clear();
 			}
 			
-			public boolean contains(Object o) {
+			public bool contains(Object o) {
 				return map.containsValue(o);
 			}
 			
-			public boolean isEmpty() {
+			public bool isEmpty() {
 				return map.isEmpty();
 			}
 			
@@ -947,7 +947,7 @@ namespace stab.query {
 				}
 			}
 			
-			public boolean remove(Object o) {
+			public bool remove(Object o) {
 				foreach (var i in map.keys.slots()) {
 					var value = map.values[i];
 					if (value == null) {
@@ -963,7 +963,7 @@ namespace stab.query {
 				return false;
 			}
 			
-			public boolean retainAll(Collection<?> c) {
+			public bool retainAll(Collection<?> c) {
 				var result = false;
 				var set = c.toSet<?>();
 				foreach (var v in this.toList()) {
@@ -1000,13 +1000,13 @@ namespace stab.query {
 			values = new long[7];
 		}
 
-		public boolean containsKey(Object o) {
+		public bool containsKey(Object o) {
 			#pragma warning disable 270
 			return keys.contains((K)o);
             #pragma warning restore
 		}
 
-		public boolean containsValue(Object o) {
+		public bool containsValue(Object o) {
 			var v = o as Long;
 			if (v != null) {
 				return containsValue(v.longValue());
@@ -1024,7 +1024,7 @@ namespace stab.query {
             #pragma warning restore
 		}
 		
-		public boolean isEmpty() {
+		public bool isEmpty() {
 			return keys.count() == 0;
 		}
 
@@ -1054,7 +1054,7 @@ namespace stab.query {
 		
 		// TLongMap
 
-		public boolean containsValue(long value) {
+		public bool containsValue(long value) {
 			foreach (var i in keys.slots()) {
 				if (values[i] == value) {
 					return true;
@@ -1121,7 +1121,7 @@ namespace stab.query {
 				this.map = map;
 			}
 			
-			public boolean add(Long u) {
+			public bool add(Long u) {
 				throw new UnsupportedOperationException();
 			}
 			
@@ -1129,15 +1129,15 @@ namespace stab.query {
 				map.clear();
 			}
 			
-			public boolean contains(Object o) {
+			public bool contains(Object o) {
 				return map.containsValue(o);
 			}
 			
-			public boolean isEmpty() {
+			public bool isEmpty() {
 				return map.isEmpty();
 			}
 			
-			public boolean remove(Object o) {
+			public bool remove(Object o) {
 				var l = o as Long;
 				if (l != null) {
 					return removeItem(l.longValue());
@@ -1145,7 +1145,7 @@ namespace stab.query {
 				return false;
 			}
 			
-			public boolean retainAll(Collection<?> c) {
+			public bool retainAll(Collection<?> c) {
 				var result = false;
 				var set = c.toSet<?>();
 				foreach (var v in this.toList()) {
@@ -1164,19 +1164,19 @@ namespace stab.query {
 			
 			// LongCollection
 		
-			public boolean add(long v) {
+			public bool add(long v) {
 				throw new UnsupportedOperationException();
 			}
 			
-			public boolean addAll(LongCollection c) {
+			public bool addAll(LongCollection c) {
 				throw new UnsupportedOperationException();
 			}
 			
-			public boolean contains(long v) {
+			public bool contains(long v) {
 				return map.containsValue(v);
 			}
 			
-			public boolean containsAll(LongCollection c) {
+			public bool containsAll(LongCollection c) {
 				foreach (var v in c) {
 					if (!contains(v)) {
 						return false;
@@ -1191,7 +1191,7 @@ namespace stab.query {
 				}
 			}
 			
-			public boolean removeItem(long v) {
+			public bool removeItem(long v) {
 				foreach (var i in map.keys.slots()) {
 					var value = map.values[i];
 					if (value == v) {
@@ -1202,7 +1202,7 @@ namespace stab.query {
 				return false;
 			}
 			
-			public boolean removeAll(LongCollection c) {
+			public bool removeAll(LongCollection c) {
 				var result = false;
 				foreach (var v in c) {
 					if (removeItem(v)) {
@@ -1212,7 +1212,7 @@ namespace stab.query {
 				return result;
 			}
 			
-			public boolean retainAll(LongCollection c) {
+			public bool retainAll(LongCollection c) {
 				var result = false;
 				var set = c.toSet();
 				foreach (var v in this.toList()) {
@@ -1259,7 +1259,7 @@ namespace stab.query {
             #pragma warning restore
 		}
 		
-		public boolean containsKey(Object o) {
+		public bool containsKey(Object o) {
 			var k = o as Long;
 			if (k != null) {
 				return containsKey(k.longValue());
@@ -1267,7 +1267,7 @@ namespace stab.query {
 			return false;
 		}
 		
-		public boolean containsValue(Object o) {
+		public bool containsValue(Object o) {
 			foreach (var i in keys.slots()) {
 				var value = values[i];
 				if (value == null) {
@@ -1293,7 +1293,7 @@ namespace stab.query {
 			return null;
 		}
 		
-		public boolean isEmpty() {
+		public bool isEmpty() {
 			return keys.count() == 0;
 		}
 
@@ -1328,7 +1328,7 @@ namespace stab.query {
 		
 		// LongTMap
 
-		public boolean containsKey(long key) {
+		public bool containsKey(long key) {
 			return keys.contains(key);
 		}
 		
@@ -1394,7 +1394,7 @@ namespace stab.query {
 			
 			// Collection<Long>
 			
-			public boolean add(Long t) {
+			public bool add(Long t) {
 				throw new UnsupportedOperationException();
 			}
 			
@@ -1402,21 +1402,21 @@ namespace stab.query {
 				map.clear();
 			}
 			
-			public boolean contains(Object o) {
+			public bool contains(Object o) {
 				return map.containsKey(o);
 			}
 			
-			public boolean isEmpty() {
+			public bool isEmpty() {
 				return map.isEmpty();
 			}
 			
-			public boolean remove(Object o) {
+			public bool remove(Object o) {
 				int size = map.size();
 				map.remove(o);
 				return size != map.size();
 			}
 			
-			public boolean retainAll(Collection<?> c) {
+			public bool retainAll(Collection<?> c) {
 				var result = false;
 				var set = c.toSet<?>();
 				foreach (var k in map.keys.toList()) {
@@ -1434,11 +1434,11 @@ namespace stab.query {
 			
 			// LongSet
 			
-			public boolean add(long l) {
+			public bool add(long l) {
 				throw new UnsupportedOperationException();
 			}
 			
-			public boolean addAll(LongCollection c) {
+			public bool addAll(LongCollection c) {
 				var result = false;
 				foreach (var i in c) {
 					result = true;
@@ -1447,11 +1447,11 @@ namespace stab.query {
 				return result;
 			}
 			
-			public boolean contains(long l) {
+			public bool contains(long l) {
 				return map.keys.contains(l);
 			}
 			
-			public boolean containsAll(LongCollection c) {
+			public bool containsAll(LongCollection c) {
 				foreach (var l in c) {
 					if (!contains(l)) {
 						return false;
@@ -1466,13 +1466,13 @@ namespace stab.query {
 				}
 			}
 			
-			public boolean removeItem(long l) {
+			public bool removeItem(long l) {
 				var size = map.size();
 				map.remove(l);
 				return size != map.size();
 			}
 			
-			public boolean removeAll(LongCollection c) {
+			public bool removeAll(LongCollection c) {
 				var result = false;
 				foreach (var l in c) {
 					if (removeItem(l)) {
@@ -1482,7 +1482,7 @@ namespace stab.query {
 				return result;
 			}
 			
-			public boolean retainAll(LongCollection c) {
+			public bool retainAll(LongCollection c) {
 				var result = false;
 				var set = c.toSet<?>();
 				foreach (var k in map.keys.toList()) {
@@ -1515,7 +1515,7 @@ namespace stab.query {
 				this.map = map;
 			}
 		
-			public boolean add(U u) {
+			public bool add(U u) {
 				throw new UnsupportedOperationException();
 			}
 			
@@ -1523,11 +1523,11 @@ namespace stab.query {
 				map.clear();
 			}
 			
-			public boolean contains(Object o) {
+			public bool contains(Object o) {
 				return map.containsValue(o);
 			}
 			
-			public boolean isEmpty() {
+			public bool isEmpty() {
 				return map.isEmpty();
 			}
 			
@@ -1537,7 +1537,7 @@ namespace stab.query {
 				}
 			}
 			
-			public boolean remove(Object o) {
+			public bool remove(Object o) {
 				foreach (var i in map.keys.slots()) {
 					var value = map.values[i];
 					if (value == null) {
@@ -1553,7 +1553,7 @@ namespace stab.query {
 				return false;
 			}
 			
-			public boolean retainAll(Collection<?> c) {
+			public bool retainAll(Collection<?> c) {
 				var result = false;
 				var set = c.toSet<?>();
 				foreach (var v in this.toList()) {
@@ -1590,13 +1590,13 @@ namespace stab.query {
 			values = new float[7];
 		}
 
-		public boolean containsKey(Object o) {
+		public bool containsKey(Object o) {
 			#pragma warning disable 270
 			return keys.contains((K)o);
             #pragma warning restore
 		}
 
-		public boolean containsValue(Object o) {
+		public bool containsValue(Object o) {
 			var v = o as Float;
 			if (v != null) {
 				return containsValue(v.floatValue());
@@ -1614,7 +1614,7 @@ namespace stab.query {
             #pragma warning restore
 		}
 		
-		public boolean isEmpty() {
+		public bool isEmpty() {
 			return keys.count() == 0;
 		}
 
@@ -1644,7 +1644,7 @@ namespace stab.query {
 		
 		// TFloatMap
 
-		public boolean containsValue(float value) {
+		public bool containsValue(float value) {
 			foreach (var i in keys.slots()) {
 				if (values[i] == value) {
 					return true;
@@ -1711,7 +1711,7 @@ namespace stab.query {
 				this.map = map;
 			}
 			
-			public boolean add(Float u) {
+			public bool add(Float u) {
 				throw new UnsupportedOperationException();
 			}
 			
@@ -1719,15 +1719,15 @@ namespace stab.query {
 				map.clear();
 			}
 			
-			public boolean contains(Object o) {
+			public bool contains(Object o) {
 				return map.containsValue(o);
 			}
 			
-			public boolean isEmpty() {
+			public bool isEmpty() {
 				return map.isEmpty();
 			}
 			
-			public boolean remove(Object o) {
+			public bool remove(Object o) {
 				var l = o as Float;
 				if (l != null) {
 					return removeItem(l.floatValue());
@@ -1735,7 +1735,7 @@ namespace stab.query {
 				return false;
 			}
 			
-			public boolean retainAll(Collection<?> c) {
+			public bool retainAll(Collection<?> c) {
 				var result = false;
 				var set = c.toSet<?>();
 				foreach (var v in this.toList()) {
@@ -1754,19 +1754,19 @@ namespace stab.query {
 			
 			// FloatCollection
 		
-			public boolean add(float v) {
+			public bool add(float v) {
 				throw new UnsupportedOperationException();
 			}
 			
-			public boolean addAll(FloatCollection c) {
+			public bool addAll(FloatCollection c) {
 				throw new UnsupportedOperationException();
 			}
 			
-			public boolean contains(float v) {
+			public bool contains(float v) {
 				return map.containsValue(v);
 			}
 			
-			public boolean containsAll(FloatCollection c) {
+			public bool containsAll(FloatCollection c) {
 				foreach (var v in c) {
 					if (!contains(v)) {
 						return false;
@@ -1781,7 +1781,7 @@ namespace stab.query {
 				}
 			}
 			
-			public boolean removeItem(float v) {
+			public bool removeItem(float v) {
 				foreach (var i in map.keys.slots()) {
 					var value = map.values[i];
 					if (value == v) {
@@ -1792,7 +1792,7 @@ namespace stab.query {
 				return false;
 			}
 			
-			public boolean removeAll(FloatCollection c) {
+			public bool removeAll(FloatCollection c) {
 				var result = false;
 				foreach (var v in c) {
 					if (removeItem(v)) {
@@ -1802,7 +1802,7 @@ namespace stab.query {
 				return result;
 			}
 			
-			public boolean retainAll(FloatCollection c) {
+			public bool retainAll(FloatCollection c) {
 				var result = false;
 				var set = c.toSet();
 				foreach (var v in this.toList()) {
@@ -1849,7 +1849,7 @@ namespace stab.query {
             #pragma warning restore
 		}
 		
-		public boolean containsKey(Object o) {
+		public bool containsKey(Object o) {
 			var k = o as Float;
 			if (k != null) {
 				return containsKey(k.floatValue());
@@ -1857,7 +1857,7 @@ namespace stab.query {
 			return false;
 		}
 		
-		public boolean containsValue(Object o) {
+		public bool containsValue(Object o) {
 			foreach (var i in keys.slots()) {
 				var value = values[i];
 				if (value == null) {
@@ -1883,7 +1883,7 @@ namespace stab.query {
 			return null;
 		}
 		
-		public boolean isEmpty() {
+		public bool isEmpty() {
 			return keys.count() == 0;
 		}
 
@@ -1918,7 +1918,7 @@ namespace stab.query {
 		
 		// FloatTMap
 
-		public boolean containsKey(float key) {
+		public bool containsKey(float key) {
 			return keys.contains(key);
 		}
 		
@@ -1984,7 +1984,7 @@ namespace stab.query {
 			
 			// Collection<Float>
 			
-			public boolean add(Float t) {
+			public bool add(Float t) {
 				throw new UnsupportedOperationException();
 			}
 			
@@ -1992,21 +1992,21 @@ namespace stab.query {
 				map.clear();
 			}
 			
-			public boolean contains(Object o) {
+			public bool contains(Object o) {
 				return map.containsKey(o);
 			}
 			
-			public boolean isEmpty() {
+			public bool isEmpty() {
 				return map.isEmpty();
 			}
 			
-			public boolean remove(Object o) {
+			public bool remove(Object o) {
 				int size = map.size();
 				map.remove(o);
 				return size != map.size();
 			}
 			
-			public boolean retainAll(Collection<?> c) {
+			public bool retainAll(Collection<?> c) {
 				var result = false;
 				var set = c.toSet<?>();
 				foreach (var k in map.keys.toList()) {
@@ -2024,11 +2024,11 @@ namespace stab.query {
 			
 			// FloatSet
 			
-			public boolean add(float l) {
+			public bool add(float l) {
 				throw new UnsupportedOperationException();
 			}
 			
-			public boolean addAll(FloatCollection c) {
+			public bool addAll(FloatCollection c) {
 				var result = false;
 				foreach (var i in c) {
 					result = true;
@@ -2037,11 +2037,11 @@ namespace stab.query {
 				return result;
 			}
 			
-			public boolean contains(float l) {
+			public bool contains(float l) {
 				return map.keys.contains(l);
 			}
 			
-			public boolean containsAll(FloatCollection c) {
+			public bool containsAll(FloatCollection c) {
 				foreach (var l in c) {
 					if (!contains(l)) {
 						return false;
@@ -2056,13 +2056,13 @@ namespace stab.query {
 				}
 			}
 			
-			public boolean removeItem(float l) {
+			public bool removeItem(float l) {
 				var size = map.size();
 				map.remove(l);
 				return size != map.size();
 			}
 			
-			public boolean removeAll(FloatCollection c) {
+			public bool removeAll(FloatCollection c) {
 				var result = false;
 				foreach (var l in c) {
 					if (removeItem(l)) {
@@ -2072,7 +2072,7 @@ namespace stab.query {
 				return result;
 			}
 			
-			public boolean retainAll(FloatCollection c) {
+			public bool retainAll(FloatCollection c) {
 				var result = false;
 				var set = c.toSet<?>();
 				foreach (var k in map.keys.toList()) {
@@ -2105,7 +2105,7 @@ namespace stab.query {
 				this.map = map;
 			}
 		
-			public boolean add(U u) {
+			public bool add(U u) {
 				throw new UnsupportedOperationException();
 			}
 			
@@ -2113,11 +2113,11 @@ namespace stab.query {
 				map.clear();
 			}
 			
-			public boolean contains(Object o) {
+			public bool contains(Object o) {
 				return map.containsValue(o);
 			}
 			
-			public boolean isEmpty() {
+			public bool isEmpty() {
 				return map.isEmpty();
 			}
 			
@@ -2127,7 +2127,7 @@ namespace stab.query {
 				}
 			}
 			
-			public boolean remove(Object o) {
+			public bool remove(Object o) {
 				foreach (var i in map.keys.slots()) {
 					var value = map.values[i];
 					if (value == null) {
@@ -2143,7 +2143,7 @@ namespace stab.query {
 				return false;
 			}
 			
-			public boolean retainAll(Collection<?> c) {
+			public bool retainAll(Collection<?> c) {
 				var result = false;
 				var set = c.toSet<?>();
 				foreach (var v in this.toList()) {
@@ -2180,13 +2180,13 @@ namespace stab.query {
 			values = new double[7];
 		}
 
-		public boolean containsKey(Object o) {
+		public bool containsKey(Object o) {
 			#pragma warning disable 270
 			return keys.contains((K)o);
             #pragma warning restore
 		}
 
-		public boolean containsValue(Object o) {
+		public bool containsValue(Object o) {
 			var v = o as Double;
 			if (v != null) {
 				return containsValue(v.doubleValue());
@@ -2204,7 +2204,7 @@ namespace stab.query {
             #pragma warning restore
 		}
 		
-		public boolean isEmpty() {
+		public bool isEmpty() {
 			return keys.count() == 0;
 		}
 
@@ -2234,7 +2234,7 @@ namespace stab.query {
 		
 		// TDoubleMap
 
-		public boolean containsValue(double value) {
+		public bool containsValue(double value) {
 			foreach (var i in keys.slots()) {
 				if (values[i] == value) {
 					return true;
@@ -2301,7 +2301,7 @@ namespace stab.query {
 				this.map = map;
 			}
 			
-			public boolean add(Double u) {
+			public bool add(Double u) {
 				throw new UnsupportedOperationException();
 			}
 			
@@ -2309,15 +2309,15 @@ namespace stab.query {
 				map.clear();
 			}
 			
-			public boolean contains(Object o) {
+			public bool contains(Object o) {
 				return map.containsValue(o);
 			}
 			
-			public boolean isEmpty() {
+			public bool isEmpty() {
 				return map.isEmpty();
 			}
 			
-			public boolean remove(Object o) {
+			public bool remove(Object o) {
 				var l = o as Double;
 				if (l != null) {
 					return removeItem(l.doubleValue());
@@ -2325,7 +2325,7 @@ namespace stab.query {
 				return false;
 			}
 			
-			public boolean retainAll(Collection<?> c) {
+			public bool retainAll(Collection<?> c) {
 				var result = false;
 				var set = c.toSet<?>();
 				foreach (var v in this.toList()) {
@@ -2344,19 +2344,19 @@ namespace stab.query {
 			
 			// DoubleCollection
 		
-			public boolean add(double v) {
+			public bool add(double v) {
 				throw new UnsupportedOperationException();
 			}
 			
-			public boolean addAll(DoubleCollection c) {
+			public bool addAll(DoubleCollection c) {
 				throw new UnsupportedOperationException();
 			}
 			
-			public boolean contains(double v) {
+			public bool contains(double v) {
 				return map.containsValue(v);
 			}
 			
-			public boolean containsAll(DoubleCollection c) {
+			public bool containsAll(DoubleCollection c) {
 				foreach (var v in c) {
 					if (!contains(v)) {
 						return false;
@@ -2371,7 +2371,7 @@ namespace stab.query {
 				}
 			}
 			
-			public boolean removeItem(double v) {
+			public bool removeItem(double v) {
 				foreach (var i in map.keys.slots()) {
 					var value = map.values[i];
 					if (value == v) {
@@ -2382,7 +2382,7 @@ namespace stab.query {
 				return false;
 			}
 			
-			public boolean removeAll(DoubleCollection c) {
+			public bool removeAll(DoubleCollection c) {
 				var result = false;
 				foreach (var v in c) {
 					if (removeItem(v)) {
@@ -2392,7 +2392,7 @@ namespace stab.query {
 				return result;
 			}
 			
-			public boolean retainAll(DoubleCollection c) {
+			public bool retainAll(DoubleCollection c) {
 				var result = false;
 				var set = c.toSet();
 				foreach (var v in this.toList()) {
@@ -2439,7 +2439,7 @@ namespace stab.query {
             #pragma warning restore
 		}
 		
-		public boolean containsKey(Object o) {
+		public bool containsKey(Object o) {
 			var k = o as Double;
 			if (k != null) {
 				return containsKey(k.doubleValue());
@@ -2447,7 +2447,7 @@ namespace stab.query {
 			return false;
 		}
 		
-		public boolean containsValue(Object o) {
+		public bool containsValue(Object o) {
 			foreach (var i in keys.slots()) {
 				var value = values[i];
 				if (value == null) {
@@ -2473,7 +2473,7 @@ namespace stab.query {
 			return null;
 		}
 		
-		public boolean isEmpty() {
+		public bool isEmpty() {
 			return keys.count() == 0;
 		}
 
@@ -2508,7 +2508,7 @@ namespace stab.query {
 		
 		// DoubleTMap
 
-		public boolean containsKey(double key) {
+		public bool containsKey(double key) {
 			return keys.contains(key);
 		}
 		
@@ -2574,7 +2574,7 @@ namespace stab.query {
 			
 			// Collection<Double>
 			
-			public boolean add(Double t) {
+			public bool add(Double t) {
 				throw new UnsupportedOperationException();
 			}
 			
@@ -2582,21 +2582,21 @@ namespace stab.query {
 				map.clear();
 			}
 			
-			public boolean contains(Object o) {
+			public bool contains(Object o) {
 				return map.containsKey(o);
 			}
 			
-			public boolean isEmpty() {
+			public bool isEmpty() {
 				return map.isEmpty();
 			}
 			
-			public boolean remove(Object o) {
+			public bool remove(Object o) {
 				int size = map.size();
 				map.remove(o);
 				return size != map.size();
 			}
 			
-			public boolean retainAll(Collection<?> c) {
+			public bool retainAll(Collection<?> c) {
 				var result = false;
 				var set = c.toSet<?>();
 				foreach (var k in map.keys.toList()) {
@@ -2614,11 +2614,11 @@ namespace stab.query {
 			
 			// DoubleSet
 			
-			public boolean add(double l) {
+			public bool add(double l) {
 				throw new UnsupportedOperationException();
 			}
 			
-			public boolean addAll(DoubleCollection c) {
+			public bool addAll(DoubleCollection c) {
 				var result = false;
 				foreach (var i in c) {
 					result = true;
@@ -2627,11 +2627,11 @@ namespace stab.query {
 				return result;
 			}
 			
-			public boolean contains(double l) {
+			public bool contains(double l) {
 				return map.keys.contains(l);
 			}
 			
-			public boolean containsAll(DoubleCollection c) {
+			public bool containsAll(DoubleCollection c) {
 				foreach (var l in c) {
 					if (!contains(l)) {
 						return false;
@@ -2646,13 +2646,13 @@ namespace stab.query {
 				}
 			}
 			
-			public boolean removeItem(double l) {
+			public bool removeItem(double l) {
 				var size = map.size();
 				map.remove(l);
 				return size != map.size();
 			}
 			
-			public boolean removeAll(DoubleCollection c) {
+			public bool removeAll(DoubleCollection c) {
 				var result = false;
 				foreach (var l in c) {
 					if (removeItem(l)) {
@@ -2662,7 +2662,7 @@ namespace stab.query {
 				return result;
 			}
 			
-			public boolean retainAll(DoubleCollection c) {
+			public bool retainAll(DoubleCollection c) {
 				var result = false;
 				var set = c.toSet<?>();
 				foreach (var k in map.keys.toList()) {
@@ -2695,7 +2695,7 @@ namespace stab.query {
 				this.map = map;
 			}
 		
-			public boolean add(U u) {
+			public bool add(U u) {
 				throw new UnsupportedOperationException();
 			}
 			
@@ -2703,11 +2703,11 @@ namespace stab.query {
 				map.clear();
 			}
 			
-			public boolean contains(Object o) {
+			public bool contains(Object o) {
 				return map.containsValue(o);
 			}
 			
-			public boolean isEmpty() {
+			public bool isEmpty() {
 				return map.isEmpty();
 			}
 			
@@ -2717,7 +2717,7 @@ namespace stab.query {
 				}
 			}
 			
-			public boolean remove(Object o) {
+			public bool remove(Object o) {
 				foreach (var i in map.keys.slots()) {
 					var value = map.values[i];
 					if (value == null) {
@@ -2733,7 +2733,7 @@ namespace stab.query {
 				return false;
 			}
 			
-			public boolean retainAll(Collection<?> c) {
+			public bool retainAll(Collection<?> c) {
 				var result = false;
 				var set = c.toSet<?>();
 				foreach (var v in this.toList()) {

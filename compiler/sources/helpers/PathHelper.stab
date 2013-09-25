@@ -102,7 +102,7 @@ namespace stab.tools.helpers {
 			return null;
 		}
 
-		public static boolean hasExtension(String path) {
+		public static bool hasExtension(String path) {
 			int index = path.lastIndexOf('.');
 			if (index == -1) {
 				return false;

@@ -37,7 +37,7 @@ namespace stab.tools.compiler {
             return handleExpression(expression, negative, true);
         }
 
-        protected override Object handleBinary(BinaryExpressionNode binary, Boolean negative, boolean nested) {
+        protected override Object handleBinary(BinaryExpressionNode binary, Boolean negative, bool nested) {
             var li = binary.LeftOperand.getUserData(typeof(ExpressionInfo));
             if (li.Value == null) {
                 handleExpression(binary.LeftOperand, Boolean.FALSE, nested);
@@ -2123,7 +2123,7 @@ namespace stab.tools.compiler {
                     BytecodeHelper.getDisplayName(li.Type), BytecodeHelper.getDisplayName(ri.Type));
         }
         
-        protected override Object handleLiteral(LiteralExpressionNode literal, Boolean negative, boolean nested) {
+        protected override Object handleLiteral(LiteralExpressionNode literal, Boolean negative, bool nested) {
             var info = literal.getUserData(typeof(ExpressionInfo));
             switch (literal.LiteralKind) {
             case Character: {
@@ -2259,7 +2259,7 @@ namespace stab.tools.compiler {
             return (info == null) ? null : info.Value;
         }
         
-        protected override Object handleUnary(UnaryExpressionNode unary, Boolean negative, boolean nested) {
+        protected override Object handleUnary(UnaryExpressionNode unary, Boolean negative, bool nested) {
             var ei = unary.Operand.getUserData(typeof(ExpressionInfo));
             negative = Boolean.FALSE;
             switch (unary.Operator) {

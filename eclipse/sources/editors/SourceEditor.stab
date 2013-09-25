@@ -72,7 +72,7 @@ namespace stab.tools.eclipse.editors {
 			super.dispose();
 		}
 	
-		public boolean IsActive^;
+		public bool IsActive^;
 	
 		public Highlighter Highlighter^;
 	
@@ -114,7 +114,7 @@ namespace stab.tools.eclipse.editors {
 				this.editor = editor;
 			}
 		
-			protected override boolean isIncluded(Annotation annotation) {
+			protected override bool isIncluded(Annotation annotation) {
 				if (annotation == null) {
 					return true;
 				}

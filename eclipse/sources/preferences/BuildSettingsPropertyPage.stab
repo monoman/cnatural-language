@@ -78,7 +78,7 @@ namespace stab.tools.eclipse.preferences {
 			return new LibrariesPreferences(this).createControl(parent);
 		}
 		
-		public override boolean performOk() {
+		public override bool performOk() {
 			var update = false;
 			var projectManager = Environment.getProjectManager(getProject());
 			var properties = projectManager.Properties;

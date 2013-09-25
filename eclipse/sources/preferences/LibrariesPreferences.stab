@@ -366,7 +366,7 @@ namespace stab.tools.eclipse.preferences {
 			tableViewer.setInput(libraries);
 		}
 
-		private static Button createButton(Composite parent, String label, boolean enabled) {
+		private static Button createButton(Composite parent, String label, bool enabled) {
 			var button = new Button(parent, SWT.PUSH);
 			button.setFont(parent.getFont());
 			button.setText(label);
@@ -424,11 +424,11 @@ namespace stab.tools.eclipse.preferences {
 		}
 		
 		private class TableCheckStateProvider : ICheckStateProvider {
-			public boolean isGrayed(Object element) {
+			public bool isGrayed(Object element) {
 				return false;
 			}
 			
-			public boolean isChecked(Object element) {
+			public bool isChecked(Object element) {
 				return ((ProjectLibrary)element).Enabled;
 			}
 		}
@@ -437,7 +437,7 @@ namespace stab.tools.eclipse.preferences {
 			public void removeListener(ILabelProviderListener listener) {
 			}
 			
-			public boolean isLabelProperty(Object element, String property) {
+			public bool isLabelProperty(Object element, String property) {
 				return false;
 			}
 			

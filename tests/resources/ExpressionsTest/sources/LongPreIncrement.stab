@@ -1,5 +1,5 @@
 public class LongPreIncrement {
-	public static boolean test(long arg) {
+	public static bool test(long arg) {
 		long l = ++arg;
 		return arg == l;
 	}

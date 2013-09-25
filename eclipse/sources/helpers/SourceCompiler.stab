@@ -39,11 +39,11 @@ namespace stab.tools.eclipse.helpers {
 			this.FilesToCompile = new HashSet<String>();
 		}
 	
-		public boolean FullBuild;
+		public bool FullBuild;
 		
-		public boolean ProgressiveBuild;
+		public bool ProgressiveBuild;
 		
-		public boolean GenerateClassFiles;
+		public bool GenerateClassFiles;
 		
 		public ResourceSet<IFile> AllFiles^;
 
@@ -70,7 +70,7 @@ namespace stab.tools.eclipse.helpers {
 			this.CompilationUnits = new HashMap<String, CompilationUnitNode>();
 		}
 	
-		public boolean Failed;
+		public bool Failed;
 		
 		public Map<String, byte[]> ClassFiles^;
 		
@@ -200,7 +200,7 @@ namespace stab.tools.eclipse.helpers {
 				if (parameters.FullBuild) {
 					filesToCompile = allFiles.getAllResources().where(p => p.exists()).toList();
 				} else {
-					boolean filteringDone = false;
+					bool filteringDone = false;
 					var referencingFiles = parameters.getDependencyInfo().getAllReferencingFiles(parameters.getFilesToCompile());
 					if (parameters.ProgressiveBuild && deletedFiles.isEmpty()) {
 						var referencedFiles = parameters.getDependencyInfo().getAllReferencedFiles(parameters.getFilesToCompile());

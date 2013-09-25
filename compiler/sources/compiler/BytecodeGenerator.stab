@@ -487,7 +487,7 @@ namespace stab.tools.compiler {
             }
         }
         
-        private static boolean requireBridge(CompilerContext context, MethodInfo bridgedMethod, MethodInfo method) {
+        private static bool requireBridge(CompilerContext context, MethodInfo bridgedMethod, MethodInfo method) {
             var def = method.OriginalMethodDefinition;
             var pit = bridgedMethod.Parameters.iterator();
             foreach (var p in def.Parameters) {
@@ -499,7 +499,7 @@ namespace stab.tools.compiler {
         	return getTypeErasure(context, bridgedMethod.ReturnType).OriginalTypeDefinition != getTypeErasure(context, def.ReturnType).OriginalTypeDefinition;
         }
 
-		private static boolean isBridgeDefined(CompilerContext context, TypeInfo type, MethodInfo method) {
+		private static bool isBridgeDefined(CompilerContext context, TypeInfo type, MethodInfo method) {
             method = method.OriginalMethodDefinition;
         	var pcount = method.Parameters.count();
             foreach (var m in type.Methods) {
@@ -1901,7 +1901,7 @@ namespace stab.tools.compiler {
             }
         }
         
-        private static boolean isGenericArray(TypeInfo type) {
+        private static bool isGenericArray(TypeInfo type) {
             if (!type.IsArray) {
                 return false;
             }
@@ -2392,7 +2392,7 @@ namespace stab.tools.compiler {
             gen.endScope();
 
             //
-            //	public final boolean hasNext() {
+            //	public final bool hasNext() {
             //		advance();
             //		return hasNext;
             //	}

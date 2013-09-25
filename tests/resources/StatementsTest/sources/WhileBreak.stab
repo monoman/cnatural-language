@@ -1,5 +1,5 @@
 public class WhileBreak {
-	public static boolean test(int n) {
+	public static bool test(int n) {
 		int i = 10;
 		while (i > 0) {
 			if (i == n) {

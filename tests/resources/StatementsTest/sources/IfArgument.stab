@@ -1,5 +1,5 @@
 public class IfArgument {
-	public static int test(boolean arg) {
+	public static int test(bool arg) {
 		if (arg) {
 			return 1;
 		} else {

@@ -36,7 +36,7 @@ namespace stab.tools.compiler {
         }
         
         MethodInfo resolveMethod(Iterable<MethodInfo> methods, Iterable<ExpressionNode> arguments,
-                TypeInfo returnType, boolean extensionMethods) {
+                TypeInfo returnType, bool extensionMethods) {
             var candidates = new ArrayList<CandidateMethodInfo>();
             var hasLambda = false;
             
@@ -64,7 +64,7 @@ namespace stab.tools.compiler {
                     // Inference phase 1
                     var nit = arguments.iterator();
                     var pit = method.Parameters.iterator();
-                    boolean closedParams = true;
+                    bool closedParams = true;
                     for (int i = 0; i < fixedArgumentCount; i++) {
                         var paramType = pit.next().Type;
                         var argNode = nit.next();
@@ -299,7 +299,7 @@ namespace stab.tools.compiler {
             return result.method;
         }
         
-        boolean resolveDelegate(TypeInfo type, ExpressionNode arg, ExpressionInfo targetInfo, SyntaxNode node) {
+        bool resolveDelegate(TypeInfo type, ExpressionNode arg, ExpressionInfo targetInfo, SyntaxNode node) {
             var invokeMethod = getInvokeMethod(type);
             int nparams = invokeMethod.Parameters.count();
             var ainfo = arg.getUserData(typeof(ExpressionInfo));
@@ -389,7 +389,7 @@ namespace stab.tools.compiler {
             }
         }
         
-        private boolean isArgumentCompatible(ExpressionNode argNode, TypeInfo paramType) {
+        private bool isArgumentCompatible(ExpressionNode argNode, TypeInfo paramType) {
             var ainfo = argNode.getUserData(typeof(ExpressionInfo));
             var cleanInfo = false;
             if (ainfo == null && argNode.ExpressionKind == ExpressionKind.Lambda) {
@@ -426,7 +426,7 @@ namespace stab.tools.compiler {
             return true;
         }
 
-        private VarargCompatible isVarargCompatible(ExpressionNode argNode, TypeInfo paramType, boolean first) {
+        private VarargCompatible isVarargCompatible(ExpressionNode argNode, TypeInfo paramType, bool first) {
             var ainfo = argNode.getUserData(typeof(ExpressionInfo));
             if (ainfo == null) {
                 if (!expressionValidator.handleExpressionNoError(argNode, paramType, true)) {
@@ -461,7 +461,7 @@ namespace stab.tools.compiler {
         // Type inference
         //
         
-        private boolean hasUnfixedTypeVariables(TypeInfo type, HashMap<TypeInfo, TypeVariableInfo> typeVariableInfos) {
+        private bool hasUnfixedTypeVariables(TypeInfo type, HashMap<TypeInfo, TypeVariableInfo> typeVariableInfos) {
             var tv = typeVariableInfos.get(type);
             if (tv != null) {
                 return tv.fixedType == null;
@@ -477,7 +477,7 @@ namespace stab.tools.compiler {
             return false;
         }
     
-        private boolean containsUnfixedVariables(Iterable<TypeInfo> types, HashMap<TypeInfo, TypeVariableInfo> typeVariableInfos) {
+        private bool containsUnfixedVariables(Iterable<TypeInfo> types, HashMap<TypeInfo, TypeVariableInfo> typeVariableInfos) {
             foreach (var type in types) {
                 var tv = typeVariableInfos[type];
                 if (tv.fixedType == null) {
@@ -487,7 +487,7 @@ namespace stab.tools.compiler {
             return false;
         }
 
-        private boolean hasUnfixedTypeVariablesDependingOn(TypeInfo type, HashMap<TypeInfo, TypeVariableInfo> typeVariableInfos,
+        private bool hasUnfixedTypeVariablesDependingOn(TypeInfo type, HashMap<TypeInfo, TypeVariableInfo> typeVariableInfos,
                 HashSet<TypeInfo> visited) {
             if (visited.contains(type)) {
                 return false;
@@ -551,7 +551,7 @@ namespace stab.tools.compiler {
                     }
                 }
                 context.CodeValidationContext.pushLambdaParameters(fromTypes);
-                boolean success = expressionValidator.handleExpressionNoError(expression, null, true);
+                bool success = expressionValidator.handleExpressionNoError(expression, null, true);
                 context.CodeValidationContext.popLambdaParameters();
                 var info = expression.getUserData(typeof(ExpressionInfo));
                 if (info == null) {
@@ -751,7 +751,7 @@ namespace stab.tools.compiler {
             return result;
         }
 
-        private boolean fixTypeVariable(TypeVariableInfo info) {
+        private bool fixTypeVariable(TypeVariableInfo info) {
             info.fixedType = getFixedType(context.TypeSystem, info.bounds);
             return info.fixedType != null;
         }
@@ -777,7 +777,7 @@ namespace stab.tools.compiler {
             }
         }
 
-        private static boolean isExcludedFromInference(TypeInfo type) {
+        private static bool isExcludedFromInference(TypeInfo type) {
             switch (type.TypeKind) {
             case Boolean:
             case Byte:
@@ -802,7 +802,7 @@ namespace stab.tools.compiler {
         // Overload resolution
         //
 
-        private CandidateMethodInfo resolveOverloading(List<CandidateMethodInfo> methodInfos, boolean extensionMethods) {
+        private CandidateMethodInfo resolveOverloading(List<CandidateMethodInfo> methodInfos, bool extensionMethods) {
             if (!extensionMethods) {
                 //
                 // Filter the methods from base types and outer types
@@ -1134,9 +1134,9 @@ namespace stab.tools.compiler {
             MethodInfo method;
             TypeInfo[] parameterTypes;
             Iterable<ExpressionNode> arguments;
-            boolean expandedForm;
+            bool expandedForm;
 
-            CandidateMethodInfo(MethodInfo method, TypeInfo[] parameterTypes, Iterable<ExpressionNode> arguments, boolean expandedForm) {
+            CandidateMethodInfo(MethodInfo method, TypeInfo[] parameterTypes, Iterable<ExpressionNode> arguments, bool expandedForm) {
                 this.method = method;
                 this.parameterTypes = parameterTypes;
                 this.arguments = arguments;

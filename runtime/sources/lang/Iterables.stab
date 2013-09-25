@@ -20,26 +20,26 @@ using java.util;
 namespace stab.lang {
 
     /// <summary>
-    /// Gives access to an iterator over a collection of boolean values.
+    /// Gives access to an iterator over a collection of bool values.
     /// </summary>
     /// <remarks>
     /// The compiler uses this interface to compile the foreach construct without boxing / unboxing.
     /// </remarks>
 	public interface BooleanIterable : Iterable<Boolean> {
         /// <summary>
-        /// Creates an iterator over a collection of boolean values.
+        /// Creates an iterator over a collection of bool values.
         /// </summary>
 		BooleanIterator iterator();
 	}
 	
     /// <summary>
-    /// Gives access to the elements of a collection of boolean values.
+    /// Gives access to the elements of a collection of bool values.
     /// </summary>
 	public interface BooleanIterator : Iterator<Boolean> {
         /// <summary>
-        /// Advances to the next boolean in the collection and returns it.
+        /// Advances to the next bool in the collection and returns it.
         /// </summary>
-		boolean nextBoolean();
+		bool nextBoolean();
 	}
 
     /// <summary>

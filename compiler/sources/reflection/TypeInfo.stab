@@ -92,103 +92,103 @@ namespace stab.reflection {
             }
         }
         
-        public boolean IsAbstract {
+        public bool IsAbstract {
             get {
                 return (this.Modifiers & Opcodes.ACC_ABSTRACT) != 0;
             }
         }
         
-        public boolean IsAnnotation {
+        public bool IsAnnotation {
             get {
                 return (this.Modifiers & Opcodes.ACC_ANNOTATION) != 0;
             }
         }
         
-        public boolean IsEnum {
+        public bool IsEnum {
             get {
                 return (this.Modifiers & Opcodes.ACC_ENUM) != 0;
             }
         }
         
-        public boolean IsFinal {
+        public bool IsFinal {
             get {
                 return (this.Modifiers & Opcodes.ACC_FINAL) != 0;
             }
         }
         
-        public boolean IsInterface {
+        public bool IsInterface {
             get {
                 return (this.Modifiers & Opcodes.ACC_INTERFACE) != 0;
             }
         }
         
-        public boolean IsPublic {
+        public bool IsPublic {
             get {
                 return (this.Modifiers & Opcodes.ACC_PUBLIC) != 0;
             }
         }
         
-        public boolean IsSynthetic {
+        public bool IsSynthetic {
             get {
                 return (this.Modifiers & Opcodes.ACC_SYNTHETIC) != 0;
             }
         }
         
-        public boolean IsNestedAbstract {
+        public bool IsNestedAbstract {
             get {
                 return (this.NestedModifiers & Opcodes.ACC_ABSTRACT) != 0;
             }
         }
 
-        public boolean IsNestedAnnotation {
+        public bool IsNestedAnnotation {
             get {
                 return (this.NestedModifiers & Opcodes.ACC_ANNOTATION) != 0;
             }
         }
 
-        public boolean IsNestedEnum {
+        public bool IsNestedEnum {
             get {
                 return (this.NestedModifiers & Opcodes.ACC_ENUM) != 0;
             }
         }
 
-        public boolean IsNestedFinal {
+        public bool IsNestedFinal {
             get {
                 return (this.NestedModifiers & Opcodes.ACC_FINAL) != 0;
             }
         }
 
-        public boolean IsNestedInterface {
+        public bool IsNestedInterface {
             get {
                 return (this.NestedModifiers & Opcodes.ACC_INTERFACE) != 0;
             }
         }
 
-        public boolean IsNestedPrivate {
+        public bool IsNestedPrivate {
             get {
                 return (this.NestedModifiers & Opcodes.ACC_PRIVATE) != 0;
             }
         }
 
-        public boolean IsNestedProtected {
+        public bool IsNestedProtected {
             get {
                 return (this.NestedModifiers & Opcodes.ACC_PROTECTED) != 0;
             }
         }
 
-        public boolean IsNestedPublic {
+        public bool IsNestedPublic {
             get {
                 return (this.NestedModifiers & Opcodes.ACC_PUBLIC) != 0;
             }
         }
 
-        public boolean IsNestedStatic {
+        public bool IsNestedStatic {
             get {
                 return (this.NestedModifiers & Opcodes.ACC_STATIC) != 0;
             }
         }
 
-        public boolean IsNestedSynthetic {
+        public bool IsNestedSynthetic {
             get {
                 return (this.NestedModifiers & Opcodes.ACC_SYNTHETIC) != 0;
             }
@@ -303,13 +303,13 @@ namespace stab.reflection {
             }
         }
         
-        public boolean IsRaw {
+        public bool IsRaw {
             get {
                 return !this.GenericArguments.any() && this.GenericTypeDefinition != null;
             }
         }
 
-        public boolean IsGenericTypeDefinition {
+        public bool IsGenericTypeDefinition {
             get {
                 return this.GenericArguments.any() && this.GenericTypeDefinition == null;
             }
@@ -325,7 +325,7 @@ namespace stab.reflection {
             }
         }
         
-        public boolean IsPrimitive {
+        public bool IsPrimitive {
             get {
                 switch (this.TypeKind) {
                 case Boolean:
@@ -344,25 +344,25 @@ namespace stab.reflection {
             }
         }
         
-        public boolean IsCategory2 {
+        public bool IsCategory2 {
             get {
                 return this.TypeKind == TypeKind.Long || this.TypeKind == TypeKind.Double;
             }
         }
         
-        public boolean IsNumeric {
+        public bool IsNumeric {
             get {
                 return this.NumericTypeKind != NumericTypeKind.None;
             }
         }
         
-        public boolean IsArray {
+        public bool IsArray {
             get {
                 return this.TypeKind == TypeKind.Array;
             }
         }
         
-        public boolean IsGenericParameter {
+        public bool IsGenericParameter {
             get {
                 return this.TypeKind == TypeKind.GenericParameter;
             }
@@ -383,7 +383,7 @@ namespace stab.reflection {
             return this.NestedTypes.where(p => p.Name.equals(name)).firstOrDefault();
         }
         
-        public boolean isAssignableFrom(TypeInfo type) {
+        public bool isAssignableFrom(TypeInfo type) {
             if (this == type || this.IsObject) {
                 return true;
             }
@@ -514,7 +514,7 @@ namespace stab.reflection {
             return false;
         }
         
-        public boolean canAccessMember(TypeInfo declaringType, boolean isPublic, boolean isProtected, boolean isPrivate) {
+        public bool canAccessMember(TypeInfo declaringType, bool isPublic, bool isProtected, bool isPrivate) {
             if (this == declaringType.OriginalTypeDefinition || this == declaringType) {
                 return true;
             }
@@ -562,19 +562,19 @@ namespace stab.reflection {
             return this.Interfaces.selectMany(f).concat(this.getBaseClasses().selectMany(f)).distinct();
         }
         
-        public boolean IsObject {
+        public bool IsObject {
             get {
                 return this.TypeKind == TypeKind.Reference && this.BaseType == null;
             }
         }
         
-        public boolean IsBoolean {
+        public bool IsBoolean {
             get {
                 return this == this.Library.BooleanType || this.FullName.equals("java/lang/Boolean");
             }
         }
         
-        public boolean IsClosed {
+        public bool IsClosed {
             get {
                 switch (this.TypeKind) {
                 case GenericParameter:
@@ -594,7 +594,7 @@ namespace stab.reflection {
             }
         }
 
-		public boolean HasWildcardArgument {
+		public bool HasWildcardArgument {
 			get {
                 switch (this.TypeKind) {
                 case LowerBoundedWildcard:

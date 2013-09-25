@@ -1,7 +1,7 @@
 using java.lang;
 
 public class GenericMethodImplementation2 : GenericMethodImplementation2Aux {
-	public static boolean test() {
+	public static bool test() {
 		var obj = new GenericMethodImplementation2();
 		var t = new[] { "STR" };
 		return obj.call(t).equals(t);

@@ -1,5 +1,5 @@
 public class WildcardBoundParameter<U> {
-	public static boolean test() {
+	public static bool test() {
 		return true;
 	}
 	

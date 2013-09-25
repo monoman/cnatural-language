@@ -47,7 +47,7 @@ namespace stab.tools.helpers {
 			throw new IllegalArgumentException(key.toString());
 		}
 		
-		public boolean hasBinding(T key) {
+		public bool hasBinding(T key) {
 			for (int i = this.bindingStack.size() - 1; i >= 0; --i) {
 				if (this.bindingStack[i].containsKey(key)) {
 					return true;
@@ -80,7 +80,7 @@ namespace stab.tools.helpers {
 			
 			public V Value^;
 			
-			public override boolean equals(Object obj) {
+			public override bool equals(Object obj) {
 				if (obj instanceof Entry<?, ?>) {
 					var e = (Entry<?, ?>)obj;
 					return this.Key.equals(e.Key);

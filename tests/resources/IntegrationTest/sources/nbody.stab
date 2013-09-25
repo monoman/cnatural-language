@@ -3,7 +3,7 @@
 using java.lang;
 
 public class nbody {
-    public static boolean test(int n, String v1, String v2) {
+    public static bool test(int n, String v1, String v2) {
         var bodies = new NBodySystem();
         if (!v1.equals("" + bodies.energy()))
         	return false;

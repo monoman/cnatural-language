@@ -5,7 +5,7 @@ using javax.xml.bind.annotation;
 [XmlAccessorType(XmlAccessType.FIELD)]
 public class AnnotationEnum {
 
-	public static boolean test() {
+	public static bool test() {
 		var c = typeof(AnnotationEnum);
 		var a = c.getAnnotation(typeof(XmlAccessorType));
 		return a.value() == XmlAccessType.FIELD;

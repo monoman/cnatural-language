@@ -89,7 +89,7 @@ namespace stab.tools.compiler {
             this.unreachableStatementsHandler = new UnreachableStatementsHandler(context);
         }
         
-        Iterable<UninitializedLocalInfo> checkMethod(MethodInfo method, BlockStatementNode body, boolean insertReturn) {
+        Iterable<UninitializedLocalInfo> checkMethod(MethodInfo method, BlockStatementNode body, bool insertReturn) {
             uninitializedLocals = new HashMap<LocalMemberInfo, UninitializedLocalInfo>();
             initializedLocals = new HashMap<LocalMemberInfo, InitializedLocalInfo>();
             
@@ -118,7 +118,7 @@ namespace stab.tools.compiler {
             return uninitializedLocals.values();
         }
         
-        static boolean isEndPointReachable(StatementNode statement) {
+        static bool isEndPointReachable(StatementNode statement) {
             var info = statement.getUserData(typeof(StatementInfo));
             return (info == null) ? false : info.IsEndPointReachable;
         }
@@ -629,7 +629,7 @@ namespace stab.tools.compiler {
             tryStatement.addOrReplaceUserData(info);
             tryStatement.Block.addOrReplaceUserData(enclosingStatements);
             handleStatement(tryStatement.Block, null);
-            boolean isEndPointReachable = tryStatement.Block.getUserData(typeof(StatementInfo)).IsEndPointReachable;
+            bool isEndPointReachable = tryStatement.Block.getUserData(typeof(StatementInfo)).IsEndPointReachable;
             foreach (var node in tryStatement.CatchClauses) {
                 var stmts = node.Block.Statements;
                 if (stmts.size() > 0) {
@@ -736,14 +736,14 @@ namespace stab.tools.compiler {
             }
             
             protected override Void handleAnonymousObjectCreation(AnonymousObjectCreationExpressionNode anonymousObject,
-                    Void source, boolean nested) {
+                    Void source, bool nested) {
                 foreach (var decl in anonymousObject.MemberDeclarators) {
                     handleExpression(decl.Value, null, true);
                 }
                 return null;
             }
             
-            protected override Void handleArrayCreation(ArrayCreationExpressionNode arrayCreation, Void source, boolean nested) {
+            protected override Void handleArrayCreation(ArrayCreationExpressionNode arrayCreation, Void source, bool nested) {
                 foreach (var e in arrayCreation.DimensionExpressions) {
                     handleExpression(e, null, true);
                 }
@@ -753,14 +753,14 @@ namespace stab.tools.compiler {
                 return null;
             }
             
-            protected override Void handleArrayInitializer(ArrayInitializerExpressionNode arrayInitializer, Void source, boolean nested) {
+            protected override Void handleArrayInitializer(ArrayInitializerExpressionNode arrayInitializer, Void source, bool nested) {
                 foreach (var e in arrayInitializer.Values) {
                     handleExpression(e, null, true);
                 }
                 return null;
             }
             
-            protected override Void handleAssign(AssignExpressionNode assign, Void source, boolean nested) {
+            protected override Void handleAssign(AssignExpressionNode assign, Void source, bool nested) {
                 if (assign.Left.ExpressionKind == ExpressionKind.SimpleName) {
                     var linfo = assign.Left.getUserData(typeof(ExpressionInfo));
                     var member = linfo.Member;
@@ -783,25 +783,25 @@ namespace stab.tools.compiler {
                 return null;
             }
         
-            protected override Void handleBinary(BinaryExpressionNode binary, Void source, boolean nested) {
+            protected override Void handleBinary(BinaryExpressionNode binary, Void source, bool nested) {
                 handleExpression(binary.LeftOperand, null, true);
                 handleExpression(binary.RightOperand, null, true);
                 return null;
             }
             
-            protected override Void handleCast(CastExpressionNode cast, Void source, boolean nested) {
+            protected override Void handleCast(CastExpressionNode cast, Void source, bool nested) {
                 handleExpression(cast.Expression, null, true);
                 return null;
             }
             
-            protected override Void handleConditional(ConditionalExpressionNode conditional, Void source, boolean nested) {
+            protected override Void handleConditional(ConditionalExpressionNode conditional, Void source, bool nested) {
                 handleExpression(conditional.Condition, null, true);
                 handleExpression(conditional.IfTrue, null, true);
                 handleExpression(conditional.IfFalse, null, true);
                 return null;
             }
             
-            protected override Void handleElementAccess(ElementAccessExpressionNode elementAccess, Void source, boolean nested) {
+            protected override Void handleElementAccess(ElementAccessExpressionNode elementAccess, Void source, bool nested) {
                 handleExpression(elementAccess.TargetObject, null, true);
                 foreach (var arg in elementAccess.Indexes) {
                     handleExpression(arg, null, true);
@@ -809,7 +809,7 @@ namespace stab.tools.compiler {
                 return null;
             }
             
-            protected override Void handleInvocation(InvocationExpressionNode invocation, Void source, boolean nested) {
+            protected override Void handleInvocation(InvocationExpressionNode invocation, Void source, bool nested) {
                 handleExpression(invocation.TargetObject, null, true);
                 foreach (var arg in invocation.Arguments) {
                     handleExpression(arg, null, true);
@@ -817,7 +817,7 @@ namespace stab.tools.compiler {
                 return null;
             }
             
-            protected override Void handleLambda(LambdaExpressionNode lambda, Void source, boolean nested) {
+            protected override Void handleLambda(LambdaExpressionNode lambda, Void source, bool nested) {
                 var methodBuilder = lambda.getUserData(typeof(MethodBuilder));
                 if (lambda.Body instanceof BlockStatementNode) {
                     var body = (BlockStatementNode)lambda.Body;
@@ -842,16 +842,16 @@ namespace stab.tools.compiler {
                 return null;
             }
             
-            protected override Void handleLiteral(LiteralExpressionNode literal, Void source, boolean nested) {
+            protected override Void handleLiteral(LiteralExpressionNode literal, Void source, bool nested) {
                 return null;
             }
             
-            protected override Void handleMemberAccess(MemberAccessExpressionNode memberAccess, Void source, boolean nested) {
+            protected override Void handleMemberAccess(MemberAccessExpressionNode memberAccess, Void source, bool nested) {
                 handleExpression(memberAccess.TargetObject, null, true);
                 return null;
             }
             
-            protected override Void handleObjectCreation(ObjectCreationExpressionNode objectCreation, Void source, boolean nested) {
+            protected override Void handleObjectCreation(ObjectCreationExpressionNode objectCreation, Void source, bool nested) {
                 foreach (var arg in objectCreation.Arguments) {
                     handleExpression(arg, null, true);
                 }
@@ -874,7 +874,7 @@ namespace stab.tools.compiler {
                 return null;
             }
             
-            protected override Void handleSimpleName(SimpleNameExpressionNode simpleName, Void source, boolean nested) {
+            protected override Void handleSimpleName(SimpleNameExpressionNode simpleName, Void source, bool nested) {
                 var info = simpleName.getUserData(typeof(ExpressionInfo));
                 var minfo = statementChecker.uninitializedLocals[info.Member];
                 if (minfo != null) {
@@ -886,28 +886,28 @@ namespace stab.tools.compiler {
                 return null;
             }
 
-            protected override Void handleSizeof(SizeofExpressionNode sizeofExpression, Void source, boolean nested) {
+            protected override Void handleSizeof(SizeofExpressionNode sizeofExpression, Void source, bool nested) {
                 handleExpression(sizeofExpression.Expression, null, true);
                 return null;
             }
 
-            protected override Void handleSuperAccess(SuperAccessExpressionNode superAccess, Void source, boolean nested) {
+            protected override Void handleSuperAccess(SuperAccessExpressionNode superAccess, Void source, bool nested) {
                 return null;
             }
             
-            protected override Void handleThisAccess(ThisAccessExpressionNode thisAccess, Void source, boolean nested) {
+            protected override Void handleThisAccess(ThisAccessExpressionNode thisAccess, Void source, bool nested) {
                 return null;
             }
             
-            protected override Void handleType(TypeExpressionNode type, Void source, boolean nested) {
+            protected override Void handleType(TypeExpressionNode type, Void source, bool nested) {
                 return null;
             }
             
-            protected override Void handleTypeof(TypeofExpressionNode typeofExpression, Void source, boolean nested) {
+            protected override Void handleTypeof(TypeofExpressionNode typeofExpression, Void source, bool nested) {
                 return null;
             }
             
-            protected override Void handleUnary(UnaryExpressionNode unary, Void source, boolean nested) {
+            protected override Void handleUnary(UnaryExpressionNode unary, Void source, bool nested) {
                 handleExpression(unary.Operand, null, true);
                 return null;
             }
@@ -1178,14 +1178,14 @@ namespace stab.tools.compiler {
                 }
                 
                 protected override Void handleAnonymousObjectCreation(AnonymousObjectCreationExpressionNode anonymousObject,
-                        Void source, boolean nested) {
+                        Void source, bool nested) {
                     foreach (var decl in anonymousObject.MemberDeclarators) {
                         handleExpression(decl.Value, null, true);
                     }
                     return null;
                 }	
 
-                protected override Void handleArrayCreation(ArrayCreationExpressionNode arrayCreation, Void source, boolean nested) {
+                protected override Void handleArrayCreation(ArrayCreationExpressionNode arrayCreation, Void source, bool nested) {
                     foreach (var e in arrayCreation.DimensionExpressions) {
                         handleExpression(e, null, true);
                     }
@@ -1195,38 +1195,38 @@ namespace stab.tools.compiler {
                     return null;
                 }
                 
-                protected override Void handleArrayInitializer(ArrayInitializerExpressionNode arrayInitializer, Void source, boolean nested) {
+                protected override Void handleArrayInitializer(ArrayInitializerExpressionNode arrayInitializer, Void source, bool nested) {
                     foreach (var e in arrayInitializer.Values) {
                         handleExpression(e, null, true);
                     }
                     return null;
                 }
                 
-                protected override Void handleAssign(AssignExpressionNode assign, Void source, boolean nested) {
+                protected override Void handleAssign(AssignExpressionNode assign, Void source, bool nested) {
                     handleExpression(assign.Left, null, true);
                     handleExpression(assign.Right, null, true);
                     return null;
                 }
             
-                protected override Void handleBinary(BinaryExpressionNode binary, Void source, boolean nested) {
+                protected override Void handleBinary(BinaryExpressionNode binary, Void source, bool nested) {
                     handleExpression(binary.LeftOperand, null, true);
                     handleExpression(binary.RightOperand, null, true);
                     return null;
                 }
                 
-                protected override Void handleCast(CastExpressionNode cast, Void source, boolean nested) {
+                protected override Void handleCast(CastExpressionNode cast, Void source, bool nested) {
                     handleExpression(cast.Expression, null, true);
                     return null;
                 }
                 
-                protected override Void handleConditional(ConditionalExpressionNode conditional, Void source, boolean nested) {
+                protected override Void handleConditional(ConditionalExpressionNode conditional, Void source, bool nested) {
                     handleExpression(conditional.Condition, null, true);
                     handleExpression(conditional.IfTrue, null, true);
                     handleExpression(conditional.IfFalse, null, true);
                     return null;
                 }
                 
-                protected override Void handleElementAccess(ElementAccessExpressionNode elementAccess, Void source, boolean nested) {
+                protected override Void handleElementAccess(ElementAccessExpressionNode elementAccess, Void source, bool nested) {
                     handleExpression(elementAccess.TargetObject, null, true);
                     foreach (var arg in elementAccess.Indexes) {
                         handleExpression(arg, null, true);
@@ -1234,7 +1234,7 @@ namespace stab.tools.compiler {
                     return null;
                 }
                 
-                protected override Void handleInvocation(InvocationExpressionNode invocation, Void source, boolean nested) {
+                protected override Void handleInvocation(InvocationExpressionNode invocation, Void source, bool nested) {
                     handleExpression(invocation.TargetObject, null, true);
                     foreach (var arg in invocation.Arguments) {
                         handleExpression(arg, null, true);
@@ -1242,21 +1242,21 @@ namespace stab.tools.compiler {
                     return null;
                 }
                 
-                protected override Void handleLambda(LambdaExpressionNode lambda, Void source, boolean nested) {
+                protected override Void handleLambda(LambdaExpressionNode lambda, Void source, bool nested) {
                     statementHandler.handleStatement(lambda.Body, null);
                     return null;
                 }
                 
-                protected override Void handleLiteral(LiteralExpressionNode literal, Void source, boolean nested) {
+                protected override Void handleLiteral(LiteralExpressionNode literal, Void source, bool nested) {
                     return null;
                 }
                 
-                protected override Void handleMemberAccess(MemberAccessExpressionNode memberAccess, Void source, boolean nested) {
+                protected override Void handleMemberAccess(MemberAccessExpressionNode memberAccess, Void source, bool nested) {
                     handleExpression(memberAccess.TargetObject, null, true);
                     return null;
                 }
                 
-                protected override Void handleObjectCreation(ObjectCreationExpressionNode objectCreation, Void source, boolean nested) {
+                protected override Void handleObjectCreation(ObjectCreationExpressionNode objectCreation, Void source, bool nested) {
                     foreach (var arg in objectCreation.Arguments) {
                         handleExpression(arg, null, true);
                     }
@@ -1279,32 +1279,32 @@ namespace stab.tools.compiler {
                     return null;
                 }
                 
-                protected override Void handleSimpleName(SimpleNameExpressionNode simpleName, Void source, boolean nested) {
+                protected override Void handleSimpleName(SimpleNameExpressionNode simpleName, Void source, bool nested) {
                     return null;
                 }
 
-                protected override Void handleSizeof(SizeofExpressionNode sizeofExpression, Void source, boolean nested) {
+                protected override Void handleSizeof(SizeofExpressionNode sizeofExpression, Void source, bool nested) {
                     handleExpression(sizeofExpression.Expression, null, true);
                     return null;
                 }
 
-                protected override Void handleSuperAccess(SuperAccessExpressionNode superAccess, Void source, boolean nested) {
+                protected override Void handleSuperAccess(SuperAccessExpressionNode superAccess, Void source, bool nested) {
                     return null;
                 }
                 
-                protected override Void handleThisAccess(ThisAccessExpressionNode thisAccess, Void source, boolean nested) {
+                protected override Void handleThisAccess(ThisAccessExpressionNode thisAccess, Void source, bool nested) {
                     return null;
                 }
                 
-                protected override Void handleType(TypeExpressionNode type, Void source, boolean nested) {
+                protected override Void handleType(TypeExpressionNode type, Void source, bool nested) {
                     return null;
                 }
                 
-                protected override Void handleTypeof(TypeofExpressionNode typeofExpression, Void source, boolean nested) {
+                protected override Void handleTypeof(TypeofExpressionNode typeofExpression, Void source, bool nested) {
                     return null;
                 }
                 
-                protected override Void handleUnary(UnaryExpressionNode unary, Void source, boolean nested) {
+                protected override Void handleUnary(UnaryExpressionNode unary, Void source, bool nested) {
                     handleExpression(unary.Operand, null, true);
                     return null;
                 }

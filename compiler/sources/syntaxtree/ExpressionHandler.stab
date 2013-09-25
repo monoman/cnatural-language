@@ -19,13 +19,13 @@ using java.lang;
 namespace stab.tools.syntaxtree {
 
 	public abstract class ExpressionHandler<TSource, TResult> {
-		private boolean failWhenUnhandled;
+		private bool failWhenUnhandled;
 		
-		protected ExpressionHandler(boolean failWhenUnhandled) {
+		protected ExpressionHandler(bool failWhenUnhandled) {
 			this.failWhenUnhandled = failWhenUnhandled;
 		}
 		
-		public virtual TResult handleExpression(ExpressionNode expression, TSource source, boolean nested) {
+		public virtual TResult handleExpression(ExpressionNode expression, TSource source, bool nested) {
 			switch (expression.ExpressionKind) {
 			case AnonymousObjectCreation:
 				return handleAnonymousObjectCreation((AnonymousObjectCreationExpressionNode)expression, source, nested);
@@ -106,95 +106,95 @@ namespace stab.tools.syntaxtree {
 		}
 		
 		protected virtual TResult handleAnonymousObjectCreation(AnonymousObjectCreationExpressionNode anonymousObject, TSource source,
-				boolean nested) {
+				bool nested) {
 			return defaultHandler();
 		}
 		
-		protected virtual TResult handleArrayCreation(ArrayCreationExpressionNode arrayCreation, TSource source, boolean nested) {
+		protected virtual TResult handleArrayCreation(ArrayCreationExpressionNode arrayCreation, TSource source, bool nested) {
 			return defaultHandler();
 		}
 		
-		protected virtual TResult handleArrayInitializer(ArrayInitializerExpressionNode arrayInitializer, TSource source, boolean nested) {
+		protected virtual TResult handleArrayInitializer(ArrayInitializerExpressionNode arrayInitializer, TSource source, bool nested) {
 			return defaultHandler();
 		}
 		
-		protected virtual TResult handleAssign(AssignExpressionNode assign, TSource source, boolean nested) {
+		protected virtual TResult handleAssign(AssignExpressionNode assign, TSource source, bool nested) {
 			return defaultHandler();
 		}
 		
-		protected virtual TResult handleBinary(BinaryExpressionNode binary, TSource source, boolean nested) {
+		protected virtual TResult handleBinary(BinaryExpressionNode binary, TSource source, bool nested) {
 			return defaultHandler();
 		}
 		
-		protected virtual TResult handleCast(CastExpressionNode cast, TSource source, boolean nested) {
+		protected virtual TResult handleCast(CastExpressionNode cast, TSource source, bool nested) {
 			return defaultHandler();
 		}
 		
-		protected virtual TResult handleCollectionInitializer(CollectionInitializerExpressionNode initializer, TSource source, boolean nested) {
+		protected virtual TResult handleCollectionInitializer(CollectionInitializerExpressionNode initializer, TSource source, bool nested) {
 			return defaultHandler();
 		}
 		
-		protected virtual TResult handleConditional(ConditionalExpressionNode conditional, TSource source, boolean nested) {
+		protected virtual TResult handleConditional(ConditionalExpressionNode conditional, TSource source, bool nested) {
 			return defaultHandler();
 		}
 		
-		protected virtual TResult handleElementAccess(ElementAccessExpressionNode elementAccess, TSource source, boolean nested) {
+		protected virtual TResult handleElementAccess(ElementAccessExpressionNode elementAccess, TSource source, bool nested) {
 			return defaultHandler();
 		}
 		
-		protected virtual TResult handleInvocation(InvocationExpressionNode invocation, TSource source, boolean nested) {
+		protected virtual TResult handleInvocation(InvocationExpressionNode invocation, TSource source, bool nested) {
 			return defaultHandler();
 		}
 		
-		protected virtual TResult handleLambda(LambdaExpressionNode lambda, TSource source, boolean nested) {
+		protected virtual TResult handleLambda(LambdaExpressionNode lambda, TSource source, bool nested) {
 			return defaultHandler();
 		}
 		
-		protected virtual TResult handleLiteral(LiteralExpressionNode literal, TSource source, boolean nested) {
+		protected virtual TResult handleLiteral(LiteralExpressionNode literal, TSource source, bool nested) {
 			return defaultHandler();
 		}
 		
-		protected virtual TResult handleMemberAccess(MemberAccessExpressionNode memberAccess, TSource source, boolean nested) {
+		protected virtual TResult handleMemberAccess(MemberAccessExpressionNode memberAccess, TSource source, bool nested) {
 			return defaultHandler();
 		}
 		
-		protected virtual TResult handleObjectCreation(ObjectCreationExpressionNode objectCreation, TSource source, boolean nested) {
+		protected virtual TResult handleObjectCreation(ObjectCreationExpressionNode objectCreation, TSource source, bool nested) {
 			return defaultHandler();
 		}
 		
-		protected virtual TResult handleObjectInitializer(ObjectInitializerExpressionNode initializer, TSource source, boolean nested) {
+		protected virtual TResult handleObjectInitializer(ObjectInitializerExpressionNode initializer, TSource source, bool nested) {
 			return defaultHandler();
 		}
 		
-		protected virtual TResult handleQuery(QueryExpressionNode query, TSource source, boolean nested) {
+		protected virtual TResult handleQuery(QueryExpressionNode query, TSource source, bool nested) {
 			return defaultHandler();
 		}
 		
-		protected virtual TResult handleSimpleName(SimpleNameExpressionNode simpleName, TSource source, boolean nested) {
+		protected virtual TResult handleSimpleName(SimpleNameExpressionNode simpleName, TSource source, bool nested) {
 			return defaultHandler();
 		}
 		
-		protected virtual TResult handleSizeof(SizeofExpressionNode sizeofExpression, TSource source, boolean nested) {
+		protected virtual TResult handleSizeof(SizeofExpressionNode sizeofExpression, TSource source, bool nested) {
 			return defaultHandler();
 		}
 		
-		protected virtual TResult handleSuperAccess(SuperAccessExpressionNode superAccess, TSource source, boolean nested) {
+		protected virtual TResult handleSuperAccess(SuperAccessExpressionNode superAccess, TSource source, bool nested) {
 			return defaultHandler();
 		}
 		
-		protected virtual TResult handleThisAccess(ThisAccessExpressionNode thisAccess, TSource source, boolean nested) {
+		protected virtual TResult handleThisAccess(ThisAccessExpressionNode thisAccess, TSource source, bool nested) {
 			return defaultHandler();
 		}
 
-		protected virtual TResult handleType(TypeExpressionNode type, TSource source, boolean nested) {
+		protected virtual TResult handleType(TypeExpressionNode type, TSource source, bool nested) {
 			return defaultHandler();
 		}
 
-		protected virtual TResult handleTypeof(TypeofExpressionNode typeofExpression, TSource source, boolean nested) {
+		protected virtual TResult handleTypeof(TypeofExpressionNode typeofExpression, TSource source, bool nested) {
 			return defaultHandler();
 		}
 
-		protected virtual TResult handleUnary(UnaryExpressionNode unary, TSource source, boolean nested) {
+		protected virtual TResult handleUnary(UnaryExpressionNode unary, TSource source, bool nested) {
 			return defaultHandler();
 		}
 		

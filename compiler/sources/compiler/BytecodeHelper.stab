@@ -56,7 +56,7 @@ namespace stab.tools.compiler {
             IterableTypes.add("java/lang/Iterable");
         }
 
-        public static boolean hasImplicitConversion(TypeInfo fromType, TypeInfo toType) {
+        public static bool hasImplicitConversion(TypeInfo fromType, TypeInfo toType) {
             if (fromType == null) {
                 return !toType.IsPrimitive;
             }
@@ -104,7 +104,7 @@ namespace stab.tools.compiler {
             return getImplicitConversion(fromType.BaseType, toType);
         }
     
-        public static boolean isCompiledToObject(TypeInfo type) {
+        public static bool isCompiledToObject(TypeInfo type) {
             if (type.IsObject) {
                 return true;
             }
@@ -194,7 +194,7 @@ namespace stab.tools.compiler {
             }
         }
         
-        static boolean isDelegateType(TypeInfo type) {
+        static bool isDelegateType(TypeInfo type) {
             TypeInfo baseType = type;
             while ((baseType = baseType.BaseType) != null) {
                 if (baseType.FullName.equals("stab/lang/Delegate")) {
@@ -204,11 +204,11 @@ namespace stab.tools.compiler {
             return false;
         }
         
-        static boolean isExpressionTreeType(TypeInfo type) {
+        static bool isExpressionTreeType(TypeInfo type) {
             return type.FullName.equals("stab/tree/ExpressionTree");
         }
     
-        static boolean isIterableType(TypeInfo type) {
+        static bool isIterableType(TypeInfo type) {
             return IterableTypes.contains(type.FullName);
         }
 
@@ -692,51 +692,51 @@ namespace stab.tools.compiler {
             return method.Annotations;
         }
 
-        public static boolean isDeprecated(Library typeSystem, TypeInfo type) {
+        public static bool isDeprecated(Library typeSystem, TypeInfo type) {
             return containsDeprecated(getAnnotations(typeSystem, type));
         }
         
-        public static boolean isDeprecated(Library typeSystem, MethodInfo method) {
+        public static bool isDeprecated(Library typeSystem, MethodInfo method) {
             return containsDeprecated(getAnnotations(typeSystem, method));
         }
         
-        public static boolean isDeprecated(Library typeSystem, FieldInfo field) {
+        public static bool isDeprecated(Library typeSystem, FieldInfo field) {
             return containsDeprecated(field.Annotations);
         }
         
-        public static boolean isDeprecated(Library typeSystem, ParameterInfo parameter) {
+        public static bool isDeprecated(Library typeSystem, ParameterInfo parameter) {
             return containsDeprecated(parameter.Annotations);
         }
         
-        private static boolean containsDeprecated(Iterable<AnnotationValue> annotations) {
+        private static bool containsDeprecated(Iterable<AnnotationValue> annotations) {
             return annotations.any(p => p.Type.FullName.equals("java/lang/Deprecated"));
         }
         
-        public static boolean isConditional(AnnotationValue annotation) {
+        public static bool isConditional(AnnotationValue annotation) {
             return annotation.Type.FullName.equals("stab/lang/Conditional");
         }
 
-        public static boolean isStaticClass(AnnotationValue annotation) {
+        public static bool isStaticClass(AnnotationValue annotation) {
             return annotation.Type.FullName.equals("stab/lang/StaticClass");
         }
 
-        public static boolean isDispose(AnnotationValue annotation) {
+        public static bool isDispose(AnnotationValue annotation) {
             return annotation.Type.FullName.equals("stab/lang/Dispose");
         }
 
-        public static boolean isExtensionMethod(AnnotationValue annotation) {
+        public static bool isExtensionMethod(AnnotationValue annotation) {
             return annotation.Type.FullName.equals("stab/lang/ExtensionMethod");
         }
 
-        public static boolean isIndexerGet(AnnotationValue annotation) {
+        public static bool isIndexerGet(AnnotationValue annotation) {
             return annotation.Type.FullName.equals("stab/lang/IndexerGet");
         }
         
-        public static boolean isIndexerSet(AnnotationValue annotation) {
+        public static bool isIndexerSet(AnnotationValue annotation) {
             return annotation.Type.FullName.equals("stab/lang/IndexerSet");
         }
         
-        public static boolean isPropertyGet(AnnotationValue annotation) {
+        public static bool isPropertyGet(AnnotationValue annotation) {
             return annotation.Type.FullName.equals("stab/lang/PropertyGet");
         }
         
@@ -758,7 +758,7 @@ namespace stab.tools.compiler {
             return result;
         }
         
-        public static boolean isPropertySet(AnnotationValue annotation) {
+        public static bool isPropertySet(AnnotationValue annotation) {
             return annotation.Type.FullName.equals("stab/lang/PropertySet");
         }
         

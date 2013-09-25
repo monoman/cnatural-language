@@ -1,7 +1,7 @@
 using java.lang;
 
 public class WildcardConstraintArgument<T> {
-	public static boolean test() {
+	public static bool test() {
 		WildcardConstraintArgument<String> obj1 = new WildcardConstraintArgument<String>("str");
 		WildcardConstraintArgument<Integer> obj2 = new WildcardConstraintArgument<Integer>(1);
 		return method(obj1) instanceof Double && method(obj2) instanceof Integer;

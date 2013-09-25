@@ -59,7 +59,7 @@ namespace stab.tools.eclipse.helpers {
 			}
 		}
 	
-		public static boolean hasNature(IProject project, String natureId) {
+		public static bool hasNature(IProject project, String natureId) {
 			if (project.exists() && project.isOpen()) {
 				try {
 					return project.hasNature(natureId);

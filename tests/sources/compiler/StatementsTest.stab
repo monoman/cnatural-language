@@ -43,12 +43,12 @@ namespace stab.tools.compiler.test {
 		
 		[Test]
 		public void ifArgument() {
-			doTest("IfArgument", new Class<?>[] { typeof(boolean) }, new Object[] { true }, 1);
+			doTest("IfArgument", new Class<?>[] { typeof(bool) }, new Object[] { true }, 1);
 		}
 		
 		[Test]
 		public void ifArgument_2() {
-			doTest("IfArgument", new Class<?>[] { typeof(boolean) }, new Object[] { false }, 2);
+			doTest("IfArgument", new Class<?>[] { typeof(bool) }, new Object[] { false }, 2);
 		}
 		
 		[Test]

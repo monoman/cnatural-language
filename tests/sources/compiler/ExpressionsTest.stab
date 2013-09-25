@@ -108,12 +108,12 @@ namespace stab.tools.compiler.test {
 		
 		[Test]
 		public void not() {
-			doTest("Not", new Class<?>[] { typeof(boolean) }, new Object[] { true }, false);
+			doTest("Not", new Class<?>[] { typeof(bool) }, new Object[] { true }, false);
 		}
 		
 		[Test]
 		public void not_2() {
-			doTest("Not", new Class<?>[] { typeof(boolean) }, new Object[] { false }, true);
+			doTest("Not", new Class<?>[] { typeof(bool) }, new Object[] { false }, true);
 		}
 		
 		[Test]
@@ -378,23 +378,23 @@ namespace stab.tools.compiler.test {
 		
 		[Test]
 		public void conditional() {
-			doTest("Conditional", new Class<?>[] { typeof(boolean), typeof(Object), typeof(Object) }, new Object[] { true, "STR", null }, "STR");
+			doTest("Conditional", new Class<?>[] { typeof(bool), typeof(Object), typeof(Object) }, new Object[] { true, "STR", null }, "STR");
 		}
 		
 		[Test]
 		public void conditional_1() {
-			doTest("Conditional", new Class<?>[] { typeof(boolean), typeof(Object), typeof(Object) }, new Object[] { false, "STR", null }, null);
+			doTest("Conditional", new Class<?>[] { typeof(bool), typeof(Object), typeof(Object) }, new Object[] { false, "STR", null }, null);
 		}
 		
 		[Test]
 		public void conditionalIf() {
-			doTest("ConditionalIf", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean) },
+			doTest("ConditionalIf", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool) },
 				new Object[] { true, true, false }, true);
 		}
 		
 		[Test]
 		public void conditionalIf_1() {
-			doTest("ConditionalIf", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean) },
+			doTest("ConditionalIf", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool) },
 				new Object[] { false, true, false }, false);
 		}
 		
@@ -471,217 +471,217 @@ namespace stab.tools.compiler.test {
 		
 		[Test]
 		public void logicalAnd4() {
-			doTest("LogicalAnd4", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean) }, new Object[] { true, true, true }, true);
+			doTest("LogicalAnd4", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool) }, new Object[] { true, true, true }, true);
 		}
 		
 		[Test]
 		public void logicalAnd4_1() {
-			doTest("LogicalAnd4", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean) }, new Object[] { true, true, false }, false);
+			doTest("LogicalAnd4", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool) }, new Object[] { true, true, false }, false);
 		}
 		
 		[Test]
 		public void logicalAnd4_2() {
-			doTest("LogicalAnd4", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean) }, new Object[] { true, false, false }, false);
+			doTest("LogicalAnd4", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool) }, new Object[] { true, false, false }, false);
 		}
 		
 		[Test]
 		public void logicalAnd5() {
-			doTest("LogicalAnd5", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean) }, new Object[] { true, true, true }, true);
+			doTest("LogicalAnd5", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool) }, new Object[] { true, true, true }, true);
 		}
 		
 		[Test]
 		public void logicalAnd5_1() {
-			doTest("LogicalAnd5", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean) }, new Object[] { true, true, false }, false);
+			doTest("LogicalAnd5", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool) }, new Object[] { true, true, false }, false);
 		}
 		
 		[Test]
 		public void logicalAnd5_2() {
-			doTest("LogicalAnd5", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean) }, new Object[] { true, false, false }, false);
+			doTest("LogicalAnd5", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool) }, new Object[] { true, false, false }, false);
 		}
 		
 		[Test]
 		public void logicalOr4() {
-			doTest("LogicalOr4", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean) }, new Object[] { false, false, false }, false);
+			doTest("LogicalOr4", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool) }, new Object[] { false, false, false }, false);
 		}
 		
 		[Test]
 		public void logicalOr4_1() {
-			doTest("LogicalOr4", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean) }, new Object[] { false, false, true }, true);
+			doTest("LogicalOr4", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool) }, new Object[] { false, false, true }, true);
 		}
 		
 		[Test]
 		public void logicalOr4_2() {
-			doTest("LogicalOr4", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean) }, new Object[] { false, true, false }, true);
+			doTest("LogicalOr4", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool) }, new Object[] { false, true, false }, true);
 		}
 		
 		[Test]
 		public void logicalOr5() {
-			doTest("LogicalOr5", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean) }, new Object[] { false, false, false }, false);
+			doTest("LogicalOr5", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool) }, new Object[] { false, false, false }, false);
 		}
 		
 		[Test]
 		public void logicalOr5_1() {
-			doTest("LogicalOr5", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean) }, new Object[] { false, false, true }, true);
+			doTest("LogicalOr5", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool) }, new Object[] { false, false, true }, true);
 		}
 		
 		[Test]
 		public void logicalOr5_2() {
-			doTest("LogicalOr5", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean) }, new Object[] { false, true, false }, true);
+			doTest("LogicalOr5", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool) }, new Object[] { false, true, false }, true);
 		}
 
 		[Test]
 		public void logicalAndOr() {
-			doTest("LogicalAndOr", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean) },
+			doTest("LogicalAndOr", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool) },
 				new Object[] { false, false, false }, false);
 		}
 
 		[Test]
 		public void logicalAndOr_1() {
-			doTest("LogicalAndOr", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean) },
+			doTest("LogicalAndOr", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool) },
 				new Object[] { false, false, true }, true);
 		}
 
 		[Test]
 		public void logicalAndOr_2() {
-			doTest("LogicalAndOr", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean) },
+			doTest("LogicalAndOr", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool) },
 				new Object[] { true, false, false }, false);
 		}
 
 		[Test]
 		public void logicalAndOr_3() {
-			doTest("LogicalAndOr", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean) },
+			doTest("LogicalAndOr", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool) },
 				new Object[] { true, true, false }, true);
 		}
 
 		[Test]
 		public void logicalOrAnd() {
-			doTest("LogicalOrAnd", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean) },
+			doTest("LogicalOrAnd", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool) },
 				new Object[] { false, false, false }, false);
 		}
 
 		[Test]
 		public void logicalOrAnd_1() {
-			doTest("LogicalOrAnd", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean) },
+			doTest("LogicalOrAnd", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool) },
 				new Object[] { false, false, true }, false);
 		}
 
 		[Test]
 		public void logicalOrAnd_2() {
-			doTest("LogicalOrAnd", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean) },
+			doTest("LogicalOrAnd", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool) },
 				new Object[] { true, false, true }, true);
 		}
 
 		[Test]
 		public void logicalOrAnd_3() {
-			doTest("LogicalOrAnd", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean) },
+			doTest("LogicalOrAnd", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool) },
 				new Object[] { false, true, true }, true);
 		}
 
 		[Test]
 		public void logicalAndOr2() {
-			doTest("LogicalAndOr2", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean) },
+			doTest("LogicalAndOr2", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool) },
 				new Object[] { false, false, false }, false);
 		}
 
 		[Test]
 		public void logicalAndOr2_1() {
-			doTest("LogicalAndOr2", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean) },
+			doTest("LogicalAndOr2", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool) },
 				new Object[] { true, false, true }, true);
 		}
 
 		[Test]
 		public void logicalAndOr2_2() {
-			doTest("LogicalAndOr2", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean) },
+			doTest("LogicalAndOr2", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool) },
 				new Object[] { true, false, false }, false);
 		}
 
 		[Test]
 		public void logicalAndOr2_3() {
-			doTest("LogicalAndOr2", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean) },
+			doTest("LogicalAndOr2", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool) },
 				new Object[] { true, true, false }, true);
 		}
 
 		[Test]
 		public void logicalOrAnd2() {
-			doTest("LogicalOrAnd2", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean) },
+			doTest("LogicalOrAnd2", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool) },
 				new Object[] { false, false, false }, false);
 		}
 
 		[Test]
 		public void logicalOrAnd2_1() {
-			doTest("LogicalOrAnd2", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean) },
+			doTest("LogicalOrAnd2", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool) },
 				new Object[] { false, false, true }, false);
 		}
 
 		[Test]
 		public void logicalOrAnd2_2() {
-			doTest("LogicalOrAnd2", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean) },
+			doTest("LogicalOrAnd2", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool) },
 				new Object[] { true, false, false }, true);
 		}
 
 		[Test]
 		public void logicalOrAnd2_3() {
-			doTest("LogicalOrAnd2", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean) },
+			doTest("LogicalOrAnd2", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool) },
 				new Object[] { false, true, true }, true);
 		}
 
 		[Test]
 		public void logicalOrAndOr() {
-			doTest("LogicalOrAndOr", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean), typeof(boolean) },
+			doTest("LogicalOrAndOr", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool), typeof(bool) },
 				new Object[] { false, false, false, false }, false);
 		}
 
 		[Test]
 		public void logicalOrAndOr_1() {
-			doTest("LogicalOrAndOr", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean), typeof(boolean) },
+			doTest("LogicalOrAndOr", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool), typeof(bool) },
 				new Object[] { false, true, true, false }, true);
 		}
 
 		[Test]
 		public void logicalOrAndOr_2() {
-			doTest("LogicalOrAndOr", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean), typeof(boolean) },
+			doTest("LogicalOrAndOr", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool), typeof(bool) },
 				new Object[] { true, false, false, true }, true);
 		}
 
 		[Test]
 		public void logicalOrAndOr_3() {
-			doTest("LogicalOrAndOr", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean), typeof(boolean) },
+			doTest("LogicalOrAndOr", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool), typeof(bool) },
 				new Object[] { false, true, false, false }, false);
 		}
 		
 		[Test]
 		public void logicalAndOrAnd() {
-			doTest("LogicalAndOrAnd", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean), typeof(boolean) },
+			doTest("LogicalAndOrAnd", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool), typeof(bool) },
 				new Object[] { false, false, false, false }, false);
 		}
 
 		[Test]
 		public void logicalAndOrAnd_1() {
-			doTest("LogicalAndOrAnd", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean), typeof(boolean) },
+			doTest("LogicalAndOrAnd", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool), typeof(bool) },
 				new Object[] { false, true, true, false }, false);
 		}
 
 		[Test]
 		public void logicalAndOrAnd_2() {
-			doTest("LogicalAndOrAnd", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean), typeof(boolean) },
+			doTest("LogicalAndOrAnd", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool), typeof(bool) },
 				new Object[] { true, true, false, false }, true);
 		}
 
 		[Test]
 		public void logicalAndOrAnd_3() {
-			doTest("LogicalAndOrAnd", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean), typeof(boolean) },
+			doTest("LogicalAndOrAnd", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool), typeof(bool) },
 				new Object[] { false, true, true, true }, true);
 		}
 
 		[Test]
 		public void logicalAndOrAnd_4() {
-			doTest("LogicalAndOrAnd", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean), typeof(boolean) },
+			doTest("LogicalAndOrAnd", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool), typeof(bool) },
 				new Object[] { true, false, true, true }, true);
 		}
 
 		[Test]
 		public void logicalAndOrAnd_5() {
-			doTest("LogicalAndOrAnd", new Class<?>[] { typeof(boolean), typeof(boolean), typeof(boolean), typeof(boolean) },
+			doTest("LogicalAndOrAnd", new Class<?>[] { typeof(bool), typeof(bool), typeof(bool), typeof(bool) },
 				new Object[] { true, false, true, false }, false);
 		}
 		
@@ -1244,7 +1244,7 @@ namespace stab.tools.compiler.test {
 		
 		[Test]
 		public void conditional2() {
-			doTest("Conditional2", new Class<?>[] { typeof(boolean), typeof(double) }, new Object[] { true, 1d }, 1d);
+			doTest("Conditional2", new Class<?>[] { typeof(bool), typeof(double) }, new Object[] { true, 1d }, 1d);
 		}
 		
 		[Test]

@@ -31,7 +31,7 @@ namespace stab.tools.eclipse.editors {
 
 	class BackgroundCompiler : IProjectBuildListener {
 		private SourceEditor editor;
-		private boolean initialized;
+		private bool initialized;
 	
 		public BackgroundCompiler(SourceEditor editor) {
 			this.editor = editor;
@@ -207,11 +207,11 @@ namespace stab.tools.eclipse.editors {
 				monitor.internalWorked(work);
 			}
 			
-			public boolean isCanceled() {
+			public bool isCanceled() {
 				return text != highlighter.Text || monitor.isCanceled();
 			}
 			
-			public void setCanceled(boolean value) {
+			public void setCanceled(bool value) {
 				monitor.setCanceled(value);
 			}
 			

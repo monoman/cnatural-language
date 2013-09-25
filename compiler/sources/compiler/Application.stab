@@ -228,7 +228,7 @@ namespace stab.tools.compiler {
             }
         }
         
-        private boolean handleArguments(String[] arguments) {
+        private bool handleArguments(String[] arguments) {
             parameters = new CompilerParameters();
             int i = 0;
             while (i < sizeof(arguments) && (arguments[i].startsWith("-"))) {

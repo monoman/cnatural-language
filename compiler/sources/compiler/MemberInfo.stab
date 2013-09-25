@@ -100,17 +100,17 @@ namespace stab.tools.compiler {
         }
         
         public static Iterable<MemberInfo> getMembers(Library typeSystem, TypeInfo scope, TypeInfo type,
-                String name, boolean useCache) {
+                String name, bool useCache) {
             return getMembers(typeSystem, scope, type, name, Query.empty<TypeInfo>(), useCache);
         }
         
         public static Iterable<MemberInfo> getMembers(Library typeSystem, TypeInfo scope, TypeInfo type, String name,
-                Iterable<TypeInfo> typeArguments, boolean useCache) {
+                Iterable<TypeInfo> typeArguments, bool useCache) {
             return getMembersRecursively(typeSystem, scope, type, name, typeArguments, useCache, new LookupContext()).distinct().toList();
         }
         
         private static Iterable<MemberInfo> getMembersRecursively(Library typeSystem, TypeInfo scope, TypeInfo type, String name,
-                Iterable<TypeInfo> typeArguments, boolean useCache, LookupContext context) {
+                Iterable<TypeInfo> typeArguments, bool useCache, LookupContext context) {
             Iterable<MemberInfo> members;
 			switch (type.TypeKind) {
 			case Array:
@@ -141,7 +141,7 @@ namespace stab.tools.compiler {
         }
         
         private static Iterable<MemberInfo> getMembers(Library typeSystem, TypeInfo type, String name,
-            Iterable<TypeInfo> typeArguments, boolean useCache, LookupContext context) {
+            Iterable<TypeInfo> typeArguments, bool useCache, LookupContext context) {
             var nTypeArgs = typeArguments.count();
             foreach (var mi in (useCache) ? getCachedMembers(typeSystem, type, name) : getMembers(typeSystem, type, name)) {
                 switch (mi.MemberKind) {
@@ -189,9 +189,9 @@ namespace stab.tools.compiler {
         }
         
         private class LookupContext {
-            boolean lookupField = true;
-            boolean lookupProperty = true;
-            boolean lookupClass = true;
+            bool lookupField = true;
+            bool lookupProperty = true;
+            bool lookupClass = true;
         }
         
         public static Iterable<MemberInfo> getCachedMembers(Library typeSystem, TypeInfo type, String name) {
@@ -252,12 +252,12 @@ namespace stab.tools.compiler {
         }
 
         public static Iterable<MemberInfo> getIndexers(Library typeSystem, TypeInfo scope, TypeInfo type,
-                int indexes, boolean useCache) {
+                int indexes, bool useCache) {
             return getIndexersRecursively(typeSystem, scope, type, indexes, useCache).distinct().toList();
         }
 
         private static Iterable<MemberInfo> getIndexersRecursively(Library typeSystem, TypeInfo scope, TypeInfo type,
-                int indexes, boolean useCache) {
+                int indexes, bool useCache) {
             Iterable<MemberInfo> members;
             if (type.IsArray) {
                 members = getIndexersRecursively(typeSystem, scope, typeSystem.ObjectType, indexes, useCache);
@@ -444,37 +444,37 @@ namespace stab.tools.compiler {
             }
         }
 
-        public virtual boolean IsParameter {
+        public virtual bool IsParameter {
             get {
                 throw new IllegalStateException();
             }
         }
 
-        public virtual boolean IsPublic {
+        public virtual bool IsPublic {
             get {
                 throw new IllegalStateException();
             }
         }
 
-        public virtual boolean IsProtected {
+        public virtual bool IsProtected {
             get {
                 throw new IllegalStateException();
             }
         }
 
-        public virtual boolean IsPrivate {
+        public virtual bool IsPrivate {
             get {
                 throw new IllegalStateException();
             }
         }
 
-        public virtual boolean IsStatic {
+        public virtual bool IsStatic {
             get {
                 return true;
             }
         }
         
-        public virtual boolean IsUsedFromLambda {
+        public virtual bool IsUsedFromLambda {
             get {
                 throw new IllegalStateException();
             }
@@ -483,7 +483,7 @@ namespace stab.tools.compiler {
             }
         }
         
-        public virtual boolean isOverridingMembers(Library typeSystem) {
+        public virtual bool isOverridingMembers(Library typeSystem) {
             throw new IllegalStateException();
         }
         
@@ -494,7 +494,7 @@ namespace stab.tools.compiler {
     
     class TypeMemberInfo : MemberInfo {
         private TypeInfo type;
-        private boolean nested;
+        private bool nested;
 
         TypeMemberInfo(TypeInfo type)
             : super(MemberKind.Type) {
@@ -520,23 +520,23 @@ namespace stab.tools.compiler {
             }
         }
         
-        public override boolean isOverridingMembers(Library typeSystem) {
+        public override bool isOverridingMembers(Library typeSystem) {
             return false;
         }
         
-        public override boolean IsPublic {
+        public override bool IsPublic {
             get {
                 return (nested) ? type.IsNestedPublic : type.IsPublic;
             }
         }
         
-        public override boolean IsProtected {
+        public override bool IsProtected {
             get {
                 return (nested) ? type.IsNestedProtected : false;
             }
         }
         
-        public override boolean IsPrivate {
+        public override bool IsPrivate {
             get {
                 return (nested) ? type.IsNestedPrivate : false;
             }
@@ -575,29 +575,29 @@ namespace stab.tools.compiler {
             }
         }
         
-        public override boolean isOverridingMembers(Library typeSystem) {
+        public override bool isOverridingMembers(Library typeSystem) {
             return false;
         }
         
-        public override boolean IsPublic {
+        public override bool IsPublic {
             get {
                 return field.IsPublic;
             }
         }
         
-        public override boolean IsProtected {
+        public override bool IsProtected {
             get {
                 return field.IsProtected;
             }
         }
         
-        public override boolean IsPrivate {
+        public override bool IsPrivate {
             get {
                 return field.IsPrivate;
             }
         }
         
-        public override boolean IsStatic {
+        public override bool IsStatic {
             get {
                 return field.IsStatic;
             }
@@ -631,7 +631,7 @@ namespace stab.tools.compiler {
             }
         }
         
-        public override boolean isOverridingMembers(Library typeSystem) {
+        public override bool isOverridingMembers(Library typeSystem) {
             return getOverridenMembers(typeSystem).any();
         }
 
@@ -656,25 +656,25 @@ namespace stab.tools.compiler {
             return overridenMembers;
         }
         
-        public override boolean IsPublic {
+        public override bool IsPublic {
             get {
                 return method.IsPublic;
             }
         }
         
-        public override boolean IsProtected {
+        public override bool IsProtected {
             get {
                 return method.IsProtected;
             }
         }
         
-        public override boolean IsPrivate {
+        public override bool IsPrivate {
             get {
                 return method.IsPrivate;
             }
         }
         
-        public override boolean IsStatic {
+        public override bool IsStatic {
             get {
                 return method.IsStatic;
             }
@@ -709,7 +709,7 @@ namespace stab.tools.compiler {
             }
         }
         
-        public override boolean IsPublic {
+        public override bool IsPublic {
             get {
                 if (getAccessor != null && getAccessor.IsPublic) {
                     return true;
@@ -718,7 +718,7 @@ namespace stab.tools.compiler {
             }
         }
         
-        public override boolean IsProtected {
+        public override bool IsProtected {
             get {
                 if (getAccessor != null) {
                     if (getAccessor.IsPublic) {
@@ -731,7 +731,7 @@ namespace stab.tools.compiler {
             }
         }
         
-        public override boolean IsPrivate {
+        public override bool IsPrivate {
             get {
                 if (getAccessor != null && !getAccessor.IsPrivate) {
                     return false;
@@ -740,7 +740,7 @@ namespace stab.tools.compiler {
             }
         }
         
-        public override boolean IsStatic {
+        public override bool IsStatic {
             get {
                 return (getAccessor ?? setAccessor).IsStatic;
             }
@@ -774,7 +774,7 @@ namespace stab.tools.compiler {
             }
         }
         
-        public override boolean isOverridingMembers(Library typeSystem) {
+        public override bool isOverridingMembers(Library typeSystem) {
             return getOverridenMembers(typeSystem).any();
         }
 
@@ -837,7 +837,7 @@ namespace stab.tools.compiler {
             }
         }
         
-        public override boolean isOverridingMembers(Library typeSystem) {
+        public override bool isOverridingMembers(Library typeSystem) {
             return getOverridenMembers(typeSystem).any();
         }
 
@@ -892,10 +892,10 @@ namespace stab.tools.compiler {
         private String name;
         private TypeInfo type;
         private MethodInfo method;
-        private boolean parameter;
-        private boolean usedFromLambda;
+        private bool parameter;
+        private bool usedFromLambda;
     
-        LocalMemberInfo(String name, TypeInfo type, MethodInfo method, boolean parameter)
+        LocalMemberInfo(String name, TypeInfo type, MethodInfo method, bool parameter)
             : super(MemberKind.Local) {
             this.name = name;
             this.type = type;
@@ -921,13 +921,13 @@ namespace stab.tools.compiler {
             }
         }
         
-        public override boolean IsParameter {
+        public override bool IsParameter {
             get {
                 return parameter;
             }
         }
         
-        public override boolean IsUsedFromLambda {
+        public override bool IsUsedFromLambda {
             get {
                 return usedFromLambda;
             }
@@ -936,6 +936,6 @@ namespace stab.tools.compiler {
             }
         }
 		
-		public boolean Unused;
+		public bool Unused;
     }
 }

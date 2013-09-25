@@ -47,7 +47,7 @@ namespace stab.tools.compiler {
             return null;
         }
 
-        public boolean isAmbiguousTypeName(String name) {
+        public bool isAmbiguousTypeName(String name) {
             var s = scope;
             do {
                 if (s.ambiguousTypes != null && s.ambiguousTypes.contains(name)) {
@@ -277,7 +277,7 @@ namespace stab.tools.compiler {
             enterMethod(method, false);
         }
         
-        public void enterMethod(MethodInfo method, boolean statementScope) {
+        public void enterMethod(MethodInfo method, bool statementScope) {
             enterScopeCore(statementScope);
             var members = scope.memberInfos;
             foreach (var p in method.Parameters) {
@@ -306,7 +306,7 @@ namespace stab.tools.compiler {
             return result;
         }
 
-        public boolean hasLocal(String name) {
+        public bool hasLocal(String name) {
             Scope s = scope;
             do {
                 var mi = s.memberInfos[name];
@@ -324,20 +324,20 @@ namespace stab.tools.compiler {
             return scope.memberInfos[name];
         }
         
-        private void enterScopeCore(boolean statementScope) {
+        private void enterScopeCore(bool statementScope) {
             scope = new Scope(statementScope, scope);
         }
         
         private class Scope {
             Scope next;
-            boolean statementScope;
+            bool statementScope;
             HashMap<String, MemberInfo> memberInfos;
             HashSet<String> ambiguousTypes;
             ArrayList<MethodInfo> extensionMethods;
             HashMap<String, Iterable<String>> packageAliases;
             TypeInfo type;
 
-            Scope(boolean statementScope, Scope next) {
+            Scope(bool statementScope, Scope next) {
                 this.statementScope = statementScope;
                 this.memberInfos = new HashMap<String, MemberInfo>();
                 this.next = next;

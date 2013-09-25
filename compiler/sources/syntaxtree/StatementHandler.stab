@@ -19,9 +19,9 @@ using java.lang;
 namespace stab.tools.syntaxtree {
 
     public abstract class StatementHandler<TSource, TResult> {
-        private boolean failWhenUnhandled;
+        private bool failWhenUnhandled;
 
-        protected StatementHandler(boolean failWhenUnhandled) {
+        protected StatementHandler(bool failWhenUnhandled) {
             this.failWhenUnhandled = failWhenUnhandled;
         }
 

@@ -78,7 +78,7 @@ namespace stab.tools.compiler {
             }
         }
         
-        static boolean isMethod(ExpressionNode argNode) {
+        static bool isMethod(ExpressionNode argNode) {
             var info = argNode.getUserData(typeof(ExpressionInfo));
             if (info == null || info.Type != null) {
                 return false;
@@ -204,7 +204,7 @@ namespace stab.tools.compiler {
             throw new Exception("Internal error line " + (expression.getLine() + 1));
         }
         
-		private static boolean isInDeprecatedContext(CompilerContext context) {
+		private static bool isInDeprecatedContext(CompilerContext context) {
 			if (!BytecodeHelper.isDeprecated(context.AnnotatedTypeSystem, context.CurrentType)) {
 				if (!context.CodeValidationContext.IsInMethod || !BytecodeHelper.isDeprecated(context.AnnotatedTypeSystem,
 						context.CodeValidationContext.RootMethod)) {
@@ -214,7 +214,7 @@ namespace stab.tools.compiler {
 			return true;
 		}
 		
-        static boolean isAssignable(CompilerContext context, TypeInfo type, ExpressionNode expression) {
+        static bool isAssignable(CompilerContext context, TypeInfo type, ExpressionNode expression) {
             var info = expression.getUserData(typeof(ExpressionInfo));
             if (info == null) {
                 return !type.IsPrimitive;

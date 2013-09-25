@@ -3,7 +3,7 @@ using java.lang;
 public class TryFinallyNestedReturn {
 	private static int field;
 
-	public static boolean test() {
+	public static bool test() {
 		return method() == 0 && field == 101;		
 	}
 

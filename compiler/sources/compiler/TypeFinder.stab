@@ -33,7 +33,7 @@ namespace stab.tools.compiler {
 
         public Library TypeSystem^;
         
-        public boolean packageExists(Iterable<String> packages) {
+        public bool packageExists(Iterable<String> packages) {
             Node n = root;
             foreach (var p in packages) {
                 n = n.children[p];

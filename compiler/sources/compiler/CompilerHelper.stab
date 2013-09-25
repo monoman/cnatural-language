@@ -123,7 +123,7 @@ namespace stab.tools.compiler {
             }
         }
 
-        static boolean isZero(ExpressionInfo info) {
+        static bool isZero(ExpressionInfo info) {
             if (info.IsConstant) {
                 Object value = info.Value;
                 if (value instanceof Double) {
@@ -185,7 +185,7 @@ namespace stab.tools.compiler {
         }
     
         static TypeInfo resolveTypeReference(CompilerContext context, String packageName, TypeReferenceNode typeReference,
-				boolean fail, boolean reportRawTypeUsage) {
+				bool fail, bool reportRawTypeUsage) {
             switch (typeReference.TypeReferenceKind) {
             case Boolean:
                 return context.TypeSystem.BooleanType;
@@ -282,7 +282,7 @@ namespace stab.tools.compiler {
         }
         
         private static TypeInfo getGenericType(CompilerContext context, String packageName, TypeInfo type,
-            List<TypeReferenceNode> typeArguments, SyntaxNode node, boolean fail, boolean reportRawTypeUsage) {
+            List<TypeReferenceNode> typeArguments, SyntaxNode node, bool fail, bool reportRawTypeUsage) {
             int nTypeArgs = typeArguments.size();
             if (!type.IsGenericTypeDefinition) {
                 if (nTypeArgs > 0) {
@@ -489,7 +489,7 @@ namespace stab.tools.compiler {
             }
         }
         
-        public static boolean shouldIgnoreCalls(CompilerContext context, MethodInfo method) {
+        public static bool shouldIgnoreCalls(CompilerContext context, MethodInfo method) {
             foreach (var ann in BytecodeHelper.getAnnotations(context.AnnotatedTypeSystem, method)) {
                 if (BytecodeHelper.isConditional(ann)) {
                     foreach (var elt in ann.getArgument("value").Elements) {
@@ -797,7 +797,7 @@ namespace stab.tools.compiler {
 			return outerClass;
 		}
         
-        static void emitMethodAccess(CompilerContext context, MethodInfo method, boolean isSuperCall) {
+        static void emitMethodAccess(CompilerContext context, MethodInfo method, bool isSuperCall) {
             var generator = context.MethodGenerationContext.Generator;
             if (requireAccessor(context, method.DeclaringType, method.IsPublic, method.IsProtected, method.IsPrivate)) {
                 var accessor = context.PrivateAccessors[method];
@@ -1079,8 +1079,8 @@ namespace stab.tools.compiler {
             }
         }
         
-        static boolean requireAccessor(CompilerContext context, TypeInfo declaringType,
-                boolean isPublic, boolean isProtected, boolean isPrivate) {
+        static bool requireAccessor(CompilerContext context, TypeInfo declaringType,
+                bool isPublic, bool isProtected, bool isPrivate) {
             var currentType = context.MethodGenerationContext.CurrentMethod.DeclaringType;
             if (isPublic || declaringType.OriginalTypeDefinition == currentType.OriginalTypeDefinition) {
                 return false;

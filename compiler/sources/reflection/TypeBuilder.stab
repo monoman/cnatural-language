@@ -22,7 +22,7 @@ using stab.query;
 namespace stab.reflection {
 
     public class TypeBuilder : ObjectTypeInfo {
-        boolean created;
+        bool created;
         private int modifiers;
         private int nestedModifiers;
         private ArrayList<TypeInfo> genericArguments;
@@ -125,7 +125,7 @@ namespace stab.reflection {
             }
         }
 
-        public AnnotationValueBuilder addAnnotation(TypeInfo type, boolean runtimeVisible) {
+        public AnnotationValueBuilder addAnnotation(TypeInfo type, bool runtimeVisible) {
             checkCreated();
             var result = new AnnotationValueBuilder(type, runtimeVisible);
             annotations.add(result);
@@ -189,7 +189,7 @@ namespace stab.reflection {
             this.Library.undefineNestedType(nestedType);
 		}
 
-        public boolean IsCreated {
+        public bool IsCreated {
             get {
                 return created;
             }
@@ -321,75 +321,75 @@ namespace stab.reflection {
             }
         }
 
-        public void setAbstract(boolean value) {
+        public void setAbstract(bool value) {
             setModifier(Opcodes.ACC_ABSTRACT, value);
         }
         
-        public void setAnnotation(boolean value) {
+        public void setAnnotation(bool value) {
             setModifier(Opcodes.ACC_ANNOTATION, value);
         }
 
-        public void setEnum(boolean value) {
+        public void setEnum(bool value) {
             setModifier(Opcodes.ACC_ENUM, value);
         }
 
-        public void setFinal(boolean value) {
+        public void setFinal(bool value) {
             setModifier(Opcodes.ACC_FINAL, value);
         }
 
-        public void setInterface(boolean value) {
+        public void setInterface(bool value) {
             setModifier(Opcodes.ACC_INTERFACE, value);
         }
 
-        public void setPublic(boolean value) {
+        public void setPublic(bool value) {
             setModifier(Opcodes.ACC_PUBLIC, value);
         }
 
-        public void setSuper(boolean value) {
+        public void setSuper(bool value) {
             setModifier(Opcodes.ACC_SUPER, value);
         }
 
-        public void setSynthetic(boolean value) {
+        public void setSynthetic(bool value) {
             setModifier(Opcodes.ACC_SYNTHETIC, value);
         }
         
-        public void setNestedAbstract(boolean value) {
+        public void setNestedAbstract(bool value) {
             setNestedModifier(Opcodes.ACC_ABSTRACT, value);
         }
         
-        public void setNestedAnnotation(boolean value) {
+        public void setNestedAnnotation(bool value) {
             setNestedModifier(Opcodes.ACC_ANNOTATION, value);
         }
 
-        public void setNestedEnum(boolean value) {
+        public void setNestedEnum(bool value) {
             setNestedModifier(Opcodes.ACC_ENUM, value);
         }
 
-        public void setNestedFinal(boolean value) {
+        public void setNestedFinal(bool value) {
             setNestedModifier(Opcodes.ACC_FINAL, value);
         }
 
-        public void setNestedInterface(boolean value) {
+        public void setNestedInterface(bool value) {
             setNestedModifier(Opcodes.ACC_INTERFACE, value);
         }
 
-        public void setNestedPrivate(boolean value) {
+        public void setNestedPrivate(bool value) {
             setNestedModifier(Opcodes.ACC_PRIVATE, value);
         }
 
-        public void setNestedProtected(boolean value) {
+        public void setNestedProtected(bool value) {
             setNestedModifier(Opcodes.ACC_PROTECTED, value);
         }
 
-        public void setNestedPublic(boolean value) {
+        public void setNestedPublic(bool value) {
             setNestedModifier(Opcodes.ACC_PUBLIC, value);
         }
 
-        public void setNestedStatic(boolean value) {
+        public void setNestedStatic(bool value) {
             setNestedModifier(Opcodes.ACC_STATIC, value);
         }
 
-        public void setNestedSynthetic(boolean value) {
+        public void setNestedSynthetic(bool value) {
             setNestedModifier(Opcodes.ACC_SYNTHETIC, value);
         }
 
@@ -405,7 +405,7 @@ namespace stab.reflection {
             }
         }
         
-        private void setModifier(int modifier, boolean value) {
+        private void setModifier(int modifier, bool value) {
             checkCreated();
             if (value) {
                 modifiers |= modifier;
@@ -414,7 +414,7 @@ namespace stab.reflection {
             }
         }
 
-        private void setNestedModifier(int modifier, boolean value) {
+        private void setNestedModifier(int modifier, bool value) {
             checkCreated();
             if (value) {
                 nestedModifiers |= modifier;

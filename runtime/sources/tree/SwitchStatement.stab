@@ -43,7 +43,7 @@ namespace stab.tree {
 	}
 
 	public class SwitchLabel {
-		SwitchLabel(String name, int value, boolean defaultLabel) {
+		SwitchLabel(String name, int value, bool defaultLabel) {
 			this.Name = name;
 			this.Value = value;
 			this.Default = defaultLabel;
@@ -53,7 +53,7 @@ namespace stab.tree {
 		
 		public int Value^;
 		
-		public boolean Default^;
+		public bool Default^;
 	}
 	
 	public class GotoCaseStatement : Statement {

@@ -1,7 +1,7 @@
 using java.lang;
 
 public class Covariance {
-	public static boolean test() {
+	public static bool test() {
 		CovarianceAux obj = new CovarianceAux2().copy();
 		return obj instanceof CovarianceAux2;
 	}

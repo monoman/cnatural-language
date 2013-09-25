@@ -2,7 +2,7 @@ using java.lang;
 using java.lang.reflect;
 
 public class ParameterAnnotation {
-	public static boolean test() {
+	public static bool test() {
 		Class<?> c = typeof(ParameterAnnotation);
 		Method m = c.getMethod("method", typeof(int));
 		return m.getParameterAnnotations()[0][0] != null;

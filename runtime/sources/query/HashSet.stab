@@ -48,17 +48,17 @@ namespace stab.query {
             return count;
         }
         
-        boolean add(T item) {
+        bool add(T item) {
             int c = count;
             addCore(item);
             return c < count;
         }
 
-        boolean contains(T item) {
+        bool contains(T item) {
             return find(item) != -1;
         }
 
-        boolean remove(T item) {
+        bool remove(T item) {
             int c = count;
             removeCore(item);
             return c > count;
@@ -206,17 +206,17 @@ namespace stab.query {
             return count;
         }
         
-        boolean add(int item) {
+        bool add(int item) {
             int c = count;
             addCore(item);
             return c < count;
         }
 
-        boolean contains(int item) {
+        bool contains(int item) {
             return find(item) != -1;
         }
 
-        boolean remove(int item) {
+        bool remove(int item) {
             int c = count;
             removeCore(item);
             return c > count;
@@ -355,17 +355,17 @@ namespace stab.query {
             return count;
         }
         
-        boolean add(long item) {
+        bool add(long item) {
             int c = count;
             addCore(item);
             return c < count;
         }
 
-        boolean contains(long item) {
+        bool contains(long item) {
             return find(item) != -1;
         }
 
-        boolean remove(long item) {
+        bool remove(long item) {
             int c = count;
             removeCore(item);
             return c > count;
@@ -504,17 +504,17 @@ namespace stab.query {
             return count;
         }
         
-        boolean add(float item) {
+        bool add(float item) {
             int c = count;
             addCore(item);
             return c < count;
         }
 
-        boolean contains(float item) {
+        bool contains(float item) {
             return find(item) != -1;
         }
 
-        boolean remove(float item) {
+        bool remove(float item) {
             int c = count;
             removeCore(item);
             return c > count;
@@ -653,17 +653,17 @@ namespace stab.query {
             return count;
         }
         
-        boolean add(double item) {
+        bool add(double item) {
             int c = count;
             addCore(item);
             return c < count;
         }
 
-        boolean contains(double item) {
+        bool contains(double item) {
             return find(item) != -1;
         }
 
-        boolean remove(double item) {
+        bool remove(double item) {
             int c = count;
             removeCore(item);
             return c > count;

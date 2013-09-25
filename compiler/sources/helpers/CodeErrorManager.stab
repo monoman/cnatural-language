@@ -50,14 +50,14 @@ namespace stab.tools.helpers {
 
 	public class CodeErrorManager {
 		private List<CodeError> errors;
-		private boolean[] errorsByScope;
+		private bool[] errorsByScope;
 		private int scopes;
 		private IntIterable disabledWarnings;
-		private boolean disableWarnings;
+		private bool disableWarnings;
 	
 		public CodeErrorManager() {
 			this.errors = new ArrayList<CodeError>();
-			this.errorsByScope = new boolean[16];
+			this.errorsByScope = new bool[16];
 		}
 	
 		public Iterable<CodeError> Errors {
@@ -77,7 +77,7 @@ namespace stab.tools.helpers {
 			}
 		}
 	
-		public boolean HasErrors {
+		public bool HasErrors {
 			get {
 				if (this.scopes == 0) {
 					return this.errors.any(p => p.Level == 0);
@@ -104,7 +104,7 @@ namespace stab.tools.helpers {
 		public void disable() {
 			this.scopes++;
 			if (this.scopes == sizeof(this.errorsByScope)) {
-				var t = new boolean[sizeof(this.errorsByScope) * 2];
+				var t = new bool[sizeof(this.errorsByScope) * 2];
 				System.arraycopy(this.errorsByScope, 0, t, 0, sizeof(this.errorsByScope));
 				this.errorsByScope = t;
 			}
@@ -115,7 +115,7 @@ namespace stab.tools.helpers {
 			this.scopes--;
 		}
 		
-		public boolean IsDisabled {
+		public bool IsDisabled {
 			get {
 				return this.scopes > 0;
 			}

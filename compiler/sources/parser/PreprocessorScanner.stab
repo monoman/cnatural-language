@@ -20,8 +20,8 @@ using stab.tools.helpers;
 namespace stab.tools.parser {
 
     public class PreprocessorScanner : ScannerBase {
-        private boolean lineStart;
-        private boolean preprocessorLine;
+        private bool lineStart;
+        private bool preprocessorLine;
     
         public PreprocessorScanner(CodeErrorManager codeErrorManager, char[] text)
             : this(codeErrorManager, text, 0, sizeof(text), 0, 0) {
@@ -46,7 +46,7 @@ namespace stab.tools.parser {
             }
         }
 
-        public final PreprocessorLexicalUnit nextLexicalUnit(boolean skippedSection) {
+        public final PreprocessorLexicalUnit nextLexicalUnit(bool skippedSection) {
             if (this.Next == -1) {
                 return PreprocessorLexicalUnit.EndOfStream;
             }
@@ -449,7 +449,7 @@ namespace stab.tools.parser {
 
                     case '\\':
                         advance();
-                        boolean done = false;
+                        bool done = false;
                         do {
                             switch (advance()) {
                             case -1:
@@ -500,7 +500,7 @@ namespace stab.tools.parser {
 
                             case '\\':
                                 advance();
-                                boolean done = false;
+                                bool done = false;
                                 do {
                                     switch (advance()) {
                                     case -1:
@@ -597,7 +597,7 @@ namespace stab.tools.parser {
         }
         
         private PreprocessorLexicalUnit scanKeyword(String suffix, PreprocessorLexicalUnit keyword) {
-            boolean isKeyword = true;
+            bool isKeyword = true;
             for (int i = 0; i < suffix.length(); i++) {
                 char c = suffix[i];
                 if (this.Next == -1 || (char)this.Next != c) {

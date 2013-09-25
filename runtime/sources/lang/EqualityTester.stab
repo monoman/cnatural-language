@@ -24,7 +24,7 @@ namespace stab.lang {
         /// Tests if <paramref name="item1"/> and <paramref name="item2"/> represent the same object.
         /// </summary>
         /// <seealso cref="java.lang.Object.equals"/>
-		boolean equals(T item1, T item2);
+		bool equals(T item1, T item2);
         
         /// <summary>
         /// Gets the hash code corresponding to <paramref name="item"/>.

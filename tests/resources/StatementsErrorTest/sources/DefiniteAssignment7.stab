@@ -1,7 +1,7 @@
 public class C {
-	boolean t;
+	bool t;
 	public void m() {
-	 	boolean b;
+	 	bool b;
 
 		if ((true ? t : (b = true)) && t) {
 	    	if (b) ;        // compile-time error

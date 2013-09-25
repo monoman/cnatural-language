@@ -1,12 +1,12 @@
 public class DelegateTarget {
-	delegate boolean D();
+	delegate bool D();
 
-	public boolean method() {
+	public bool method() {
 		D d = method;
 		return d.Target == this;
 	}
 	
-	public static boolean test() {
+	public static bool test() {
 		var obj = new DelegateTarget();
 		return obj.method();
 	}

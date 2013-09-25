@@ -303,7 +303,11 @@ namespace stab.tools.parser {
             case 'b':
                 switch (advance()) {
                 case 'o':
-                    return scanKeyword("oolean", Keyword.Boolean);
+					if (advance() != 'o' || advance() != 'l')
+						return scanKeyword("", Keyword.None);
+					if (advance() == 'e')
+						return scanKeyword("ean", Keyword.Boolean);
+					return scanKeyword("", Keyword.Boolean);
                 case 'r':
                     return scanKeyword("reak", Keyword.Break);
                 case 'y':
@@ -1280,7 +1284,7 @@ namespace stab.tools.parser {
             return scanKeyword(suffix, keyword, true);
         }
 
-        private LexicalUnit scanKeyword(String suffix, Keyword keyword, boolean contextual) {
+        private LexicalUnit scanKeyword(String suffix, Keyword keyword, bool contextual) {
             var isKeyword = true;
             for (var i = 0; i < suffix.length(); i++) {
                 var c = suffix[i];

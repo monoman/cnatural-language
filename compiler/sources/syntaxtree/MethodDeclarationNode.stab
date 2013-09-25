@@ -26,7 +26,7 @@ namespace stab.tools.syntaxtree {
 			this.ConstraintsClauses = new ArrayList<TypeParameterConstraintsClauseNode>();
 		}
 		
-		public boolean IsPartial;
+		public bool IsPartial;
 		
 		public TypeReferenceNode ReturnType;
 		

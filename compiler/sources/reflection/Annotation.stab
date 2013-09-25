@@ -67,7 +67,7 @@ namespace stab.reflection {
             }
         }
         
-        public virtual boolean IsRuntimeVisible {
+        public virtual bool IsRuntimeVisible {
             get {
                 throw new UnsupportedOperationException();
             }
@@ -90,10 +90,10 @@ namespace stab.reflection {
 	
     public class AnnotationValue : AnnotationArgument {
         private TypeInfo type;
-        private boolean runtimeVisible;
+        private bool runtimeVisible;
         HashMap<String, AnnotationArgument> arguments;
         
-        AnnotationValue(TypeInfo type, boolean runtimeVisible)
+        AnnotationValue(TypeInfo type, bool runtimeVisible)
             : super(AnnotationArgumentKind.Annotation) {
             this.type = type;
             this.runtimeVisible = runtimeVisible;
@@ -106,7 +106,7 @@ namespace stab.reflection {
             }
         }
         
-        public override boolean IsRuntimeVisible {
+        public override bool IsRuntimeVisible {
             get {
                 return runtimeVisible;
             }

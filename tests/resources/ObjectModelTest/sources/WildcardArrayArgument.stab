@@ -1,7 +1,7 @@
 using java.lang;
 
 public class WildcardArrayArgument<T> {
-	public static boolean test() {
+	public static bool test() {
 		WildcardArrayArgument<?>[] args = new[] {
 				new WildcardArrayArgument<String>("str"),
 				new WildcardArrayArgument<Integer>(1) };

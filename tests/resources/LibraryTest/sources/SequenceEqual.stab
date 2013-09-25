@@ -3,7 +3,7 @@ using java.util;
 using stab.query;
 
 public class SequenceEqual {
-	public static boolean test() {
+	public static bool test() {
 		return new ArrayList<String> { "a", "b", "c" }.sequenceEqual(Query.asIterable(new[] { "a", "b", "c" }));
 	}
 }

@@ -34,7 +34,7 @@ namespace stab.reflection {
             this.name = name;
         }
         
-        public AnnotationValueBuilder addAnnotation(TypeInfo type, boolean runtimeVisible) {
+        public AnnotationValueBuilder addAnnotation(TypeInfo type, bool runtimeVisible) {
             method.checkCreated();
             var result = new AnnotationValueBuilder(type, runtimeVisible);
             annotations.add(result);
@@ -134,7 +134,7 @@ namespace stab.reflection {
             }
         }
         
-        public AnnotationValueBuilder addAnnotation(TypeInfo type, boolean runtimeVisible) {
+        public AnnotationValueBuilder addAnnotation(TypeInfo type, bool runtimeVisible) {
             checkCreated();
             var result = new AnnotationValueBuilder(type, runtimeVisible);
             annotations.add(result);
@@ -185,51 +185,51 @@ namespace stab.reflection {
             }
         }
         
-        public void setAbstract(boolean value) {
+        public void setAbstract(bool value) {
             setModifiers(Opcodes.ACC_ABSTRACT, value);
         }
     
-        public void setBridge(boolean value) {
+        public void setBridge(bool value) {
             setModifiers(Opcodes.ACC_BRIDGE, value);
         }
     
-        public void setFinal(boolean value) {
+        public void setFinal(bool value) {
             setModifiers(Opcodes.ACC_FINAL, value);
         }
         
-        public void setNative(boolean value) {
+        public void setNative(bool value) {
             setModifiers(Opcodes.ACC_NATIVE, value);
         }
     
-        public void setPrivate(boolean value) {
+        public void setPrivate(bool value) {
             setModifiers(Opcodes.ACC_PRIVATE, value);
         }
     
-        public void setProtected(boolean value) {
+        public void setProtected(bool value) {
             setModifiers(Opcodes.ACC_PROTECTED, value);
         }
     
-        public void setPublic(boolean value) {
+        public void setPublic(bool value) {
             setModifiers(Opcodes.ACC_PUBLIC, value);
         }
     
-        public void setStatic(boolean value) {
+        public void setStatic(bool value) {
             setModifiers(Opcodes.ACC_STATIC, value);
         }
     
-        public void setStrict(boolean value) {
+        public void setStrict(bool value) {
             setModifiers(Opcodes.ACC_STRICT, value);
         }
     
-        public void setSynchronized(boolean value) {
+        public void setSynchronized(bool value) {
             setModifiers(Opcodes.ACC_SYNCHRONIZED, value);
         }
     
-        public void setSynthetic(boolean value) {
+        public void setSynthetic(bool value) {
             setModifiers(Opcodes.ACC_SYNTHETIC, value);
         }
     
-        public void setVarargs(boolean value) {
+        public void setVarargs(bool value) {
             setModifiers(Opcodes.ACC_VARARGS, value);
         }
 
@@ -239,7 +239,7 @@ namespace stab.reflection {
             }
         }
 
-        private void setModifiers(int modifiers, boolean value) {
+        private void setModifiers(int modifiers, bool value) {
             checkCreated();
             if (value) {
                 this.modifiers |= modifiers;
@@ -271,7 +271,7 @@ namespace stab.reflection {
             ((TypeBuilder)this.DeclaringType).checkCreated();
         }
         
-        boolean IsCreated {
+        bool IsCreated {
             get {
                 return ((TypeBuilder)this.DeclaringType).created;
             }

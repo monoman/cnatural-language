@@ -22,8 +22,8 @@ using stab.lang;
 namespace stab.query {
 
 	abstract class CollectionBase<E> : Collection<E> {
-		public boolean addAll(Collection<E> c) {
-			boolean result = false;
+		public bool addAll(Collection<E> c) {
+			bool result = false;
 			foreach (var d in c) {
 				result = true;
 				add(d);
@@ -31,7 +31,7 @@ namespace stab.query {
 			return result;
 		}
 		
-		public boolean containsAll(Collection<?> c) {
+		public bool containsAll(Collection<?> c) {
 			foreach (var o in c) {
 				if (!contains(o)) {
 					return false;
@@ -40,7 +40,7 @@ namespace stab.query {
 			return true;
 		}
 		
-		public boolean removeAll(Collection<?> c) {
+		public bool removeAll(Collection<?> c) {
 			var result = false;
 			foreach (var o in c) {
 				if (remove(o)) {
@@ -89,7 +89,7 @@ namespace stab.query {
 			size = 0;
 		}
 		
-		public boolean isEmpty() {
+		public bool isEmpty() {
 			return size == 0;
 		}
 		
@@ -122,11 +122,11 @@ namespace stab.query {
 		
 		// Collection
 		
-		public boolean add(Integer i) {
+		public bool add(Integer i) {
 			return add(i.intValue());
 		}
 		
-		public boolean contains(Object o) {
+		public bool contains(Object o) {
 			var i = o as Integer;
 			if (i == null) {
 				return false;
@@ -134,7 +134,7 @@ namespace stab.query {
 			return contains(i.intValue());
 		}
 		
-		public boolean remove(Object o) {
+		public bool remove(Object o) {
 			var i = o as Integer;
 			if (i == null) {
 				return false;
@@ -142,7 +142,7 @@ namespace stab.query {
 			return removeItem(i.intValue());
 		}
 
-		public boolean retainAll(Collection<?> c) {
+		public bool retainAll(Collection<?> c) {
 			if (this.isEmpty() || c.isEmpty()) {
 				return false;
 			}
@@ -156,7 +156,7 @@ namespace stab.query {
 			return retainAll(set);
 		}
 		
-		private boolean retainAll(IntHashSet set) {
+		private bool retainAll(IntHashSet set) {
 			var t = new int[Math.min(size, set.count())];
 			int len = 0;
 			for (int i = 0; i < size; i++) {
@@ -175,7 +175,7 @@ namespace stab.query {
 
 		// IntCollection
 		
-		public boolean add(int i) {
+		public bool add(int i) {
 			if (size == sizeof(items)) {
 				resize(size * 2);
 			}
@@ -183,7 +183,7 @@ namespace stab.query {
 			return true;
 		}
 		
-		public boolean addAll(IntCollection c) {
+		public bool addAll(IntCollection c) {
 			var result = false;
 			foreach (var i in c) {
 				result = true;
@@ -192,7 +192,7 @@ namespace stab.query {
 			return result;
 		}
 		
-		public boolean contains(int i) {
+		public bool contains(int i) {
 			for (int index = 0; index < size; index++) {
 				if (items[index] == i) {
 					return true;
@@ -201,7 +201,7 @@ namespace stab.query {
 			return false;
 		}
 		
-		public boolean containsAll(IntCollection c) {
+		public bool containsAll(IntCollection c) {
 			foreach (var i in c) {
 				if (!contains(i)) {
 					return false;
@@ -216,7 +216,7 @@ namespace stab.query {
 			}
 		}
 		
-		public boolean removeItem(int i) {
+		public bool removeItem(int i) {
 			for (int index = 0; index < size; index++) {
 				if (items[index] == i) {
 					removeAt(index);
@@ -226,7 +226,7 @@ namespace stab.query {
 			return false;
 		}
 		
-		public boolean removeAll(IntCollection c) {
+		public bool removeAll(IntCollection c) {
 			var result = false;
 			foreach (var i in c) {
 				if (removeItem(i)) {
@@ -236,7 +236,7 @@ namespace stab.query {
 			return result;
 		}
 		
-		public boolean retainAll(IntCollection c) {
+		public bool retainAll(IntCollection c) {
 			if (this.isEmpty() || c.isEmpty()) {
 				return false;
 			}
@@ -262,7 +262,7 @@ namespace stab.query {
 			add(index, i.intValue());
 		}
 
-		public boolean addAll(int index, Collection<Integer> c) {
+		public bool addAll(int index, Collection<Integer> c) {
 			if (index < 0 || index > size) {
 				throw new IndexOutOfBoundsException("index = " + index);
 			}
@@ -329,7 +329,7 @@ namespace stab.query {
 			size++;
 		}
 		
-		public boolean addAll(int index, IntCollection c) {
+		public bool addAll(int index, IntCollection c) {
 			if (index < 0 || index > size) {
 				throw new IndexOutOfBoundsException("index = " + index);
 			}
@@ -427,11 +427,11 @@ namespace stab.query {
 		
 		// Collection
 		
-		public boolean add(Long l) {
+		public bool add(Long l) {
 			return add(l.longValue());
 		}
 		
-		public boolean contains(Object o) {
+		public bool contains(Object o) {
 			var l = o as Long;
 			if (l == null) {
 				return false;
@@ -439,7 +439,7 @@ namespace stab.query {
 			return contains(l.longValue());
 		}
 		
-		public boolean remove(Object o) {
+		public bool remove(Object o) {
 			var l = o as Long;
 			if (l == null) {
 				return false;
@@ -447,7 +447,7 @@ namespace stab.query {
 			return removeItem(l.longValue());
 		}
 
-		public boolean retainAll(Collection<?> c) {
+		public bool retainAll(Collection<?> c) {
 			if (this.isEmpty() || c.isEmpty()) {
 				return false;
 			}
@@ -463,7 +463,7 @@ namespace stab.query {
 		
 		// LongCollection
 		
-		public boolean add(long l) {
+		public bool add(long l) {
 			if (size == sizeof(items)) {
 				resize(size * 2);
 			}
@@ -471,7 +471,7 @@ namespace stab.query {
 			return true;
 		}
 		
-		public boolean addAll(LongCollection c) {
+		public bool addAll(LongCollection c) {
 			var result = false;
 			foreach (var i in c) {
 				result = true;
@@ -480,7 +480,7 @@ namespace stab.query {
 			return result;
 		}
 		
-		public boolean contains(long l) {
+		public bool contains(long l) {
 			for (int index = 0; index < size; index++) {
 				if (items[index] == l) {
 					return true;
@@ -489,7 +489,7 @@ namespace stab.query {
 			return false;
 		}
 		
-		public boolean containsAll(LongCollection c) {
+		public bool containsAll(LongCollection c) {
 			foreach (var l in c) {
 				if (!contains(l)) {
 					return false;
@@ -504,7 +504,7 @@ namespace stab.query {
 			}
 		}
 		
-		public boolean removeItem(long l) {
+		public bool removeItem(long l) {
 			for (int index = 0; index < size; index++) {
 				if (items[index] == l) {
 					removeAt(index);
@@ -514,7 +514,7 @@ namespace stab.query {
 			return false;
 		}
 		
-		public boolean removeAll(LongCollection c) {
+		public bool removeAll(LongCollection c) {
 			var result = false;
 			foreach (var l in c) {
 				if (removeItem(l)) {
@@ -524,7 +524,7 @@ namespace stab.query {
 			return result;
 		}
 		
-		public boolean retainAll(LongCollection c) {
+		public bool retainAll(LongCollection c) {
 			if (this.isEmpty() || c.isEmpty()) {
 				return false;
 			}
@@ -535,7 +535,7 @@ namespace stab.query {
 			return retainAll(set);
 		}
 
-		private boolean retainAll(LongHashSet set) {
+		private bool retainAll(LongHashSet set) {
 			var t = new long[Math.min(size, set.count())];
 			int len = 0;
 			for (int i = 0; i < size; i++) {
@@ -567,7 +567,7 @@ namespace stab.query {
 			add(index, l.longValue());
 		}
 
-		public boolean addAll(int index, Collection<Long> c) {
+		public bool addAll(int index, Collection<Long> c) {
 			if (index < 0 || index > size) {
 				throw new IndexOutOfBoundsException("index = " + index);
 			}
@@ -634,7 +634,7 @@ namespace stab.query {
 			size++;
 		}
 		
-		public boolean addAll(int index, LongCollection c) {
+		public bool addAll(int index, LongCollection c) {
 			if (index < 0 || index > size) {
 				throw new IndexOutOfBoundsException("index = " + index);
 			}
@@ -732,11 +732,11 @@ namespace stab.query {
 		
 		// Collection
 		
-		public boolean add(Float f) {
+		public bool add(Float f) {
 			return add(f.floatValue());
 		}
 		
-		public boolean contains(Object o) {
+		public bool contains(Object o) {
 			var f = o as Float;
 			if (f == null) {
 				return false;
@@ -744,7 +744,7 @@ namespace stab.query {
 			return contains(f.floatValue());
 		}
 		
-		public boolean remove(Object o) {
+		public bool remove(Object o) {
 			var f = o as Float;
 			if (f == null) {
 				return false;
@@ -752,7 +752,7 @@ namespace stab.query {
 			return removeItem(f.floatValue());
 		}
 
-		public boolean retainAll(Collection<?> c) {
+		public bool retainAll(Collection<?> c) {
 			if (this.isEmpty() || c.isEmpty()) {
 				return false;
 			}
@@ -768,7 +768,7 @@ namespace stab.query {
 		
 		// FloatCollection
 		
-		public boolean add(float f) {
+		public bool add(float f) {
 			if (size == sizeof(items)) {
 				resize(size * 2);
 			}
@@ -776,7 +776,7 @@ namespace stab.query {
 			return true;
 		}
 		
-		public boolean addAll(FloatCollection c) {
+		public bool addAll(FloatCollection c) {
 			var result = false;
 			foreach (var i in c) {
 				result = true;
@@ -785,7 +785,7 @@ namespace stab.query {
 			return result;
 		}
 		
-		public boolean contains(float f) {
+		public bool contains(float f) {
 			for (int index = 0; index < size; index++) {
 				if (items[index] == f) {
 					return true;
@@ -794,7 +794,7 @@ namespace stab.query {
 			return false;
 		}
 		
-		public boolean containsAll(FloatCollection c) {
+		public bool containsAll(FloatCollection c) {
 			foreach (var f in c) {
 				if (!contains(f)) {
 					return false;
@@ -809,7 +809,7 @@ namespace stab.query {
 			}
 		}
 		
-		public boolean removeItem(float f) {
+		public bool removeItem(float f) {
 			for (int index = 0; index < size; index++) {
 				if (items[index] == f) {
 					removeAt(index);
@@ -819,7 +819,7 @@ namespace stab.query {
 			return false;
 		}
 		
-		public boolean removeAll(FloatCollection c) {
+		public bool removeAll(FloatCollection c) {
 			var result = false;
 			foreach (var f in c) {
 				if (removeItem(f)) {
@@ -829,7 +829,7 @@ namespace stab.query {
 			return result;
 		}
 		
-		public boolean retainAll(FloatCollection c) {
+		public bool retainAll(FloatCollection c) {
 			if (this.isEmpty() || c.isEmpty()) {
 				return false;
 			}
@@ -840,7 +840,7 @@ namespace stab.query {
 			return retainAll(set);
 		}
 
-		private boolean retainAll(FloatHashSet set) {
+		private bool retainAll(FloatHashSet set) {
 			var t = new float[Math.min(size, set.count())];
 			int len = 0;
 			for (int i = 0; i < size; i++) {
@@ -872,7 +872,7 @@ namespace stab.query {
 			add(index, f.floatValue());
 		}
 
-		public boolean addAll(int index, Collection<Float> c) {
+		public bool addAll(int index, Collection<Float> c) {
 			if (index < 0 || index > size) {
 				throw new IndexOutOfBoundsException("index = " + index);
 			}
@@ -939,7 +939,7 @@ namespace stab.query {
 			size++;
 		}
 		
-		public boolean addAll(int index, FloatCollection c) {
+		public bool addAll(int index, FloatCollection c) {
 			if (index < 0 || index > size) {
 				throw new IndexOutOfBoundsException("index = " + index);
 			}
@@ -1037,11 +1037,11 @@ namespace stab.query {
 		
 		// Collection
 		
-		public boolean add(Double d) {
+		public bool add(Double d) {
 			return add(d.doubleValue());
 		}
 		
-		public boolean contains(Object o) {
+		public bool contains(Object o) {
 			var d = o as Double;
 			if (d == null) {
 				return false;
@@ -1049,7 +1049,7 @@ namespace stab.query {
 			return contains(d.doubleValue());
 		}
 		
-		public boolean remove(Object o) {
+		public bool remove(Object o) {
 			var d = o as Double;
 			if (d == null) {
 				return false;
@@ -1057,7 +1057,7 @@ namespace stab.query {
 			return removeItem(d.doubleValue());
 		}
 
-		public boolean retainAll(Collection<?> c) {
+		public bool retainAll(Collection<?> c) {
 			if (this.isEmpty() || c.isEmpty()) {
 				return false;
 			}
@@ -1073,7 +1073,7 @@ namespace stab.query {
 		
 		// DoubleCollection
 		
-		public boolean add(double d) {
+		public bool add(double d) {
 			if (size == sizeof(items)) {
 				resize(size * 2);
 			}
@@ -1081,7 +1081,7 @@ namespace stab.query {
 			return true;
 		}
 		
-		public boolean addAll(DoubleCollection c) {
+		public bool addAll(DoubleCollection c) {
 			var result = false;
 			foreach (var i in c) {
 				result = true;
@@ -1090,7 +1090,7 @@ namespace stab.query {
 			return result;
 		}
 		
-		public boolean contains(double d) {
+		public bool contains(double d) {
 			for (int index = 0; index < size; index++) {
 				if (items[index] == d) {
 					return true;
@@ -1099,7 +1099,7 @@ namespace stab.query {
 			return false;
 		}
 		
-		public boolean containsAll(DoubleCollection c) {
+		public bool containsAll(DoubleCollection c) {
 			foreach (var f in c) {
 				if (!contains(f)) {
 					return false;
@@ -1114,7 +1114,7 @@ namespace stab.query {
 			}
 		}
 		
-		public boolean removeItem(double d) {
+		public bool removeItem(double d) {
 			for (int index = 0; index < size; index++) {
 				if (items[index] == d) {
 					removeAt(index);
@@ -1124,7 +1124,7 @@ namespace stab.query {
 			return false;
 		}
 		
-		public boolean removeAll(DoubleCollection c) {
+		public bool removeAll(DoubleCollection c) {
 			var result = false;
 			foreach (var d in c) {
 				if (removeItem(d)) {
@@ -1134,7 +1134,7 @@ namespace stab.query {
 			return result;
 		}
 		
-		public boolean retainAll(DoubleCollection c) {
+		public bool retainAll(DoubleCollection c) {
 			if (this.isEmpty() || c.isEmpty()) {
 				return false;
 			}
@@ -1145,7 +1145,7 @@ namespace stab.query {
 			return retainAll(set);
 		}
 
-		private boolean retainAll(DoubleHashSet set) {
+		private bool retainAll(DoubleHashSet set) {
 			var t = new double[Math.min(size, set.count())];
 			int len = 0;
 			for (int i = 0; i < size; i++) {
@@ -1177,7 +1177,7 @@ namespace stab.query {
 			add(index, d.doubleValue());
 		}
 
-		public boolean addAll(int index, Collection<Double> c) {
+		public bool addAll(int index, Collection<Double> c) {
 			if (index < 0 || index > size) {
 				throw new IndexOutOfBoundsException("index = " + index);
 			}
@@ -1244,7 +1244,7 @@ namespace stab.query {
 			size++;
 		}
 		
-		public boolean addAll(int index, DoubleCollection c) {
+		public bool addAll(int index, DoubleCollection c) {
 			if (index < 0 || index > size) {
 				throw new IndexOutOfBoundsException("index = " + index);
 			}
@@ -1337,7 +1337,7 @@ namespace stab.query {
 			this.set = new HashSet<E>(tester, 7);
 		}
 		
-		public boolean add(E e) {
+		public bool add(E e) {
 			return set.add(e);
 		}
 		
@@ -1345,13 +1345,13 @@ namespace stab.query {
 			set = new HashSet<E>(set.equalityTester(), 7);
 		}
 		
-		public boolean contains(Object o) {
+		public bool contains(Object o) {
 			#pragma warning disable 270
 			return set.contains((E)o);
 			#pragma warning restore
 		}
 		
-		public boolean isEmpty() {
+		public bool isEmpty() {
 			return set.count() == 0;
 		}
 		
@@ -1359,13 +1359,13 @@ namespace stab.query {
 			return set.iterator();
 		}
 		
-		public boolean remove(Object o) {
+		public bool remove(Object o) {
 			#pragma warning disable 270
 			return set.remove((E)o);
 			#pragma warning restore
 		}
 		
-		public boolean retainAll(Collection<?> c) {
+		public bool retainAll(Collection<?> c) {
 			if (this.isEmpty() || c.isEmpty()) {
 				return false;
 			}
@@ -1398,7 +1398,7 @@ namespace stab.query {
 
 		// Collection
 		
-		public boolean add(Integer e) {
+		public bool add(Integer e) {
 			return add(e.intValue());
 		}
 		
@@ -1406,7 +1406,7 @@ namespace stab.query {
 			set = new IntHashSet(7);
 		}
 		
-		public boolean contains(Object o) {
+		public bool contains(Object o) {
 			var i = o as Integer;
 			if (i == null) {
 				return false;
@@ -1414,11 +1414,11 @@ namespace stab.query {
 			return contains(i.intValue());
 		}
 		
-		public boolean isEmpty() {
+		public bool isEmpty() {
 			return set.count() == 0;
 		}
 		
-		public boolean remove(Object o) {
+		public bool remove(Object o) {
 			var i = o as Integer;
 			if (i == null) {
 				return false;
@@ -1426,7 +1426,7 @@ namespace stab.query {
 			return removeItem(i.intValue());
 		}
 		
-		public boolean retainAll(Collection<?> c) {
+		public bool retainAll(Collection<?> c) {
 			if (this.isEmpty() || c.isEmpty()) {
 				return false;
 			}
@@ -1448,11 +1448,11 @@ namespace stab.query {
 		
 		// IntCollection
 		
-		public boolean add(int i) {
+		public bool add(int i) {
 			return set.add(i);
 		}
 		
-		public boolean addAll(IntCollection c) {
+		public bool addAll(IntCollection c) {
 			var result = false;
 			foreach (var i in c) {
 				result = true;
@@ -1461,11 +1461,11 @@ namespace stab.query {
 			return result;
 		}
 		
-		public boolean contains(int i) {
+		public bool contains(int i) {
 			return set.contains(i);
 		}
 		
-		public boolean containsAll(IntCollection c) {
+		public bool containsAll(IntCollection c) {
 			foreach (var i in c) {
 				if (!contains(i)) {
 					return false;
@@ -1478,11 +1478,11 @@ namespace stab.query {
 			return set.iterator();
 		}
 		
-		public boolean removeItem(int i) {
+		public bool removeItem(int i) {
 			return set.remove(i);
 		}
 		
-		public boolean removeAll(IntCollection c) {
+		public bool removeAll(IntCollection c) {
 			var result = false;
 			foreach (var i in c) {
 				if (removeItem(i)) {
@@ -1492,7 +1492,7 @@ namespace stab.query {
 			return result;
 		}
 		
-		public boolean retainAll(IntCollection c) {
+		public bool retainAll(IntCollection c) {
 			if (this.isEmpty() || c.isEmpty()) {
 				return false;
 			}
@@ -1529,7 +1529,7 @@ namespace stab.query {
 
 		// Collection
 		
-		public boolean add(Long e) {
+		public bool add(Long e) {
 			return add(e.longValue());
 		}
 		
@@ -1537,7 +1537,7 @@ namespace stab.query {
 			set = new LongHashSet(7);
 		}
 		
-		public boolean contains(Object o) {
+		public bool contains(Object o) {
 			var l = o as Long;
 			if (l == null) {
 				return false;
@@ -1545,11 +1545,11 @@ namespace stab.query {
 			return contains(l.longValue());
 		}
 		
-		public boolean isEmpty() {
+		public bool isEmpty() {
 			return set.count() == 0;
 		}
 		
-		public boolean remove(Object o) {
+		public bool remove(Object o) {
 			var l = o as Long;
 			if (l == null) {
 				return false;
@@ -1557,7 +1557,7 @@ namespace stab.query {
 			return removeItem(l.longValue());
 		}
 		
-		public boolean retainAll(Collection<?> c) {
+		public bool retainAll(Collection<?> c) {
 			if (this.isEmpty() || c.isEmpty()) {
 				return false;
 			}
@@ -1579,11 +1579,11 @@ namespace stab.query {
 		
 		// LongCollection
 		
-		public boolean add(long l) {
+		public bool add(long l) {
 			return set.add(l);
 		}
 		
-		public boolean addAll(LongCollection c) {
+		public bool addAll(LongCollection c) {
 			var result = false;
 			foreach (var i in c) {
 				result = true;
@@ -1592,11 +1592,11 @@ namespace stab.query {
 			return result;
 		}
 		
-		public boolean contains(long l) {
+		public bool contains(long l) {
 			return set.contains(l);
 		}
 		
-		public boolean containsAll(LongCollection c) {
+		public bool containsAll(LongCollection c) {
 			foreach (var l in c) {
 				if (!contains(l)) {
 					return false;
@@ -1609,11 +1609,11 @@ namespace stab.query {
 			return set.iterator();
 		}
 		
-		public boolean removeItem(long l) {
+		public bool removeItem(long l) {
 			return set.remove(l);
 		}
 		
-		public boolean removeAll(LongCollection c) {
+		public bool removeAll(LongCollection c) {
 			var result = false;
 			foreach (var l in c) {
 				if (removeItem(l)) {
@@ -1623,7 +1623,7 @@ namespace stab.query {
 			return result;
 		}
 		
-		public boolean retainAll(LongCollection c) {
+		public bool retainAll(LongCollection c) {
 			if (this.isEmpty() || c.isEmpty()) {
 				return false;
 			}
@@ -1660,7 +1660,7 @@ namespace stab.query {
 
 		// Collection
 		
-		public boolean add(Float e) {
+		public bool add(Float e) {
 			return add(e.floatValue());
 		}
 		
@@ -1668,7 +1668,7 @@ namespace stab.query {
 			set = new FloatHashSet(7);
 		}
 		
-		public boolean contains(Object o) {
+		public bool contains(Object o) {
 			var f = o as Float;
 			if (f == null) {
 				return false;
@@ -1676,11 +1676,11 @@ namespace stab.query {
 			return contains(f.floatValue());
 		}
 		
-		public boolean isEmpty() {
+		public bool isEmpty() {
 			return set.count() == 0;
 		}
 		
-		public boolean remove(Object o) {
+		public bool remove(Object o) {
 			var f = o as Float;
 			if (f == null) {
 				return false;
@@ -1688,7 +1688,7 @@ namespace stab.query {
 			return removeItem(f.floatValue());
 		}
 		
-		public boolean retainAll(Collection<?> c) {
+		public bool retainAll(Collection<?> c) {
 			if (this.isEmpty() || c.isEmpty()) {
 				return false;
 			}
@@ -1710,11 +1710,11 @@ namespace stab.query {
 		
 		// FloatCollection
 		
-		public boolean add(float f) {
+		public bool add(float f) {
 			return set.add(f);
 		}
 		
-		public boolean addAll(FloatCollection c) {
+		public bool addAll(FloatCollection c) {
 			var result = false;
 			foreach (var f in c) {
 				result = true;
@@ -1723,11 +1723,11 @@ namespace stab.query {
 			return result;
 		}
 		
-		public boolean contains(float f) {
+		public bool contains(float f) {
 			return set.contains(f);
 		}
 		
-		public boolean containsAll(FloatCollection c) {
+		public bool containsAll(FloatCollection c) {
 			foreach (var f in c) {
 				if (!contains(f)) {
 					return false;
@@ -1740,11 +1740,11 @@ namespace stab.query {
 			return set.iterator();
 		}
 		
-		public boolean removeItem(float f) {
+		public bool removeItem(float f) {
 			return set.remove(f);
 		}
 		
-		public boolean removeAll(FloatCollection c) {
+		public bool removeAll(FloatCollection c) {
 			var result = false;
 			foreach (var f in c) {
 				if (removeItem(f)) {
@@ -1754,7 +1754,7 @@ namespace stab.query {
 			return result;
 		}
 		
-		public boolean retainAll(FloatCollection c) {
+		public bool retainAll(FloatCollection c) {
 			if (this.isEmpty() || c.isEmpty()) {
 				return false;
 			}
@@ -1791,7 +1791,7 @@ namespace stab.query {
 
 		// Collection
 		
-		public boolean add(Double e) {
+		public bool add(Double e) {
 			return add(e.doubleValue());
 		}
 		
@@ -1799,7 +1799,7 @@ namespace stab.query {
 			set = new DoubleHashSet(7);
 		}
 		
-		public boolean contains(Object o) {
+		public bool contains(Object o) {
 			var d = o as Double;
 			if (d == null) {
 				return false;
@@ -1807,11 +1807,11 @@ namespace stab.query {
 			return contains(d.doubleValue());
 		}
 		
-		public boolean isEmpty() {
+		public bool isEmpty() {
 			return set.count() == 0;
 		}
 		
-		public boolean remove(Object o) {
+		public bool remove(Object o) {
 			var d = o as Double;
 			if (d == null) {
 				return false;
@@ -1819,7 +1819,7 @@ namespace stab.query {
 			return removeItem(d.doubleValue());
 		}
 		
-		public boolean retainAll(Collection<?> c) {
+		public bool retainAll(Collection<?> c) {
 			if (this.isEmpty() || c.isEmpty()) {
 				return false;
 			}
@@ -1841,11 +1841,11 @@ namespace stab.query {
 		
 		// DoubleCollection
 		
-		public boolean add(double d) {
+		public bool add(double d) {
 			return set.add(d);
 		}
 		
-		public boolean addAll(DoubleCollection c) {
+		public bool addAll(DoubleCollection c) {
 			var result = false;
 			foreach (var d in c) {
 				result = true;
@@ -1854,11 +1854,11 @@ namespace stab.query {
 			return result;
 		}
 		
-		public boolean contains(double d) {
+		public bool contains(double d) {
 			return set.contains(d);
 		}
 		
-		public boolean containsAll(DoubleCollection c) {
+		public bool containsAll(DoubleCollection c) {
 			foreach (var d in c) {
 				if (!contains(d)) {
 					return false;
@@ -1871,11 +1871,11 @@ namespace stab.query {
 			return set.iterator();
 		}
 		
-		public boolean removeItem(double d) {
+		public bool removeItem(double d) {
 			return set.remove(d);
 		}
 		
-		public boolean removeAll(DoubleCollection c) {
+		public bool removeAll(DoubleCollection c) {
 			var result = false;
 			foreach (var d in c) {
 				if (removeItem(d)) {
@@ -1885,7 +1885,7 @@ namespace stab.query {
 			return result;
 		}
 		
-		public boolean retainAll(DoubleCollection c) {
+		public bool retainAll(DoubleCollection c) {
 			if (this.isEmpty() || c.isEmpty()) {
 				return false;
 			}

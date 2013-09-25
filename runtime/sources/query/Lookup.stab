@@ -20,31 +20,31 @@ using stab.lang;
 namespace stab.query {
 
 	public interface Lookup<TKey, TElement> : Iterable<Grouping<TKey, TElement>> {
-		boolean contains(TKey key);
+		bool contains(TKey key);
 		int Count^;
 		Iterable<TElement> this[TKey key]^;
 	}
 
 	public interface IntLookup<TElement> : Iterable<IntGrouping<TElement>> {
-		boolean contains(int key);
+		bool contains(int key);
 		int Count^;
 		Iterable<TElement> this[int key]^;
 	}
 
 	public interface LongLookup<TElement> : Iterable<LongGrouping<TElement>> {
-		boolean contains(long key);
+		bool contains(long key);
 		int Count^;
 		Iterable<TElement> this[long key]^;
 	}
 
 	public interface FloatLookup<TElement> : Iterable<FloatGrouping<TElement>> {
-		boolean contains(float key);
+		bool contains(float key);
 		int Count^;
 		Iterable<TElement> this[float key]^;
 	}
 
 	public interface DoubleLookup<TElement> : Iterable<DoubleGrouping<TElement>> {
-		boolean contains(double key);
+		bool contains(double key);
 		int Count^;
 		Iterable<TElement> this[double key]^;
 	}
@@ -59,7 +59,7 @@ namespace stab.query {
 			this.groupings = new DefaultGrouping<TKey, TElement>[7];
 		}
 		
-		public boolean contains(TKey key) {
+		public bool contains(TKey key) {
 			return keySet.find(key) != -1;
 		}
 		
@@ -90,7 +90,7 @@ namespace stab.query {
 			}
 		}
 		
-		DefaultGrouping<TKey, TElement> getGrouping(TKey key, boolean create) {
+		DefaultGrouping<TKey, TElement> getGrouping(TKey key, bool create) {
 			int index = keySet.find(key);
 			if (index == -1) {
 				if (create) {
@@ -127,7 +127,7 @@ namespace stab.query {
 			this.groupings = new DefaultIntGrouping<TElement>[7];
 		}
 		
-		public boolean contains(int key) {
+		public bool contains(int key) {
 			return keySet.find(key) != -1;
 		}
 		
@@ -158,7 +158,7 @@ namespace stab.query {
 			}
 		}
 		
-		DefaultIntGrouping<TElement> getGrouping(int key, boolean create) {
+		DefaultIntGrouping<TElement> getGrouping(int key, bool create) {
 			int index = keySet.find(key);
 			if (index == -1) {
 				if (create) {
@@ -195,7 +195,7 @@ namespace stab.query {
 			this.groupings = new DefaultLongGrouping<TElement>[7];
 		}
 		
-		public boolean contains(long key) {
+		public bool contains(long key) {
 			return keySet.find(key) != -1;
 		}
 		
@@ -226,7 +226,7 @@ namespace stab.query {
 			}
 		}
 		
-		DefaultLongGrouping<TElement> getGrouping(long key, boolean create) {
+		DefaultLongGrouping<TElement> getGrouping(long key, bool create) {
 			int index = keySet.find(key);
 			if (index == -1) {
 				if (create) {
@@ -263,7 +263,7 @@ namespace stab.query {
 			this.groupings = new DefaultFloatGrouping<TElement>[7];
 		}
 		
-		public boolean contains(float key) {
+		public bool contains(float key) {
 			return keySet.find(key) != -1;
 		}
 		
@@ -294,7 +294,7 @@ namespace stab.query {
 			}
 		}
 		
-		DefaultFloatGrouping<TElement> getGrouping(float key, boolean create) {
+		DefaultFloatGrouping<TElement> getGrouping(float key, bool create) {
 			int index = keySet.find(key);
 			if (index == -1) {
 				if (create) {
@@ -331,7 +331,7 @@ namespace stab.query {
 			this.groupings = new DefaultDoubleGrouping<TElement>[7];
 		}
 		
-		public boolean contains(double key) {
+		public bool contains(double key) {
 			return keySet.find(key) != -1;
 		}
 		
@@ -362,7 +362,7 @@ namespace stab.query {
 			}
 		}
 		
-		DefaultDoubleGrouping<TElement> getGrouping(double key, boolean create) {
+		DefaultDoubleGrouping<TElement> getGrouping(double key, bool create) {
 			int index = keySet.find(key);
 			if (index == -1) {
 				if (create) {

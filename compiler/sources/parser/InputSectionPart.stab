@@ -55,19 +55,19 @@ namespace stab.tools.parser {
             }
         }
         
-        public virtual boolean SkippedSection {
+        public virtual bool SkippedSection {
             get {
                 throw new IllegalStateException();
             }
         }
         
-        public virtual boolean ExpressionValue {
+        public virtual bool ExpressionValue {
             get {
                 throw new IllegalStateException();
             }
         }
         
-        public virtual boolean Define {
+        public virtual bool Define {
             get {
                 throw new IllegalStateException();
             }
@@ -79,7 +79,7 @@ namespace stab.tools.parser {
             }
         }
         
-        public virtual boolean Error {
+        public virtual bool Error {
             get {
                 throw new IllegalStateException();
             }
@@ -97,19 +97,19 @@ namespace stab.tools.parser {
             }
         }
         
-        public virtual boolean Hidden {
+        public virtual bool Hidden {
             get {
                 throw new IllegalStateException();
             }
         }
         
-        public virtual boolean Default {
+        public virtual bool Default {
             get {
                 throw new IllegalStateException();
             }
         }
         
-        public virtual boolean Restore {
+        public virtual bool Restore {
             get {
                 throw new IllegalStateException();
             }
@@ -151,15 +151,15 @@ namespace stab.tools.parser {
     }
 
     abstract class SkippableInputSectionPart : CompoundInputSectionPart {
-        private boolean skippedSection;
+        private bool skippedSection;
         
         protected SkippableInputSectionPart(InputSectionPartKind type, int position, int length, int line,
-            Iterable<InputSectionPart> inputSectionParts, boolean skippedSection)
+            Iterable<InputSectionPart> inputSectionParts, bool skippedSection)
             : super(type, position, length, line, inputSectionParts) {
             this.skippedSection = skippedSection;
         }
 
-        public override boolean SkippedSection {
+        public override bool SkippedSection {
             get {
                 return skippedSection;
             }
@@ -167,15 +167,15 @@ namespace stab.tools.parser {
     }
 
     abstract class ConditionalInputSectionPart : SkippableInputSectionPart {
-        private boolean expressionValue;
+        private bool expressionValue;
         
         protected ConditionalInputSectionPart(InputSectionPartKind type, int position, int length, int line,
-            Iterable<InputSectionPart> parts, boolean skippedSection, boolean expressionValue)
+            Iterable<InputSectionPart> parts, bool skippedSection, bool expressionValue)
             : super(type, position, length, line, parts, skippedSection) {
             this.expressionValue = expressionValue;
         }
 
-        public override boolean ExpressionValue {
+        public override bool ExpressionValue {
             get {
                 return expressionValue;
             }
@@ -183,16 +183,16 @@ namespace stab.tools.parser {
     }
 
     class DefinitionSectionPart : InputSectionPart {
-        private boolean define;
+        private bool define;
         private String symbol;
         
-        DefinitionSectionPart(int position, int length, int line, boolean define, String symbol)
+        DefinitionSectionPart(int position, int length, int line, bool define, String symbol)
             : super(InputSectionPartKind.Definition, position, length, line) {
             this.define = define;
             this.symbol = symbol;
         }
 
-        public override boolean Define {
+        public override bool Define {
             get {
                 return define;
             }
@@ -206,16 +206,16 @@ namespace stab.tools.parser {
     }
 
     class DiagnosticSectionPart : InputSectionPart {
-        private boolean error;
+        private bool error;
         private String message;
         
-        DiagnosticSectionPart(int position, int length, int line, boolean error, String message)
+        DiagnosticSectionPart(int position, int length, int line, bool error, String message)
             : super(InputSectionPartKind.Diagnostic, position, length, line) {
             this.error = error;
             this.message = message;
         }
 
-        public override boolean Error {
+        public override bool Error {
             get {
                 return error;
             }
@@ -230,35 +230,35 @@ namespace stab.tools.parser {
 
 
     class ElifSectionPart : ConditionalInputSectionPart {
-        ElifSectionPart(int position, int length, int line, Iterable<InputSectionPart> parts, boolean skippedSection, boolean expressionValue)
+        ElifSectionPart(int position, int length, int line, Iterable<InputSectionPart> parts, bool skippedSection, bool expressionValue)
             : super(InputSectionPartKind.Elif, position, length, line, parts, skippedSection, expressionValue) {
         }
     }
 
 
     class IfSectionPart : ConditionalInputSectionPart {
-        IfSectionPart(int position, int length, int line, Iterable<InputSectionPart> parts, boolean skippedSection, boolean expressionValue)
+        IfSectionPart(int position, int length, int line, Iterable<InputSectionPart> parts, bool skippedSection, bool expressionValue)
             : super(InputSectionPartKind.If, position, length, line, parts, skippedSection, expressionValue) {
         }
     }
 
     class ElseSectionPart : SkippableInputSectionPart {
-        ElseSectionPart(int position, int length, int line, Iterable<InputSectionPart> parts, boolean skippedSection)
+        ElseSectionPart(int position, int length, int line, Iterable<InputSectionPart> parts, bool skippedSection)
             : super(InputSectionPartKind.Else, position, length, line, parts, skippedSection) {
         }
     }
 
     class LineSectionPart : InputSectionPart {
         private String filename;
-        private boolean hidden;
-        private boolean @default;
+        private bool hidden;
+        private bool @default;
         
         LineSectionPart(int position, int length, int line, String filename)
             : super(InputSectionPartKind.Line, position, length, line) {
             this.filename = filename;
         }
 
-        LineSectionPart(int position, int length, int line, boolean hidden)
+        LineSectionPart(int position, int length, int line, bool hidden)
             : super(InputSectionPartKind.Line, position, length, line) {
             this.hidden = hidden;
             this.@default = !hidden;
@@ -270,13 +270,13 @@ namespace stab.tools.parser {
             }
         }
 
-        public override boolean Hidden {
+        public override bool Hidden {
             get {
                 return hidden;
             }
         }
 
-        public override boolean Default {
+        public override bool Default {
             get {
                 return @default;
             }
@@ -284,16 +284,16 @@ namespace stab.tools.parser {
     }
 
     class PragmaSectionPart : InputSectionPart {
-        private boolean restore;
+        private bool restore;
         private IntIterable warnings;
 
-        PragmaSectionPart(int position, int length, int line, boolean restore, IntIterable warnings)
+        PragmaSectionPart(int position, int length, int line, bool restore, IntIterable warnings)
             : super(InputSectionPartKind.Pragma, position, length, line) {
             this.restore = restore;
             this.warnings = warnings;
         }
 
-        public override boolean Restore {
+        public override bool Restore {
             get {
                 return restore;
             }

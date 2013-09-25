@@ -46,7 +46,7 @@ namespace stab.tools.syntaxtree {
 			this.Arguments = new ArrayList<ExpressionNode>();
 		}
 		
-		public boolean IsSuper;
+		public bool IsSuper;
 		
 		public List<ExpressionNode> Arguments^;
 	}

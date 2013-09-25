@@ -1,6 +1,6 @@
 public class VirtualCall : VirtualCallAux {
 
-	public boolean method() {
+	public bool method() {
 		return super.test1() != ((VirtualCallAux)this).test1();
 	}
 
@@ -8,7 +8,7 @@ public class VirtualCall : VirtualCallAux {
 		return 3;
 	}
 	
-	public static boolean test() {
+	public static bool test() {
 		var obj = new VirtualCall();
 		return obj.method();
 	}

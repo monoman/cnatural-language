@@ -1,7 +1,7 @@
 using java.lang;
 
 public class AutoboxingEqual {
-	public static boolean test() {
+	public static bool test() {
 		Integer x = 37;
 		Integer y = x;
 		x++;

@@ -3,7 +3,7 @@ using java.util;
 using stab.query;
 
 public class ToTIntMap {
-	public static boolean test() {
+	public static bool test() {
 		var map = Query.asIterable(new[] { 1, 2, 3 }).toMap(p => "K" + p);
 		return map.containsValue(1) &&
 				map.containsValue(2) &&

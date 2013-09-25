@@ -24,7 +24,7 @@ namespace stab.lang {
     /// </summary>
 	public interface IntList : List<Integer>, IntCollection {
 		void add(int index, int i);
-		boolean addAll(int index, IntCollection c);
+		bool addAll(int index, IntCollection c);
 		int indexOf(int i);
 		int lastIndexOf(int i);
 		int removeAt(int index);
@@ -38,7 +38,7 @@ namespace stab.lang {
     /// </summary>
 	public interface LongList : List<Long>, LongCollection {
 		void add(int index, long l);
-		boolean addAll(int index, LongCollection c);
+		bool addAll(int index, LongCollection c);
 		int indexOf(long l);
 		int lastIndexOf(long l);
 		long removeAt(int index);
@@ -52,7 +52,7 @@ namespace stab.lang {
     /// </summary>
 	public interface FloatList : List<Float>, FloatCollection {
 		void add(int index, float f);
-		boolean addAll(int index, FloatCollection c);
+		bool addAll(int index, FloatCollection c);
 		int indexOf(float f);
 		int lastIndexOf(float f);
 		float removeAt(int index);
@@ -66,7 +66,7 @@ namespace stab.lang {
     /// </summary>
 	public interface DoubleList : List<Double>, DoubleCollection {
 		void add(int index, double d);
-		boolean addAll(int index, DoubleCollection c);
+		bool addAll(int index, DoubleCollection c);
 		int indexOf(double d);
 		int lastIndexOf(double d);
 		double removeAt(int index);

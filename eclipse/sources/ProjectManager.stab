@@ -72,7 +72,7 @@ namespace stab.tools.eclipse {
 			}
 		}
 
-		public boolean RequireFullBuild {
+		public bool RequireFullBuild {
 			get {
 				return this.DependencyInfo == null;
 			}

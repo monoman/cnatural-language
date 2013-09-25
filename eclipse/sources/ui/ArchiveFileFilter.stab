@@ -23,16 +23,16 @@ namespace stab.tools.eclipse.ui {
 
  	public class ArchiveFileFilter : ViewerFilter {
  		private Iterable<IResource> excludedFiles;
- 		private boolean recursive;
- 		private boolean allowAllArchives;
+ 		private bool recursive;
+ 		private bool allowAllArchives;
  	
- 		public ArchiveFileFilter(Iterable<IResource> excludedFiles, boolean recursive, boolean allowAllArchives) {
+ 		public ArchiveFileFilter(Iterable<IResource> excludedFiles, bool recursive, bool allowAllArchives) {
  			this.excludedFiles = (excludedFiles == null) ? Query.empty<IResource>() : excludedFiles;
  			this.recursive = recursive;
  			this.allowAllArchives = allowAllArchives;
  		}
  	
-		public override boolean select(Viewer viewer, Object parent, Object element) {
+		public override bool select(Viewer viewer, Object parent, Object element) {
 			if (element instanceof IFile) {
 				var file = (IFile)element;
 				if (!excludedFiles.contains(file)) {

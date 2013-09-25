@@ -38,7 +38,7 @@ namespace stab.tools.eclipse.ui {
 		}
 		
 		class FilteredTreeWithFilter : FilteredTree {
-			private boolean narrowingDown;
+			private bool narrowingDown;
 			private String previousFilterText;
 			
 			public FilteredTreeWithFilter(Composite parent, int treeStyle)

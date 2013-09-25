@@ -1,7 +1,7 @@
 using stab.query;
 
 public class LinqExecution {
-	public static boolean test() {
+	public static bool test() {
 		var i = 0;
 		var query = from n in Query.range(0, 10)
 					select ++i;

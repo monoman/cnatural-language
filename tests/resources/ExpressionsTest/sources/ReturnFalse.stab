@@ -1,5 +1,5 @@
 public class ReturnFalse {
-	public static boolean test() {
+	public static bool test() {
 		return false;
 	}
 }

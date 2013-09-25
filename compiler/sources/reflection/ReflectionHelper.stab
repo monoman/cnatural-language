@@ -213,7 +213,7 @@ namespace stab.reflection {
             this.bindings[key] = value;
         }
         
-        boolean hasBinding(TypeInfo key) {
+        bool hasBinding(TypeInfo key) {
             var b = this;
             do {
                 if (b.bindings[key] != null) {

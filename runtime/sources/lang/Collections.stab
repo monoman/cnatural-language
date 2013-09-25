@@ -23,14 +23,14 @@ namespace stab.lang {
     /// Provides methods to manipulate a collection of ints without boxing / unboxing.
     /// </summary>
 	public interface IntCollection : Collection<Integer>, IntIterable {
-		boolean add(int i);
-		boolean addAll(IntCollection c);
-		boolean contains(int i);
-		boolean containsAll(IntCollection c);
+		bool add(int i);
+		bool addAll(IntCollection c);
+		bool contains(int i);
+		bool containsAll(IntCollection c);
 		IntIterator iterator();
-		boolean removeItem(int i);
-		boolean removeAll(IntCollection c);
-		boolean retainAll(IntCollection c);
+		bool removeItem(int i);
+		bool removeAll(IntCollection c);
+		bool retainAll(IntCollection c);
 		int[] toArray(int[] a);
 	}
 
@@ -38,14 +38,14 @@ namespace stab.lang {
     /// Provides methods to manipulate a collection of longs without boxing / unboxing.
     /// </summary>
 	public interface LongCollection : Collection<Long>, LongIterable {
-		boolean add(long l);
-		boolean addAll(LongCollection c);
-		boolean contains(long l);
-		boolean containsAll(LongCollection c);
+		bool add(long l);
+		bool addAll(LongCollection c);
+		bool contains(long l);
+		bool containsAll(LongCollection c);
 		LongIterator iterator();
-		boolean removeItem(long l);
-		boolean removeAll(LongCollection c);
-		boolean retainAll(LongCollection c);
+		bool removeItem(long l);
+		bool removeAll(LongCollection c);
+		bool retainAll(LongCollection c);
 		long[] toArray(long[] a);
 	}
 
@@ -53,14 +53,14 @@ namespace stab.lang {
     /// Provides methods to manipulate a collection of floats without boxing / unboxing.
     /// </summary>
 	public interface FloatCollection : Collection<Float>, FloatIterable {
-		boolean add(float f);
-		boolean addAll(FloatCollection c);
-		boolean contains(float f);
-		boolean containsAll(FloatCollection c);
+		bool add(float f);
+		bool addAll(FloatCollection c);
+		bool contains(float f);
+		bool containsAll(FloatCollection c);
 		FloatIterator iterator();
-		boolean removeItem(float f);
-		boolean removeAll(FloatCollection c);
-		boolean retainAll(FloatCollection c);
+		bool removeItem(float f);
+		bool removeAll(FloatCollection c);
+		bool retainAll(FloatCollection c);
 		float[] toArray(float[] a);
 	}
 
@@ -68,14 +68,14 @@ namespace stab.lang {
     /// Provides methods to manipulate a collection of doubles without boxing / unboxing.
     /// </summary>
 	public interface DoubleCollection : Collection<Double>, DoubleIterable {
-		boolean add(double d);
-		boolean addAll(DoubleCollection c);
-		boolean contains(double d);
-		boolean containsAll(DoubleCollection c);
+		bool add(double d);
+		bool addAll(DoubleCollection c);
+		bool contains(double d);
+		bool containsAll(DoubleCollection c);
 		DoubleIterator iterator();
-		boolean removeItem(double d);
-		boolean removeAll(DoubleCollection c);
-		boolean retainAll(DoubleCollection c);
+		bool removeItem(double d);
+		bool removeAll(DoubleCollection c);
+		bool retainAll(DoubleCollection c);
 		double[] toArray(double[] a);
 	}
 }

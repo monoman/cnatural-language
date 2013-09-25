@@ -124,7 +124,7 @@ namespace stab.tools.eclipse.editors {
 			}
 		}
 
-		static void updateTextStyle(SemanticStyle value, TextStyle textStyle, boolean add) {
+		static void updateTextStyle(SemanticStyle value, TextStyle textStyle, bool add) {
 			var ts = value.TextStyles;
 			if (add) {
 				ts.add(TextStyle.Bold);
@@ -202,25 +202,25 @@ namespace stab.tools.eclipse.editors {
 			}
 		}
 		
-		public boolean IsBold {
+		public bool IsBold {
 			get {
 				return textStyles.contains(TextStyle.Bold);
 			}
 		}
 		
-		public boolean IsItalic {
+		public bool IsItalic {
 			get {
 				return textStyles.contains(TextStyle.Italic);
 			}
 		}
 		
-		public boolean Strikethrough {
+		public bool Strikethrough {
 			get {
 				return textStyles.contains(TextStyle.Strikethrough);
 			}
 		}
 		
-		public boolean Underline {
+		public bool Underline {
 			get {
 				return textStyles.contains(TextStyle.Underline);
 			}

@@ -1,5 +1,5 @@
 public class IntEqual {
-	public static boolean test(int arg1, int arg2) {
+	public static bool test(int arg1, int arg2) {
 		return arg1 == arg2;
 	}
 }

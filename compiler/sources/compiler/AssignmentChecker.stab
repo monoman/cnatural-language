@@ -237,7 +237,7 @@ namespace stab.tools.compiler {
             if (expressionChecker.handleExpression(switchStatement.Selector, visited, true) == AssignmentState.Assigned) {
                 return null;
             }
-            boolean hasDefault = false;
+            bool hasDefault = false;
             foreach (var section in switchStatement.Sections) {
                 if (section.CaseExpression == null) {
                     hasDefault = true;
@@ -344,7 +344,7 @@ namespace stab.tools.compiler {
             }
 
             protected override AssignmentState handleArrayCreation(ArrayCreationExpressionNode arrayCreation, HashSet<StatementNode> visited,
-                    boolean nested) {
+                    bool nested) {
                 foreach (var e in arrayCreation.DimensionExpressions) {
                     if (handleExpression(e, visited, true) == AssignmentState.Assigned) {
                         return AssignmentState.Assigned;
@@ -357,7 +357,7 @@ namespace stab.tools.compiler {
             }
             
             protected override AssignmentState handleArrayInitializer(ArrayInitializerExpressionNode arrayInitializer,
-                    HashSet<StatementNode> visited, boolean nested) {
+                    HashSet<StatementNode> visited, bool nested) {
                 foreach (var e in arrayInitializer.Values) {
                     if (handleExpression(e, visited, true) == AssignmentState.Assigned) {
                         return AssignmentState.Assigned;
@@ -366,7 +366,7 @@ namespace stab.tools.compiler {
                 return AssignmentState.NotAssigned;
             }
             
-            protected override AssignmentState handleAssign(AssignExpressionNode assign, HashSet<StatementNode> visited, boolean nested) {
+            protected override AssignmentState handleAssign(AssignExpressionNode assign, HashSet<StatementNode> visited, bool nested) {
                 if (handleExpression(assign.Right, visited, true) == AssignmentState.Assigned) {
                     return AssignmentState.Assigned;
                 }
@@ -382,7 +382,7 @@ namespace stab.tools.compiler {
                 return AssignmentState.NotAssigned;
             }
 
-            protected override AssignmentState handleBinary(BinaryExpressionNode binary, HashSet<StatementNode> visited, boolean nested) {
+            protected override AssignmentState handleBinary(BinaryExpressionNode binary, HashSet<StatementNode> visited, bool nested) {
                 var state = handleExpression(binary.LeftOperand, visited, true);
                 switch (binary.Operator) {
                 case LogicalAnd:
@@ -448,12 +448,12 @@ namespace stab.tools.compiler {
                 return AssignmentState.NotAssigned;
             }
 
-            protected override AssignmentState handleCast(CastExpressionNode cast, HashSet<StatementNode> visited, boolean nested) {
+            protected override AssignmentState handleCast(CastExpressionNode cast, HashSet<StatementNode> visited, bool nested) {
                 return handleExpression(cast.Expression, visited, true);
             }
             
             protected override AssignmentState handleConditional(ConditionalExpressionNode conditional, HashSet<StatementNode> visited,
-                    boolean nested) {
+                    bool nested) {
                 switch (handleExpression(conditional.Condition, visited, true)) {
                 case Assigned:
                     return AssignmentState.Assigned;
@@ -487,7 +487,7 @@ namespace stab.tools.compiler {
             }
 
             protected override AssignmentState handleElementAccess(ElementAccessExpressionNode elementAccess, HashSet<StatementNode> visited,
-                    boolean nested) {
+                    bool nested) {
                 if (handleExpression(elementAccess.TargetObject, visited, true) == AssignmentState.Assigned) {
                     return AssignmentState.Assigned;
                 }
@@ -500,7 +500,7 @@ namespace stab.tools.compiler {
             }
             
             protected override AssignmentState handleInvocation(InvocationExpressionNode invocation, HashSet<StatementNode> visited,
-                    boolean nested) {
+                    bool nested) {
                 var info = invocation.getUserData(typeof(ExpressionInfo));
                 if (!info.Method.IsExcludedFromCompilation) {
                     if (handleExpression(invocation.TargetObject, visited, true) == AssignmentState.Assigned) {
@@ -515,17 +515,17 @@ namespace stab.tools.compiler {
                 return AssignmentState.NotAssigned;
             }
 
-            protected override AssignmentState handleLambda(LambdaExpressionNode lambda, HashSet<StatementNode> visited, boolean nested) {
+            protected override AssignmentState handleLambda(LambdaExpressionNode lambda, HashSet<StatementNode> visited, bool nested) {
                 assignmentChecker.visitStatement(lambda.Body, visited);
                 return AssignmentState.NotAssigned;
             }
             
-            protected override AssignmentState handleLiteral(LiteralExpressionNode literal, HashSet<StatementNode> visited, boolean nested) {
+            protected override AssignmentState handleLiteral(LiteralExpressionNode literal, HashSet<StatementNode> visited, bool nested) {
                 return AssignmentState.NotAssigned;
             }
             
             protected override AssignmentState handleMemberAccess(MemberAccessExpressionNode memberAccess, HashSet<StatementNode> visited,
-                    boolean nested) {
+                    bool nested) {
                 if (handleExpression(memberAccess.TargetObject, visited, true) == AssignmentState.Assigned) {
                     return AssignmentState.Assigned;
                 }
@@ -533,7 +533,7 @@ namespace stab.tools.compiler {
             }
             
             protected override AssignmentState handleObjectCreation(ObjectCreationExpressionNode objectCreation, HashSet<StatementNode> visited,
-                    boolean nested) {
+                    bool nested) {
                 foreach (var arg in objectCreation.Arguments) {
                     if (handleExpression(arg, visited, true) == AssignmentState.Assigned) {
                         return AssignmentState.Assigned;
@@ -563,7 +563,7 @@ namespace stab.tools.compiler {
             }
             
             protected override AssignmentState handleSimpleName(SimpleNameExpressionNode simpleName, HashSet<StatementNode> visited,
-                    boolean nested) {
+                    bool nested) {
                 var info = simpleName.getUserData(typeof(ExpressionInfo));
                 var member = info.Member;
                 if (member == assignmentChecker.uninitializedLocalInfo.local) {
@@ -572,29 +572,29 @@ namespace stab.tools.compiler {
                 return AssignmentState.NotAssigned;
             }
             
-            protected override AssignmentState handleSizeof(SizeofExpressionNode sizeofExpr, HashSet<StatementNode> visited, boolean nested) {
+            protected override AssignmentState handleSizeof(SizeofExpressionNode sizeofExpr, HashSet<StatementNode> visited, bool nested) {
                 return handleExpression(sizeofExpr.Expression, null, true);
             }
 
             protected override AssignmentState handleSuperAccess(SuperAccessExpressionNode superAccess, HashSet<StatementNode> visited,
-                    boolean nested) {
+                    bool nested) {
                 return AssignmentState.NotAssigned;
             }
             
             protected override AssignmentState handleThisAccess(ThisAccessExpressionNode thisAccess, HashSet<StatementNode> visited,
-                    boolean nested) {
+                    bool nested) {
                 return AssignmentState.NotAssigned;
             }
             
-            protected override AssignmentState handleType(TypeExpressionNode type, HashSet<StatementNode> visited, boolean nested) {
+            protected override AssignmentState handleType(TypeExpressionNode type, HashSet<StatementNode> visited, bool nested) {
                 return AssignmentState.NotAssigned;
             }
             
-            protected override AssignmentState handleTypeof(TypeofExpressionNode typeofExpr, HashSet<StatementNode> visited, boolean nested) {
+            protected override AssignmentState handleTypeof(TypeofExpressionNode typeofExpr, HashSet<StatementNode> visited, bool nested) {
                 return AssignmentState.NotAssigned;
             }
             
-            protected override AssignmentState handleUnary(UnaryExpressionNode unary, HashSet<StatementNode> visited, boolean nested) {
+            protected override AssignmentState handleUnary(UnaryExpressionNode unary, HashSet<StatementNode> visited, bool nested) {
                 if (unary.Operator == UnaryOperator.Not) {
                     switch (handleExpression(unary.Operand, visited, true)) {
                     case Assigned:

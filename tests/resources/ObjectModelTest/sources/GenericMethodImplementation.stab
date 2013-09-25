@@ -1,7 +1,7 @@
 using java.lang;
 
 public class GenericMethodImplementation : GenericMethodImplementationAux {
-	public static boolean test() {
+	public static bool test() {
 		var obj = new GenericMethodImplementation();
 		return obj.call("STR").equals("STR");
 	}

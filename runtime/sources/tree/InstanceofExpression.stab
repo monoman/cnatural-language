@@ -20,7 +20,7 @@ namespace stab.tree {
 
     public class InstanceofExpression : Expression {
         InstanceofExpression(Expression operand, Class<?> typeOperand)
-            : super(ExpressionKind.Instanceof, typeof(boolean)) {
+            : super(ExpressionKind.Instanceof, typeof(bool)) {
             this.Operand = operand;
             this.TypeOperand = typeOperand;
         }

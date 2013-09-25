@@ -33,7 +33,7 @@ namespace stab.tools.syntaxtree {
 			}
 		}
 		
-		public boolean IsPartial;
+		public bool IsPartial;
 		
 		public int NameOffset;
 		

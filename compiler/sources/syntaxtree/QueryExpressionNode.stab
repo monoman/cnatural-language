@@ -107,7 +107,7 @@ namespace stab.tools.syntaxtree {
 		public OrderingNode() {
 		}
 		
-		public boolean Descending;
+		public bool Descending;
 		
 		public ExpressionNode KeySelector;
 	}

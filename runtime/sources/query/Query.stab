@@ -194,7 +194,7 @@ namespace stab.query {
 		// all
 		//
 		
-		public static boolean all<TSource>(this Iterable<TSource> source, FunctionTBoolean<TSource> predicate) {
+		public static bool all<TSource>(this Iterable<TSource> source, FunctionTBoolean<TSource> predicate) {
 			if (source == null) throw new NullPointerException("source");
 			if (predicate == null) throw new NullPointerException("predicate");
 
@@ -206,7 +206,7 @@ namespace stab.query {
 			return true;
 		}
 		
-		public static boolean all(this IntIterable source, FunctionIntBoolean predicate) {
+		public static bool all(this IntIterable source, FunctionIntBoolean predicate) {
 			if (source == null) throw new NullPointerException("source");
 			if (predicate == null) throw new NullPointerException("predicate");
 
@@ -218,7 +218,7 @@ namespace stab.query {
 			return true;
 		}
 		
-		public static boolean all(this LongIterable source, FunctionLongBoolean predicate) {
+		public static bool all(this LongIterable source, FunctionLongBoolean predicate) {
 			if (source == null) throw new NullPointerException("source");
 			if (predicate == null) throw new NullPointerException("predicate");
 
@@ -230,7 +230,7 @@ namespace stab.query {
 			return true;
 		}
 		
-		public static boolean all(this FloatIterable source, FunctionFloatBoolean predicate) {
+		public static bool all(this FloatIterable source, FunctionFloatBoolean predicate) {
 			if (source == null) throw new NullPointerException("source");
 			if (predicate == null) throw new NullPointerException("predicate");
 
@@ -242,7 +242,7 @@ namespace stab.query {
 			return true;
 		}
 		
-		public static boolean all(this DoubleIterable source, FunctionDoubleBoolean predicate) {
+		public static bool all(this DoubleIterable source, FunctionDoubleBoolean predicate) {
 			if (source == null) throw new NullPointerException("source");
 			if (predicate == null) throw new NullPointerException("predicate");
 
@@ -258,7 +258,7 @@ namespace stab.query {
 		// any
 		//
 		
-		public static boolean any<TSource>(this Iterable<TSource> source) {
+		public static bool any<TSource>(this Iterable<TSource> source) {
 			if (source == null) throw new NullPointerException("source");
 
 			if (source instanceof Collection<?>) {
@@ -267,7 +267,7 @@ namespace stab.query {
 			return source.iterator().hasNext();
 		}
 
-		public static boolean any<TSource>(this Iterable<TSource> source, FunctionTBoolean<TSource> predicate) {
+		public static bool any<TSource>(this Iterable<TSource> source, FunctionTBoolean<TSource> predicate) {
 			if (source == null) throw new NullPointerException("source");
 			if (predicate == null) throw new NullPointerException("predicate");
 
@@ -279,7 +279,7 @@ namespace stab.query {
 			return false;
 		}
 
-		public static boolean any(this IntIterable source, FunctionIntBoolean predicate) {
+		public static bool any(this IntIterable source, FunctionIntBoolean predicate) {
 			if (source == null) throw new NullPointerException("source");
 			if (predicate == null) throw new NullPointerException("predicate");
 
@@ -291,7 +291,7 @@ namespace stab.query {
 			return false;
 		}
 
-		public static boolean any(this LongIterable source, FunctionLongBoolean predicate) {
+		public static bool any(this LongIterable source, FunctionLongBoolean predicate) {
 			if (source == null) throw new NullPointerException("source");
 			if (predicate == null) throw new NullPointerException("predicate");
 
@@ -303,7 +303,7 @@ namespace stab.query {
 			return false;
 		}
 		
-		public static boolean any(this FloatIterable source, FunctionFloatBoolean predicate) {
+		public static bool any(this FloatIterable source, FunctionFloatBoolean predicate) {
 			if (source == null) throw new NullPointerException("source");
 			if (predicate == null) throw new NullPointerException("predicate");
 
@@ -315,7 +315,7 @@ namespace stab.query {
 			return false;
 		}
 
-		public static boolean any(this DoubleIterable source, FunctionDoubleBoolean predicate) {
+		public static bool any(this DoubleIterable source, FunctionDoubleBoolean predicate) {
 			if (source == null) throw new NullPointerException("source");
 			if (predicate == null) throw new NullPointerException("predicate");
 
@@ -339,7 +339,7 @@ namespace stab.query {
 			}
 		}
 
-		public static BooleanIterable asIterable(boolean[] array) {
+		public static BooleanIterable asIterable(bool[] array) {
 			if (array == null) throw new NullPointerException("array");
 			
 			foreach (var s in array) {
@@ -701,11 +701,11 @@ namespace stab.query {
 		// contains
 		//
 
-		public static boolean contains<TSource>(this Iterable<TSource> source, TSource item) {
+		public static bool contains<TSource>(this Iterable<TSource> source, TSource item) {
 			return contains(source, item, null);
 		}
 
-		public static boolean contains<TSource>(this Iterable<TSource> source, TSource item, EqualityTester<TSource> tester) {
+		public static bool contains<TSource>(this Iterable<TSource> source, TSource item, EqualityTester<TSource> tester) {
 			if (source == null) throw new NullPointerException("source");
 			if (tester == null) {
 				tester = Query.getDefaultEqualityTester();
@@ -719,7 +719,7 @@ namespace stab.query {
 			return false;
 		}
 
-		public static boolean contains(this IntIterable source, int item) {
+		public static bool contains(this IntIterable source, int item) {
 			if (source == null) throw new NullPointerException("source");
 
 			foreach (var s in source) {
@@ -730,7 +730,7 @@ namespace stab.query {
 			return false;
 		}
 
-		public static boolean contains(this LongIterable source, long item) {
+		public static bool contains(this LongIterable source, long item) {
 			if (source == null) throw new NullPointerException("source");
 
 			foreach (var s in source) {
@@ -741,7 +741,7 @@ namespace stab.query {
 			return false;
 		}
 
-		public static boolean contains(this FloatIterable source, float item) {
+		public static bool contains(this FloatIterable source, float item) {
 			if (source == null) throw new NullPointerException("source");
 
 			foreach (var s in source) {
@@ -752,7 +752,7 @@ namespace stab.query {
 			return false;
 		}
 
-		public static boolean contains(this DoubleIterable source, double item) {
+		public static bool contains(this DoubleIterable source, double item) {
 			if (source == null) throw new NullPointerException("source");
 
 			foreach (var s in source) {
@@ -1205,7 +1205,7 @@ namespace stab.query {
 		private class EmptyIterator : Iterator {
 			static Iterator INSTANCE = new EmptyIterator();
 		
-			public boolean hasNext() {
+			public bool hasNext() {
 				return false;
 			}
 			
@@ -1235,11 +1235,11 @@ namespace stab.query {
 		private class EmptyBooleanIterator : BooleanIterator {
 			static BooleanIterator INSTANCE = new EmptyBooleanIterator();
 
-			public boolean nextBoolean() {
+			public bool nextBoolean() {
 				throw new NoSuchElementException();
 			}
 			
-			public boolean hasNext() {
+			public bool hasNext() {
 				return false;
 			}
 			
@@ -1271,7 +1271,7 @@ namespace stab.query {
 				throw new NoSuchElementException();
 			}
 			
-			public boolean hasNext() {
+			public bool hasNext() {
 				return false;
 			}
 			
@@ -1303,7 +1303,7 @@ namespace stab.query {
 				throw new NoSuchElementException();
 			}
 			
-			public boolean hasNext() {
+			public bool hasNext() {
 				return false;
 			}
 			
@@ -1335,7 +1335,7 @@ namespace stab.query {
 				throw new NoSuchElementException();
 			}
 			
-			public boolean hasNext() {
+			public bool hasNext() {
 				return false;
 			}
 			
@@ -1367,7 +1367,7 @@ namespace stab.query {
 				throw new NoSuchElementException();
 			}
 			
-			public boolean hasNext() {
+			public bool hasNext() {
 				return false;
 			}
 			
@@ -1399,7 +1399,7 @@ namespace stab.query {
 				throw new NoSuchElementException();
 			}
 			
-			public boolean hasNext() {
+			public bool hasNext() {
 				return false;
 			}
 			
@@ -1431,7 +1431,7 @@ namespace stab.query {
 				throw new NoSuchElementException();
 			}
 			
-			public boolean hasNext() {
+			public bool hasNext() {
 				return false;
 			}
 			
@@ -1463,7 +1463,7 @@ namespace stab.query {
 				throw new NoSuchElementException();
 			}
 			
-			public boolean hasNext() {
+			public bool hasNext() {
 				return false;
 			}
 			
@@ -4005,11 +4005,11 @@ namespace stab.query {
 		// sequenceEqual
 		//
 		
-		public static boolean sequenceEqual<TSource>(this Iterable<TSource> first, Iterable<TSource> second) {
+		public static bool sequenceEqual<TSource>(this Iterable<TSource> first, Iterable<TSource> second) {
 			return sequenceEqual(first, second, null);
 		}
 		
-		public static boolean sequenceEqual<TSource>(this Iterable<TSource> first, Iterable<TSource> second, EqualityTester<TSource> tester) {
+		public static bool sequenceEqual<TSource>(this Iterable<TSource> first, Iterable<TSource> second, EqualityTester<TSource> tester) {
 			if (first == null) throw new NullPointerException("first");
 			if (second == null) throw new NullPointerException("second");
 			if (tester == null) {
@@ -4026,7 +4026,7 @@ namespace stab.query {
 			return !it2.hasNext();
 		}
 
-		public static boolean sequenceEqual(this IntIterable first, IntIterable second) {
+		public static bool sequenceEqual(this IntIterable first, IntIterable second) {
 			if (first == null) throw new NullPointerException("first");
 			if (second == null) throw new NullPointerException("second");
 		
@@ -4040,7 +4040,7 @@ namespace stab.query {
 			return !it2.hasNext();
 		}
 
-		public static boolean sequenceEqual(this LongIterable first, LongIterable second) {
+		public static bool sequenceEqual(this LongIterable first, LongIterable second) {
 			if (first == null) throw new NullPointerException("first");
 			if (second == null) throw new NullPointerException("second");
 		
@@ -4054,7 +4054,7 @@ namespace stab.query {
 			return !it2.hasNext();
 		}
 
-		public static boolean sequenceEqual(this FloatIterable first, FloatIterable second) {
+		public static bool sequenceEqual(this FloatIterable first, FloatIterable second) {
 			if (first == null) throw new NullPointerException("first");
 			if (second == null) throw new NullPointerException("second");
 		
@@ -4068,7 +4068,7 @@ namespace stab.query {
 			return !it2.hasNext();
 		}
 
-		public static boolean sequenceEqual(this DoubleIterable first, DoubleIterable second) {
+		public static bool sequenceEqual(this DoubleIterable first, DoubleIterable second) {
 			if (first == null) throw new NullPointerException("first");
 			if (second == null) throw new NullPointerException("second");
 		
@@ -5382,7 +5382,7 @@ namespace stab.query {
 		private class DefaultEqualityTester<T> : EqualityTester<T> {
 			static EqualityTester<?> INSTANCE = new DefaultEqualityTester<Object>();
 			
-			public boolean equals(T item1, T item2) {
+			public bool equals(T item1, T item2) {
 				return (item1 == null) ? item2 == null : item1.equals(item2);
 			}
 			

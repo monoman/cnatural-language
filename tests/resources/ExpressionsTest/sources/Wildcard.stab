@@ -1,7 +1,7 @@
 using java.lang;
 
 public class Wildcard {
-	public static boolean test() {
+	public static bool test() {
 		var w1 = new WildcardAux<Object>(new Object());
 		var w2 = new WildcardAux<String>("STR");
 		var o1 = test(w1);

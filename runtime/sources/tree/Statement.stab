@@ -115,7 +115,7 @@ namespace stab.tree {
 			return new SwitchSection(labels, statements);
 		}
 		
-		public static SwitchLabel switchLabel(String name, int value, boolean isDefault) {
+		public static SwitchLabel switchLabel(String name, int value, bool isDefault) {
 			return new SwitchLabel(name, value, isDefault);
 		}
 		

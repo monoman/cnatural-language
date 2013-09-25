@@ -1,5 +1,5 @@
 public class Not {
-	public static boolean test(boolean arg) {
+	public static bool test(bool arg) {
 		return !arg;
 	}
 }

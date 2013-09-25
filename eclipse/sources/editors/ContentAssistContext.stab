@@ -170,7 +170,7 @@ namespace stab.tools.eclipse.editors {
 			return getMembers(member.Type, (member.MemberKind == MemberKind.Local) ? false : member.IsStatic);
 		}
 		
-		public Iterable<MemberInfo> getMembers(TypeInfo declaringType, boolean staticOnly) {
+		public Iterable<MemberInfo> getMembers(TypeInfo declaringType, bool staticOnly) {
 			var members = new HashMap<String, MemberInfo>();
 			foreach (var t in declaringType.getBaseTypes().reverse()) {
 				putFields(t, members);
@@ -339,7 +339,7 @@ namespace stab.tools.eclipse.editors {
 			}
 		}
 		
-        private Iterable<MemberInfo> filterMembers(TypeInfo scope, boolean staticOnly, Iterable<MemberInfo> members) {
+        private Iterable<MemberInfo> filterMembers(TypeInfo scope, bool staticOnly, Iterable<MemberInfo> members) {
             foreach (var mi in members) {
             	if (mi.MemberKind == MemberKind.Local || mi.DeclaringType == null) {
             		yield return mi;

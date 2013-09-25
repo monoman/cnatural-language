@@ -1,7 +1,7 @@
 using java.util;
 
 public class WildcardBoundInheritance {
-	public static boolean test() {
+	public static bool test() {
 		// Just test that it compiles
 		method1(new ArrayList<WildcardBoundInheritanceAux2>());
 		method2(new ArrayList<WildcardBoundInheritanceAux2>());

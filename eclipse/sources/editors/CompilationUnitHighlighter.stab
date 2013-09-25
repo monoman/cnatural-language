@@ -34,18 +34,18 @@ namespace stab.tools.eclipse.editors {
 		
 		public Token EndToken^;
 		
-		boolean containsOffset(int offset) {
+		bool containsOffset(int offset) {
 			if (this.StartToken.IsUpdated) {
 				return false;
 			}
 			return this.StartToken.offset < offset && this.EndToken.offset + this.EndToken.length >= offset;
 		}
 		
-		boolean isAfterOffset(int offset) {
+		bool isAfterOffset(int offset) {
 			return this.StartToken.offset >= offset;
 		}
 		
-		boolean isBeforeOffset(int offset) {
+		bool isBeforeOffset(int offset) {
 			return this.EndToken.offset + this.EndToken.length < offset;
 		}
 	}
@@ -603,7 +603,7 @@ namespace stab.tools.eclipse.editors {
 				this.highlighter = highlighter;
 			}
 			
-			protected override Void handleAnonymousObjectCreation(AnonymousObjectCreationExpressionNode anonymousObject, Void source, boolean nested) {
+			protected override Void handleAnonymousObjectCreation(AnonymousObjectCreationExpressionNode anonymousObject, Void source, bool nested) {
 				highlighter.setStartAndEndTokens(anonymousObject);
 				foreach (var mi in anonymousObject.MemberDeclarators) {
 					highlighter.setStartAndEndTokens(mi);
@@ -613,7 +613,7 @@ namespace stab.tools.eclipse.editors {
 				return null;
 			}
 			
-			protected override Void handleArrayCreation(ArrayCreationExpressionNode arrayCreation, Void source, boolean nested) {
+			protected override Void handleArrayCreation(ArrayCreationExpressionNode arrayCreation, Void source, bool nested) {
 				highlighter.setStartAndEndTokens(arrayCreation);
 				if (arrayCreation.Type != null) {
 					highlighter.setStartAndEndTokens(arrayCreation.Type);
@@ -629,7 +629,7 @@ namespace stab.tools.eclipse.editors {
 				return null;
 			}
 	
-			protected override Void handleArrayInitializer(ArrayInitializerExpressionNode arrayInitializer, Void source, boolean nested) {
+			protected override Void handleArrayInitializer(ArrayInitializerExpressionNode arrayInitializer, Void source, bool nested) {
 				highlighter.setStartAndEndTokens(arrayInitializer);
 				foreach (var e in arrayInitializer.Values) {
 					handleExpression(e, null, true);
@@ -637,21 +637,21 @@ namespace stab.tools.eclipse.editors {
 				return null;
 			}
 	
-			protected override Void handleAssign(AssignExpressionNode assign, Void source, boolean nested) {
+			protected override Void handleAssign(AssignExpressionNode assign, Void source, bool nested) {
 				highlighter.setStartAndEndTokens(assign);
 				handleExpression(assign.Left, null, true);
 				handleExpression(assign.Right, null, true);
 				return null;
 			}
 			
-			protected override Void handleBinary(BinaryExpressionNode binary, Void source, boolean nested) {
+			protected override Void handleBinary(BinaryExpressionNode binary, Void source, bool nested) {
 				highlighter.setStartAndEndTokens(binary);
 				handleExpression(binary.LeftOperand, null, true);
 				handleExpression(binary.RightOperand, null, true);
 				return null;
 			}
 	
-			protected override Void handleCast(CastExpressionNode cast, Void source, boolean nested) {
+			protected override Void handleCast(CastExpressionNode cast, Void source, bool nested) {
 				highlighter.setStartAndEndTokens(cast);
 				var info = cast.getUserData(typeof(ExpressionInfo));
 				highlighter.setStartAndEndTokens(cast.TargetType);
@@ -660,7 +660,7 @@ namespace stab.tools.eclipse.editors {
 				return null;
 			}
 	
-			protected override Void handleConditional(ConditionalExpressionNode conditional, Void source, boolean nested) {
+			protected override Void handleConditional(ConditionalExpressionNode conditional, Void source, bool nested) {
 				highlighter.setStartAndEndTokens(conditional);
 				handleExpression(conditional.Condition, null, true);
 				handleExpression(conditional.IfTrue, null, true);
@@ -668,7 +668,7 @@ namespace stab.tools.eclipse.editors {
 				return null;
 			}
 			
-			protected override Void handleElementAccess(ElementAccessExpressionNode elementAccess, Void source, boolean nested) {
+			protected override Void handleElementAccess(ElementAccessExpressionNode elementAccess, Void source, bool nested) {
 				highlighter.setStartAndEndTokens(elementAccess);
 				handleExpression(elementAccess.TargetObject, null, true);
 				foreach (var e in elementAccess.Indexes) {
@@ -677,7 +677,7 @@ namespace stab.tools.eclipse.editors {
 				return null;
 			}
 			
-			protected override Void handleInvocation(InvocationExpressionNode invocation, Void source, boolean nested) {
+			protected override Void handleInvocation(InvocationExpressionNode invocation, Void source, bool nested) {
 				highlighter.setStartAndEndTokens(invocation);
 				handleExpression(invocation.TargetObject, null, true);
 				foreach (var e in invocation.Arguments) {
@@ -686,7 +686,7 @@ namespace stab.tools.eclipse.editors {
 				return null;
 			}
 			
-			protected override Void handleLambda(LambdaExpressionNode lambda, Void source, boolean nested) {
+			protected override Void handleLambda(LambdaExpressionNode lambda, Void source, bool nested) {
 				highlighter.setStartAndEndTokens(lambda);
 				var m = lambda.getUserData(typeof(MethodInfo));
 				var pit = m.Parameters.iterator();
@@ -703,12 +703,12 @@ namespace stab.tools.eclipse.editors {
 				return null;
 			}
 
-			protected override Void handleLiteral(LiteralExpressionNode literal, Void source, boolean nested) {
+			protected override Void handleLiteral(LiteralExpressionNode literal, Void source, bool nested) {
 				highlighter.setStartAndEndTokens(literal);
 				return null;
 			}
 			
-			protected override Void handleMemberAccess(MemberAccessExpressionNode memberAccess, Void source, boolean nested) {
+			protected override Void handleMemberAccess(MemberAccessExpressionNode memberAccess, Void source, bool nested) {
 				highlighter.setStartAndEndTokens(memberAccess);
 				highlighter.setStartAndEndTokens(memberAccess.Member);
 				var info = memberAccess.getUserData(typeof(ExpressionInfo));
@@ -768,7 +768,7 @@ namespace stab.tools.eclipse.editors {
 				return null;
 			}
 	
-			protected override Void handleObjectCreation(ObjectCreationExpressionNode objectCreation, Void source, boolean nested) {
+			protected override Void handleObjectCreation(ObjectCreationExpressionNode objectCreation, Void source, bool nested) {
 				highlighter.setStartAndEndTokens(objectCreation);
 				var info = objectCreation.getUserData(typeof(ExpressionInfo));
 				highlighter.setStartAndEndTokens(objectCreation.Type);
@@ -782,7 +782,7 @@ namespace stab.tools.eclipse.editors {
 				return null;
 			}
 	
-			protected override Void handleCollectionInitializer(CollectionInitializerExpressionNode initializer, Void source, boolean nested) {
+			protected override Void handleCollectionInitializer(CollectionInitializerExpressionNode initializer, Void source, bool nested) {
 				highlighter.setStartAndEndTokens(initializer);
 				foreach (var e in initializer.Values.selectMany(p => p)) {
 					handleExpression(e, null, true);
@@ -792,7 +792,7 @@ namespace stab.tools.eclipse.editors {
 	
 			// TODO: handleQuery
 			
-			protected override Void handleObjectInitializer(ObjectInitializerExpressionNode initializer, Void source, boolean nested) {
+			protected override Void handleObjectInitializer(ObjectInitializerExpressionNode initializer, Void source, bool nested) {
 				highlighter.setStartAndEndTokens(initializer);
 				foreach (var init in initializer.MemberInitializers) {
 					highlighter.setStartAndEndTokens(init);
@@ -809,7 +809,7 @@ namespace stab.tools.eclipse.editors {
 				return null;
 			}
 			
-			protected override Void handleSimpleName(SimpleNameExpressionNode simpleName, Void source, boolean nested) {
+			protected override Void handleSimpleName(SimpleNameExpressionNode simpleName, Void source, bool nested) {
 				highlighter.setStartAndEndTokens(simpleName);
 				var info = simpleName.getUserData(typeof(ExpressionInfo));
 				if (info == null) {
@@ -862,36 +862,36 @@ namespace stab.tools.eclipse.editors {
 				return null;
 			}
 	
-			protected override Void handleSizeof(SizeofExpressionNode sizeofExpression, Void source, boolean nested) {
+			protected override Void handleSizeof(SizeofExpressionNode sizeofExpression, Void source, bool nested) {
 				highlighter.setStartAndEndTokens(sizeofExpression);
 				handleExpression(sizeofExpression.Expression, null, true);
 				return null;
 			}
 
-			protected override Void handleSuperAccess(SuperAccessExpressionNode superAccess, Void source, boolean nested) {
+			protected override Void handleSuperAccess(SuperAccessExpressionNode superAccess, Void source, bool nested) {
 				highlighter.setStartAndEndTokens(superAccess);
 				return null;
 			}
 			
-			protected override Void handleThisAccess(ThisAccessExpressionNode thisAccess, Void source, boolean nested) {
+			protected override Void handleThisAccess(ThisAccessExpressionNode thisAccess, Void source, bool nested) {
 				highlighter.setStartAndEndTokens(thisAccess);
 				return null;
 			}
 	
-			protected override Void handleType(TypeExpressionNode type, Void source, boolean nested) {
+			protected override Void handleType(TypeExpressionNode type, Void source, bool nested) {
 				highlighter.setStartAndEndTokens(type);
 				var info = type.getUserData(typeof(ExpressionInfo));
 				highlighter.highlightType(type.TypeReference, info.Type);
 				return null;
 			}
 			
-			protected override Void handleTypeof(TypeofExpressionNode typeofExpression, Void source, boolean nested) {
+			protected override Void handleTypeof(TypeofExpressionNode typeofExpression, Void source, bool nested) {
 				highlighter.setStartAndEndTokens(typeofExpression);
 				highlighter.highlightType(typeofExpression.Type, typeofExpression.getUserData(typeof(TypeInfo)));
 				return null;
 			}
 			
-			protected override Void handleUnary(UnaryExpressionNode unary, Void source, boolean nested) {
+			protected override Void handleUnary(UnaryExpressionNode unary, Void source, bool nested) {
 				highlighter.setStartAndEndTokens(unary);
 				handleExpression(unary.Operand, null, true);
 				return null;

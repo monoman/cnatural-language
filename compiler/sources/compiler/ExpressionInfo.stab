@@ -44,7 +44,7 @@ namespace stab.tools.compiler {
             set;
         }
         
-        public boolean IsConstant {
+        public bool IsConstant {
             get;
             set;
         }
@@ -89,17 +89,17 @@ namespace stab.tools.compiler {
             set;
         }
         
-        boolean IsSuperCall {
+        bool IsSuperCall {
             get;
             set;
         }
         
-        boolean Negate {
+        bool Negate {
             get;
             set;
         }
         
-        boolean IsExtension {
+        bool IsExtension {
             get;
             set;
         }

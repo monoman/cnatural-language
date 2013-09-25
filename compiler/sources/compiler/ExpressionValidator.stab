@@ -37,7 +37,7 @@ namespace stab.tools.compiler {
         
         public MethodResolver MethodResolver^;
         
-        boolean handleExpressionNoError(ExpressionNode expression, TypeInfo targetType, boolean nested) {
+        bool handleExpressionNoError(ExpressionNode expression, TypeInfo targetType, bool nested) {
             try {
                 context.disableErrors();
                 handleExpression(expression, targetType, nested);
@@ -49,7 +49,7 @@ namespace stab.tools.compiler {
         }
 
         protected override Void handleAnonymousObjectCreation(AnonymousObjectCreationExpressionNode anonymousObject, TypeInfo targetType,
-                boolean nested) {
+                bool nested) {
             var propertyNames = new ArrayList<String>();
             var propertyTypes = new ArrayList<TypeInfo>();
             foreach (var decl in anonymousObject.MemberDeclarators) {
@@ -152,7 +152,7 @@ namespace stab.tools.compiler {
             return null;
         }
         
-        protected override Void handleArrayCreation(ArrayCreationExpressionNode arrayCreation, TypeInfo targetType, boolean nested) {
+        protected override Void handleArrayCreation(ArrayCreationExpressionNode arrayCreation, TypeInfo targetType, bool nested) {
             var typeRef = arrayCreation.Type;
             TypeInfo type = null;
             if (typeRef != null) {
@@ -203,7 +203,7 @@ namespace stab.tools.compiler {
             return null;
         }
         
-        protected override Void handleArrayInitializer(ArrayInitializerExpressionNode arrayInitializer, TypeInfo targetType, boolean nested) {
+        protected override Void handleArrayInitializer(ArrayInitializerExpressionNode arrayInitializer, TypeInfo targetType, bool nested) {
             TypeInfo targetElementType = null;
             if (targetType != null) {
                 targetElementType = targetType.ElementType;
@@ -242,7 +242,7 @@ namespace stab.tools.compiler {
             return null;
         }
         
-        protected override Void handleAssign(AssignExpressionNode assign, TypeInfo targetType, boolean nested) {
+        protected override Void handleAssign(AssignExpressionNode assign, TypeInfo targetType, bool nested) {
             var left = assign.Left;
             var right = assign.Right;
             handleExpression(left, targetType, true);
@@ -356,7 +356,7 @@ namespace stab.tools.compiler {
             return null;
         }
         
-        protected override Void handleBinary(BinaryExpressionNode binary, TypeInfo targetType, boolean nested) {
+        protected override Void handleBinary(BinaryExpressionNode binary, TypeInfo targetType, bool nested) {
             var left = binary.LeftOperand;
             var right = binary.RightOperand;
             handleExpression(left, null, true);
@@ -731,7 +731,7 @@ namespace stab.tools.compiler {
             return null;
         }
 
-        protected override Void handleCast(CastExpressionNode cast, TypeInfo targetType, boolean nested) {
+        protected override Void handleCast(CastExpressionNode cast, TypeInfo targetType, bool nested) {
             var type = CompilerHelper.resolveTypeReference(context, context.CurrentType.PackageName, cast.TargetType);
             handleExpression(cast.Expression, type, true);
             ValidationHelper.setBoxing(context, type, cast.Expression);
@@ -757,7 +757,7 @@ namespace stab.tools.compiler {
             return null;
         }
         
-        protected override Void handleConditional(ConditionalExpressionNode conditional, TypeInfo targetType, boolean nested) {
+        protected override Void handleConditional(ConditionalExpressionNode conditional, TypeInfo targetType, bool nested) {
             handleExpression(conditional.Condition, context.TypeSystem.BooleanType, true);
             ValidationHelper.setBoxing(context, context.TypeSystem.BooleanType, conditional.Condition);
             var cinfo = conditional.Condition.getUserData(typeof(ExpressionInfo));
@@ -797,7 +797,7 @@ namespace stab.tools.compiler {
             return null;
         }
         
-        protected override Void handleElementAccess(ElementAccessExpressionNode elementAccess, TypeInfo targetType, boolean nested) {
+        protected override Void handleElementAccess(ElementAccessExpressionNode elementAccess, TypeInfo targetType, bool nested) {
             var target = elementAccess.TargetObject;
             handleExpression(target, null, true);
             var tinfo = target.getUserData(typeof(ExpressionInfo));
@@ -854,7 +854,7 @@ namespace stab.tools.compiler {
             return null;
         }
         
-        protected override Void handleInvocation(InvocationExpressionNode invocation, TypeInfo targetType, boolean nested) {
+        protected override Void handleInvocation(InvocationExpressionNode invocation, TypeInfo targetType, bool nested) {
             handleExpression(invocation.TargetObject, null, true);
             var tinfo = invocation.TargetObject.getUserData(typeof(ExpressionInfo));
             var members = tinfo.Members;
@@ -985,7 +985,7 @@ namespace stab.tools.compiler {
             return null;
         }
         
-        protected override Void handleLambda(LambdaExpressionNode lambda, TypeInfo targetType, boolean nested) {
+        protected override Void handleLambda(LambdaExpressionNode lambda, TypeInfo targetType, bool nested) {
         	if (!context.CodeValidationContext.IsInMethod) {
                 throw context.error(CompileErrorId.LambdaOutsideMethod, lambda);
         	}
@@ -1184,7 +1184,7 @@ namespace stab.tools.compiler {
             return result.distinct().toList();
         }
 
-        protected override Void handleLiteral(LiteralExpressionNode literal, TypeInfo targetType, boolean nested) {
+        protected override Void handleLiteral(LiteralExpressionNode literal, TypeInfo targetType, bool nested) {
             switch (literal.getLiteralKind()) {
             case Character:
                 literal.addOrReplaceUserData(new ExpressionInfo(null, null));
@@ -1230,7 +1230,7 @@ namespace stab.tools.compiler {
             return null;
         }
         
-        protected override Void handleMemberAccess(MemberAccessExpressionNode memberAccess, TypeInfo targetType, boolean nested) {
+        protected override Void handleMemberAccess(MemberAccessExpressionNode memberAccess, TypeInfo targetType, bool nested) {
             var nameExpression = memberAccess.Member;
             var name = nameExpression.Name ?? context.getIdentifier(nameExpression.NameOffset, nameExpression.NameLength);
             handleExpression(memberAccess.TargetObject, null, true);
@@ -1309,7 +1309,7 @@ namespace stab.tools.compiler {
             return null;
         }
         
-        protected override Void handleObjectCreation(ObjectCreationExpressionNode objectCreation, TypeInfo targetType, boolean nested) {
+        protected override Void handleObjectCreation(ObjectCreationExpressionNode objectCreation, TypeInfo targetType, bool nested) {
             var type = CompilerHelper.resolveTypeReference(context, context.CurrentType.PackageName, objectCreation.Type);
             if (BytecodeHelper.isDelegateType(type)) {
                 if (objectCreation.Arguments.size() != 1) {
@@ -1495,7 +1495,7 @@ namespace stab.tools.compiler {
             return null;
         }
         
-        protected override Void handleSimpleName(SimpleNameExpressionNode simpleName, TypeInfo targetType, boolean nested) {
+        protected override Void handleSimpleName(SimpleNameExpressionNode simpleName, TypeInfo targetType, bool nested) {
             var name = simpleName.Name ?? context.getIdentifier(simpleName.NameOffset, simpleName.NameLength);
             var typeArgs = getTypeArguments(simpleName.TypeArguments);
             var members = context.MemberResolver.resolveName(context.CurrentType, name, typeArgs);
@@ -1527,7 +1527,7 @@ namespace stab.tools.compiler {
             return null;
         }
         
-        protected override Void handleSizeof(SizeofExpressionNode sizeofExpression, TypeInfo targetType, boolean nested) {
+        protected override Void handleSizeof(SizeofExpressionNode sizeofExpression, TypeInfo targetType, bool nested) {
             var expression = sizeofExpression.Expression;
             handleExpression(expression, null, true);
             var einfo = expression.getUserData(typeof(ExpressionInfo));
@@ -1538,7 +1538,7 @@ namespace stab.tools.compiler {
             return null;
         }
         
-        protected override Void handleSuperAccess(SuperAccessExpressionNode superAccess, TypeInfo targetType, boolean nested) {
+        protected override Void handleSuperAccess(SuperAccessExpressionNode superAccess, TypeInfo targetType, bool nested) {
             if (context.CodeValidationContext.IsStatic) {
                 context.addError(CompileErrorId.StaticSuperAccess, superAccess);
             }
@@ -1549,7 +1549,7 @@ namespace stab.tools.compiler {
             return null;
         }
         
-        protected override Void handleThisAccess(ThisAccessExpressionNode thisAccess, TypeInfo targetType, boolean nested) {
+        protected override Void handleThisAccess(ThisAccessExpressionNode thisAccess, TypeInfo targetType, bool nested) {
             if (context.CodeValidationContext.IsStatic) {
                 context.addError(CompileErrorId.StaticThisAccess, thisAccess);
             }
@@ -1563,13 +1563,13 @@ namespace stab.tools.compiler {
             return null;
         }
         
-        protected override Void handleType(TypeExpressionNode type, TypeInfo targetType, boolean nested) {
+        protected override Void handleType(TypeExpressionNode type, TypeInfo targetType, bool nested) {
             var t = CompilerHelper.resolveTypeReference(context, context.CurrentType.PackageName, type.TypeReference);
             type.addOrReplaceUserData(new ExpressionInfo(t));
             return null;
         }
         
-        protected override Void handleTypeof(TypeofExpressionNode typeofExpression, TypeInfo targetType, boolean nested) {
+        protected override Void handleTypeof(TypeofExpressionNode typeofExpression, TypeInfo targetType, bool nested) {
             var type = CompilerHelper.resolveTypeReference(context, context.CurrentType.PackageName, typeofExpression.Type);
             if (type.IsGenericParameter) {
                 throw context.error(CompileErrorId.TypeofTypeVariable, typeofExpression, BytecodeHelper.getDisplayName(type));
@@ -1594,7 +1594,7 @@ namespace stab.tools.compiler {
             return null;
         }
         
-        protected override Void handleUnary(UnaryExpressionNode unary, TypeInfo targetType, boolean nested) {
+        protected override Void handleUnary(UnaryExpressionNode unary, TypeInfo targetType, bool nested) {
             handleExpression(unary.Operand, null, true);
             var oinfo = unary.Operand.getUserData(typeof(ExpressionInfo));
             if (oinfo == null) {

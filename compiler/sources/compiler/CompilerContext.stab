@@ -99,7 +99,7 @@ namespace stab.tools.compiler {
         
         public List<CompilationUnitNode> CompilationUnits^;
         
-        boolean HasErrors {
+        bool HasErrors {
             get {
                 return this.Results.codeErrorManager.HasErrors;
             }
@@ -178,7 +178,7 @@ namespace stab.tools.compiler {
             this.Results.codeErrorManager.restore();
         }
         
-        boolean IsErrorHandlingDisabled {
+        bool IsErrorHandlingDisabled {
             get {
                 return this.Results.codeErrorManager.IsDisabled;
             }
@@ -197,9 +197,9 @@ namespace stab.tools.compiler {
             addError(1, id, node, arguments);
         }
         
-        public boolean DisableIgnoredErrorTracking;
+        public bool DisableIgnoredErrorTracking;
         
-        boolean addIgnoredError() {
+        bool addIgnoredError() {
         	if (this.id != null && !this.IsErrorHandlingDisabled) {
         		addError(this.id, this.node, this.arguments);
         		return true;
@@ -263,27 +263,27 @@ namespace stab.tools.compiler {
             context.MemberResolver.leaveMethod();
         }
 
-        public boolean IsStatic;
+        public bool IsStatic;
         
-        boolean IsInMethod {
+        bool IsInMethod {
             get {
                 return methods.size() > 0;
             }
         }
         
-        boolean IsInExpressionTree {
+        bool IsInExpressionTree {
         	get {
 	            return this.CurrentMethod != this.RootMethod && this.CurrentMethod.DeclaringType.FullName.indexOf('#') != -1;
         	}
         }
         
-        boolean IsInNestedMethod {
+        bool IsInNestedMethod {
             get {
                 return methods.size() > 1;
             }
         }
         
-        boolean IsInLambda {
+        bool IsInLambda {
             get {
                 return returnTypes.size() > 0 && !this.IsInExpressionTree;
             }
@@ -330,7 +330,7 @@ namespace stab.tools.compiler {
     
     class MethodGenerationContext {
         private ArrayList<MethodBuilder> methods;
-        private boolean destructor;
+        private bool destructor;
         private int foreachStatement;
         private int stringSwitch;
         private int generatedLocal;
@@ -383,19 +383,19 @@ namespace stab.tools.compiler {
             this.Generator = this.CurrentMethod.CodeGenerator;
         }
         
-        boolean IsInDestructor {
+        bool IsInDestructor {
             get {
                 return destructor && !IsInLambda;
             }
         }
 
-        boolean IsInLambda {
+        bool IsInLambda {
             get {
                 return methods.size() > 1;
             }
         }
         
-        boolean IsInIterable {
+        bool IsInIterable {
             get {
                 return this.Iterable != null;
             }
@@ -413,11 +413,11 @@ namespace stab.tools.compiler {
             }
         }
         
-        public boolean IsLambdaScopeUsed;
+        public bool IsLambdaScopeUsed;
         
-        public boolean IsLambdaScopeInitialized;
+        public bool IsLambdaScopeInitialized;
         
-        public boolean IsLambdaScopeThisInitialized;
+        public bool IsLambdaScopeThisInitialized;
         
         public TypeBuilder LambdaScope^;
         
@@ -435,7 +435,7 @@ namespace stab.tools.compiler {
         
         public List<LocalInfo> CatchVariables^;
         
-        public boolean IsBuildingString;
+        public bool IsBuildingString;
         
         public int PreviousLineNumber;
         

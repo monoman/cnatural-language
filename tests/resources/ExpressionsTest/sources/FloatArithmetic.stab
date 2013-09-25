@@ -1,7 +1,7 @@
 using java.lang;
 
 public class FloatArithmetic {
-	public static boolean test() {
+	public static bool test() {
 		float f = -1, g;
 		int bits = Float.floatToIntBits(f);
 		int s = ((bits >> 31) == 0) ? 1 : -1;

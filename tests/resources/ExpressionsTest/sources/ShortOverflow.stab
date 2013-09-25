@@ -1,5 +1,5 @@
 public class ShortOverflow {
-	public static boolean test() {
+	public static bool test() {
 		short v = 32767;
 		return ++v == -32768;
 	}

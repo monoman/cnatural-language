@@ -23,7 +23,7 @@ namespace stab.tools.eclipse.helpers {
 
 	public class JvmTypeSystemHelper {
 	
-		public static boolean isStructurallyEqual(TypeInfo oldType, TypeInfo newType) {
+		public static bool isStructurallyEqual(TypeInfo oldType, TypeInfo newType) {
 			if (oldType.IsNestedPrivate) {
 				return true;
 			}
@@ -32,7 +32,7 @@ namespace stab.tools.eclipse.helpers {
 			}
 			
 			foreach (var i in oldType.Interfaces) {
-				boolean found = false;
+				bool found = false;
 				foreach (var j in newType.Interfaces) {
 					if (sameTypes(i, j)) {
 						found = true;
@@ -151,7 +151,7 @@ namespace stab.tools.eclipse.helpers {
 			Environment.trace(targetTypeSystem, types.count() + " types cloned in " + ((System.nanoTime() - t0) / 1e6) + "ms");
 		}
 
-		private static boolean sameMethods(MethodInfo oldMethod, MethodInfo newMethod) {
+		private static bool sameMethods(MethodInfo oldMethod, MethodInfo newMethod) {
 			if (!oldMethod.Name.equals(newMethod.Name)) {
 				return false;
 			}
@@ -168,7 +168,7 @@ namespace stab.tools.eclipse.helpers {
 			return true;
 		}
 
-		private static boolean sameTypes(TypeInfo oldType, TypeInfo newType) {
+		private static bool sameTypes(TypeInfo oldType, TypeInfo newType) {
 			switch (oldType.TypeKind) {
 			case Boolean:
 			case Byte:

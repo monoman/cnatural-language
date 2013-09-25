@@ -106,7 +106,7 @@ namespace stab.tools.syntaxtree {
             handleStatement(statement, null);
         }
         
-        public ExpressionNode translate(ExpressionNode statement, boolean resetIdentifierCount) {
+        public ExpressionNode translate(ExpressionNode statement, bool resetIdentifierCount) {
             if (resetIdentifierCount) {
                 transparentIdentifierCount = 0;
             }
@@ -268,14 +268,14 @@ namespace stab.tools.syntaxtree {
             }
             
             protected override ExpressionNode handleAnonymousObjectCreation(AnonymousObjectCreationExpressionNode anonymousObject,
-                    QueryScope scope, boolean nested) {
+                    QueryScope scope, bool nested) {
                 foreach (var decl in anonymousObject.MemberDeclarators) {
                     decl.Value = handleExpression(decl.Value, scope, nested);
                 }
                 return anonymousObject;
             }
             
-            protected override ExpressionNode handleArrayCreation(ArrayCreationExpressionNode arrayCreation, QueryScope scope, boolean nested) {
+            protected override ExpressionNode handleArrayCreation(ArrayCreationExpressionNode arrayCreation, QueryScope scope, bool nested) {
                 var dimensions = arrayCreation.DimensionExpressions;
                 var size = dimensions.size();
                 for (int i = 0; i < size; i++) {
@@ -288,7 +288,7 @@ namespace stab.tools.syntaxtree {
             }
             
             protected override ExpressionNode handleArrayInitializer(ArrayInitializerExpressionNode arrayInitializer, QueryScope scope,
-                    boolean nested) {
+                    bool nested) {
                 var values = arrayInitializer.Values;
                 var size = values.size();
                 for (int i = 0; i < size; i++) {
@@ -297,25 +297,25 @@ namespace stab.tools.syntaxtree {
                 return arrayInitializer;
             }
             
-            protected override ExpressionNode handleAssign(AssignExpressionNode assign, QueryScope scope, boolean nested) {
+            protected override ExpressionNode handleAssign(AssignExpressionNode assign, QueryScope scope, bool nested) {
                 assign.Left = handleExpression(assign.Left, scope, nested);
                 assign.Right = handleExpression(assign.Right, scope, nested);
                 return assign;
             }
             
-            protected override ExpressionNode handleBinary(BinaryExpressionNode binary, QueryScope scope, boolean nested) {
+            protected override ExpressionNode handleBinary(BinaryExpressionNode binary, QueryScope scope, bool nested) {
                 binary.LeftOperand = handleExpression(binary.LeftOperand, scope, nested);
                 binary.RightOperand = handleExpression(binary.RightOperand, scope, nested);
                 return binary;
             }
             
-            protected override ExpressionNode handleCast(CastExpressionNode cast, QueryScope scope, boolean nested) {
+            protected override ExpressionNode handleCast(CastExpressionNode cast, QueryScope scope, bool nested) {
                 cast.Expression = handleExpression(cast.Expression, scope, nested);
                 return cast;
             }
             
             protected override ExpressionNode handleCollectionInitializer(CollectionInitializerExpressionNode initializer, QueryScope scope,
-                    boolean nested) {
+                    bool nested) {
                 foreach (var args in initializer.Values) {
                     int size = args.size();
                     for (int i = 0; i < size; i++) {
@@ -325,14 +325,14 @@ namespace stab.tools.syntaxtree {
                 return initializer;
             }
             
-            protected override ExpressionNode handleConditional(ConditionalExpressionNode conditional, QueryScope scope, boolean nested) {
+            protected override ExpressionNode handleConditional(ConditionalExpressionNode conditional, QueryScope scope, bool nested) {
                 conditional.Condition = handleExpression(conditional.Condition, scope, nested);
                 conditional.IfTrue = handleExpression(conditional.IfTrue, scope, nested);
                 conditional.IfFalse = handleExpression(conditional.IfFalse, scope, nested);
                 return conditional;
             }
             
-            protected override ExpressionNode handleElementAccess(ElementAccessExpressionNode elementAccess, QueryScope scope, boolean nested) {
+            protected override ExpressionNode handleElementAccess(ElementAccessExpressionNode elementAccess, QueryScope scope, bool nested) {
                 elementAccess.TargetObject = handleExpression(elementAccess.TargetObject, scope, nested);
                 var indexes = elementAccess.Indexes;
                 var size = indexes.size();
@@ -342,7 +342,7 @@ namespace stab.tools.syntaxtree {
                 return elementAccess;
             }
             
-            protected override ExpressionNode handleInvocation(InvocationExpressionNode invocation, QueryScope scope, boolean nested) {
+            protected override ExpressionNode handleInvocation(InvocationExpressionNode invocation, QueryScope scope, bool nested) {
                 invocation.TargetObject = handleExpression(invocation.TargetObject, scope, nested);
                 var args = invocation.Arguments;
                 var size = args.size();
@@ -352,21 +352,21 @@ namespace stab.tools.syntaxtree {
                 return invocation;
             }
             
-            protected override ExpressionNode handleLambda(LambdaExpressionNode lambda, QueryScope scope, boolean nested) {
+            protected override ExpressionNode handleLambda(LambdaExpressionNode lambda, QueryScope scope, bool nested) {
                 statementTranslator.handleStatement(lambda.Body, scope);
                 return lambda;
             }
             
-            protected override ExpressionNode handleLiteral(LiteralExpressionNode literal, QueryScope scope, boolean nested) {
+            protected override ExpressionNode handleLiteral(LiteralExpressionNode literal, QueryScope scope, bool nested) {
                 return literal;
             }
             
-            protected override ExpressionNode handleMemberAccess(MemberAccessExpressionNode memberAccess, QueryScope scope, boolean nested) {
+            protected override ExpressionNode handleMemberAccess(MemberAccessExpressionNode memberAccess, QueryScope scope, bool nested) {
                 memberAccess.TargetObject = handleExpression(memberAccess.TargetObject, scope, nested);
                 return memberAccess;
             }
             
-            protected override ExpressionNode handleObjectCreation(ObjectCreationExpressionNode objectCreation, QueryScope scope, boolean nested) {
+            protected override ExpressionNode handleObjectCreation(ObjectCreationExpressionNode objectCreation, QueryScope scope, bool nested) {
                 var args = objectCreation.Arguments;
                 var size = args.size();
                 for (int i = 0; i < size; i++) {
@@ -379,14 +379,14 @@ namespace stab.tools.syntaxtree {
             }
             
             protected override ExpressionNode handleObjectInitializer(ObjectInitializerExpressionNode initializer, QueryScope scope,
-                    boolean nested) {
+                    bool nested) {
                 foreach (var mi in initializer.MemberInitializers) {
                     mi.Value = handleExpression(mi.Value, scope, nested);
                 }
                 return initializer;
             }
             
-            protected override ExpressionNode handleQuery(QueryExpressionNode query, QueryScope scope, boolean nested) {
+            protected override ExpressionNode handleQuery(QueryExpressionNode query, QueryScope scope, bool nested) {
                 var from = query.From;
                 from.Origin = handleExpression(from.Origin, scope, true);
                 var body = query.Body;
@@ -820,7 +820,7 @@ namespace stab.tools.syntaxtree {
                 to.DisabledWarnings = from.DisabledWarnings;
             }
             
-            protected override ExpressionNode handleSimpleName(SimpleNameExpressionNode simpleName, QueryScope scope, boolean nested) {
+            protected override ExpressionNode handleSimpleName(SimpleNameExpressionNode simpleName, QueryScope scope, bool nested) {
                 if (scope == null) {
                     return simpleName;
                 } else {
@@ -829,28 +829,28 @@ namespace stab.tools.syntaxtree {
                 }
             }
             
-            protected override ExpressionNode handleSizeof(SizeofExpressionNode sizeofExpression, QueryScope scope, boolean nested) {
+            protected override ExpressionNode handleSizeof(SizeofExpressionNode sizeofExpression, QueryScope scope, bool nested) {
                 sizeofExpression.Expression = handleExpression(sizeofExpression.Expression, scope, nested);
                 return sizeofExpression;
             }
             
-            protected override ExpressionNode handleSuperAccess(SuperAccessExpressionNode superAccess, QueryScope scope, boolean nested) {
+            protected override ExpressionNode handleSuperAccess(SuperAccessExpressionNode superAccess, QueryScope scope, bool nested) {
                 return superAccess;
             }
             
-            protected override ExpressionNode handleThisAccess(ThisAccessExpressionNode thisAccess, QueryScope scope, boolean nested) {
+            protected override ExpressionNode handleThisAccess(ThisAccessExpressionNode thisAccess, QueryScope scope, bool nested) {
                 return thisAccess;
             }
             
-            protected override ExpressionNode handleType(TypeExpressionNode type, QueryScope scope, boolean nested) {
+            protected override ExpressionNode handleType(TypeExpressionNode type, QueryScope scope, bool nested) {
                 return type;
             }
             
-            protected override ExpressionNode handleTypeof(TypeofExpressionNode typeofExpression, QueryScope scope, boolean nested) {
+            protected override ExpressionNode handleTypeof(TypeofExpressionNode typeofExpression, QueryScope scope, bool nested) {
                 return typeofExpression;
             }
             
-            protected override ExpressionNode handleUnary(UnaryExpressionNode unary, QueryScope scope, boolean nested) {
+            protected override ExpressionNode handleUnary(UnaryExpressionNode unary, QueryScope scope, bool nested) {
                 unary.Operand = handleExpression(unary.Operand, scope, nested);
                 return unary;
             }

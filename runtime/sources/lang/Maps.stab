@@ -20,7 +20,7 @@ using java.util;
 namespace stab.lang {
 
 	public interface IntTMap<V> : Map<Integer, V> {
-		boolean containsKey(int key);
+		bool containsKey(int key);
 		V get(int key);
 		IntSet keySet();
 		V put(int key, V value);
@@ -29,7 +29,7 @@ namespace stab.lang {
 	}
 	
 	public interface TIntMap<K> : Map<K, Integer> {
-		boolean containsValue(int value);
+		bool containsValue(int value);
 		int getValue(K key);
 		int put(K key, int value);
 		void putAll(TIntMap<? : K> m);
@@ -38,7 +38,7 @@ namespace stab.lang {
 	}
 	
 	public interface LongTMap<V> : Map<Long, V> {
-		boolean containsKey(long key);
+		bool containsKey(long key);
 		V get(long key);
 		LongSet keySet();
 		V put(long key, V value);
@@ -47,7 +47,7 @@ namespace stab.lang {
 	}
 	
 	public interface TLongMap<K> : Map<K, Long> {
-		boolean containsValue(long value);
+		bool containsValue(long value);
 		long getValue(K key);
 		long put(K key, long value);
 		void putAll(TLongMap<? : K> m);
@@ -56,7 +56,7 @@ namespace stab.lang {
 	}
 	
 	public interface FloatTMap<V> : Map<Float, V> {
-		boolean containsKey(float key);
+		bool containsKey(float key);
 		V get(float key);
 		FloatSet keySet();
 		V put(float key, V value);
@@ -65,7 +65,7 @@ namespace stab.lang {
 	}
 	
 	public interface TFloatMap<K> : Map<K, Float> {
-		boolean containsValue(float value);
+		bool containsValue(float value);
 		float getValue(K key);
 		float put(K key, float value);
 		void putAll(TFloatMap<? : K> m);
@@ -74,7 +74,7 @@ namespace stab.lang {
 	}
 	
 	public interface DoubleTMap<V> : Map<Double, V> {
-		boolean containsKey(double key);
+		bool containsKey(double key);
 		V get(double key);
 		DoubleSet keySet();
 		V put(double key, V value);
@@ -83,7 +83,7 @@ namespace stab.lang {
 	}
 	
 	public interface TDoubleMap<K> : Map<K, Double> {
-		boolean containsValue(double value);
+		bool containsValue(double value);
 		double getValue(K key);
 		double put(K key, double value);
 		void putAll(TDoubleMap<? : K> m);

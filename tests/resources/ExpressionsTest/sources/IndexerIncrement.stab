@@ -10,7 +10,7 @@ public class IndexerIncrement {
 		}
 	}
 	
-	public static boolean test() {
+	public static bool test() {
 		var obj = new IndexerIncrement();
 		var d = obj[5]++;
 		++obj[5];

@@ -905,7 +905,7 @@ namespace stab.tools.parser.test {
 				case Orderby:
 					var orderby = (OrderbyQueryBodyClauseNode)c;
 					sb.append("orderby ");
-					boolean first = true;
+					bool first = true;
 					foreach (var o in orderby.Orderings) {
 						if (first) {
 							first = false;

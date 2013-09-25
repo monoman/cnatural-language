@@ -6,7 +6,7 @@ public class ArrayIndexerAssign {
 		return 1;
 	}
 
-	public boolean method() {
+	public bool method() {
 		int[] a = new int[2];
 		int i = 0;
 		
@@ -18,7 +18,7 @@ public class ArrayIndexerAssign {
 		return i == 1 && a[0] == 4 && calls == 1 && a[1] == 1;
 	}
 	
-	public static boolean test() {
+	public static bool test() {
 		var obj = new ArrayIndexerAssign();
 		return obj.method();
 	}

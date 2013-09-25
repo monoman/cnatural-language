@@ -1,5 +1,5 @@
 public class LogicalOrAnd2 {
-	public static boolean test(boolean a, boolean b, boolean c) {
+	public static bool test(bool a, bool b, bool c) {
 		if (a || (b && c)) {
 			return true;
 		} else {

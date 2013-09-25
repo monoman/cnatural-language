@@ -1,5 +1,5 @@
 public class IntArrayPreIncrement {
-	public static boolean test() {
+	public static bool test() {
 		var t = new int[] { 1 };
 		int i = ++t[0];
 		++t[0];

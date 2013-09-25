@@ -31,17 +31,17 @@ namespace stab.tools.eclipse.editors {
 	public class ContentAssistProcessor : IContentAssistProcessor {
 		private static final ICompletionProposal[] EMPTY_PROPOSALS = CompletionProposalHelper.createEmpty();
 		private static final Iterable<String> STATEMENT_TEXTS = new ArrayList<String> {
-			"boolean", "byte", "char", "do", "double", "float", "for", "foreach", "if", "int",
+			"bool", "boolean", "byte", "char", "do", "double", "float", "for", "foreach", "if", "int",
 			"long", "new", "return", "short", "super", "synchronized", "this", "using", "while" };
 		private static final Iterable<String> EXPRESSION_TEXTS = new ArrayList<String> {
 			"false", "instanceof", "new", "null", "sizeof", "super", "this", "true", "typeof" };
 		private static final Iterable<String> TYPE_TEXTS = new ArrayList<String> {
-			"boolean", "byte", "char", "double", "float", "int", "long", "short" };
+			"bool", "boolean", "byte", "char", "double", "float", "int", "long", "short" };
 	
 		private SourceEditor editor;
 		private ISourceViewer sourceViewer;
 		
-		private boolean inEditedText;
+		private bool inEditedText;
 		private int actualOffset;
 		private int actualTokenIndex;
 		private Token actualToken;
@@ -636,7 +636,7 @@ namespace stab.tools.eclipse.editors {
 			return computeCompletionProposals(syntaxNode, true);
 		}
 
-		private ICompletionProposal[] computeCompletionProposals(SyntaxNode syntaxNode, boolean expression) {
+		private ICompletionProposal[] computeCompletionProposals(SyntaxNode syntaxNode, bool expression) {
 			var prefix = "";
 			int length = 0;
 			if (inEditedText) {
@@ -753,7 +753,7 @@ namespace stab.tools.eclipse.editors {
 			}
 		}
 		
-		private static boolean isExpressionSeparator(Token token) {
+		private static bool isExpressionSeparator(Token token) {
 			switch (token.LexicalUnit) {
 			case Dot:
 			case Identifier:
@@ -775,7 +775,7 @@ namespace stab.tools.eclipse.editors {
 			}
 		}
 
-		private boolean containsOffset(SyntaxNode syntaxNode) {
+		private bool containsOffset(SyntaxNode syntaxNode) {
 			var bounds = syntaxNode.getUserData(typeof(SyntaxNodeBounds));
 			if (bounds == null) {
 				return false;
@@ -783,14 +783,14 @@ namespace stab.tools.eclipse.editors {
 			return bounds.containsOffset(offset);
 		}
 		
-		private boolean editedText(SyntaxNode syntaxNode) {
+		private bool editedText(SyntaxNode syntaxNode) {
 			var bounds = syntaxNode.getUserData(typeof(SyntaxNodeBounds));
 			var startToken = bounds.StartToken;
 			var endToken = bounds.EndToken;
 			return endToken.offset + endToken.length - startToken.offset != syntaxNode.EndPosition - syntaxNode.StartPosition;
 		}
 		
-		private boolean isAfterEndToken(SyntaxNode syntaxNode) {
+		private bool isAfterEndToken(SyntaxNode syntaxNode) {
 			var bounds = syntaxNode.getUserData(typeof(SyntaxNodeBounds));
 			var endToken = bounds.EndToken;
 			return endToken.offset + endToken.length == offset;
@@ -1116,7 +1116,7 @@ namespace stab.tools.eclipse.editors {
 			}
 			
 			protected override ICompletionProposal[] handleAnonymousObjectCreation(AnonymousObjectCreationExpressionNode anonymousObject,
-					Void source, boolean nested) {
+					Void source, bool nested) {
 				foreach (var mi in anonymousObject.MemberDeclarators) {
 					var bounds = mi.getUserData(typeof(SyntaxNodeBounds));
 					if (bounds == null || bounds.isAfterOffset(processor.offset)) {
@@ -1137,7 +1137,7 @@ namespace stab.tools.eclipse.editors {
 				return processor.computeCompletionProposalsInExpression(anonymousObject);
 			}
 			
-			protected override ICompletionProposal[] handleArrayCreation(ArrayCreationExpressionNode arrayCreation, Void source, boolean nested) {
+			protected override ICompletionProposal[] handleArrayCreation(ArrayCreationExpressionNode arrayCreation, Void source, bool nested) {
 				if (arrayCreation.Type != null && processor.containsOffset(arrayCreation.Type)) {
 					var info = arrayCreation.getUserData(typeof(ExpressionInfo));
 					return processor.computeCompletionProposalsInType(arrayCreation.Type, info.Type);
@@ -1161,7 +1161,7 @@ namespace stab.tools.eclipse.editors {
 			}
 			
 			protected override ICompletionProposal[] handleArrayInitializer(ArrayInitializerExpressionNode arrayInitializer, Void source,
-					boolean nested) {
+					bool nested) {
 				foreach (var e in arrayInitializer.Values) {
 					var bounds = e.getUserData(typeof(SyntaxNodeBounds));
 					if (bounds == null || bounds.isAfterOffset(processor.offset)) {
@@ -1177,7 +1177,7 @@ namespace stab.tools.eclipse.editors {
 				return processor.computeCompletionProposalsInExpression(arrayInitializer);
 			}
 			
-			protected override ICompletionProposal[] handleAssign(AssignExpressionNode assign, Void source, boolean nested) {
+			protected override ICompletionProposal[] handleAssign(AssignExpressionNode assign, Void source, bool nested) {
 				if (processor.containsOffset(assign.Left)) {
 					return handleExpression(assign.Left, null, true);
 				}
@@ -1189,7 +1189,7 @@ namespace stab.tools.eclipse.editors {
 				return processor.computeCompletionProposalsInExpression(assign);
 			}
 			
-			protected override ICompletionProposal[] handleBinary(BinaryExpressionNode binary, Void source, boolean nested) {
+			protected override ICompletionProposal[] handleBinary(BinaryExpressionNode binary, Void source, bool nested) {
 				if (processor.containsOffset(binary.LeftOperand)) {
 					return handleExpression(binary.LeftOperand, null, true);
 				}
@@ -1201,7 +1201,7 @@ namespace stab.tools.eclipse.editors {
 				return processor.computeCompletionProposalsInExpression(binary);
 			}
 	
-			protected override ICompletionProposal[] handleCast(CastExpressionNode cast, Void source, boolean nested) {
+			protected override ICompletionProposal[] handleCast(CastExpressionNode cast, Void source, bool nested) {
 				if (processor.containsOffset(cast.TargetType)) {
 				var info = cast.getUserData(typeof(ExpressionInfo));
 					return processor.computeCompletionProposalsInType(cast.TargetType, info.Type);
@@ -1214,7 +1214,7 @@ namespace stab.tools.eclipse.editors {
 				return processor.computeCompletionProposalsInExpression(cast);
 			}
 			
-			protected override ICompletionProposal[] handleConditional(ConditionalExpressionNode conditional, Void source, boolean nested) {
+			protected override ICompletionProposal[] handleConditional(ConditionalExpressionNode conditional, Void source, bool nested) {
 				if (processor.containsOffset(conditional.Condition)) {
 					return handleExpression(conditional.Condition, null, true);
 				}
@@ -1229,7 +1229,7 @@ namespace stab.tools.eclipse.editors {
 				return processor.computeCompletionProposalsInExpression(conditional);
 			}
 			
-			protected override ICompletionProposal[] handleElementAccess(ElementAccessExpressionNode elementAccess, Void source, boolean nested) {
+			protected override ICompletionProposal[] handleElementAccess(ElementAccessExpressionNode elementAccess, Void source, bool nested) {
 				if (processor.containsOffset(elementAccess.TargetObject)) {
 					return handleExpression(elementAccess.TargetObject, null, true);
 				}
@@ -1248,7 +1248,7 @@ namespace stab.tools.eclipse.editors {
 				return processor.computeCompletionProposalsInExpression(elementAccess);
 			}
 			
-			protected override ICompletionProposal[] handleInvocation(InvocationExpressionNode invocation, Void source, boolean nested) {
+			protected override ICompletionProposal[] handleInvocation(InvocationExpressionNode invocation, Void source, bool nested) {
 				if (processor.containsOffset(invocation.TargetObject)) {
 					return handleExpression(invocation.TargetObject, null, true);
 				}
@@ -1267,7 +1267,7 @@ namespace stab.tools.eclipse.editors {
 				return processor.computeCompletionProposalsInExpression(invocation);
 			}
 			
-			protected override ICompletionProposal[] handleLambda(LambdaExpressionNode lambda, Void source, boolean nested) {
+			protected override ICompletionProposal[] handleLambda(LambdaExpressionNode lambda, Void source, bool nested) {
 				var m = lambda.getUserData(typeof(MethodInfo));
 				var pit = m.Parameters.iterator();
 				foreach (var p in lambda.Parameters) {
@@ -1298,12 +1298,12 @@ namespace stab.tools.eclipse.editors {
 				return EMPTY_PROPOSALS;
 			}
 
-			protected override ICompletionProposal[] handleLiteral(LiteralExpressionNode literal, Void source, boolean nested) {
+			protected override ICompletionProposal[] handleLiteral(LiteralExpressionNode literal, Void source, bool nested) {
 				Environment.trace(this, "literal");
 				return processor.computeCompletionProposalsInExpression(literal);
 			}
 			
-			protected override ICompletionProposal[] handleMemberAccess(MemberAccessExpressionNode memberAccess, Void source, boolean nested) {
+			protected override ICompletionProposal[] handleMemberAccess(MemberAccessExpressionNode memberAccess, Void source, bool nested) {
 				if (processor.containsOffset(memberAccess.TargetObject)) {
 					return handleExpression(memberAccess.TargetObject, null, true);
 				}
@@ -1349,7 +1349,7 @@ namespace stab.tools.eclipse.editors {
 				return EMPTY_PROPOSALS;
 			}
 			
-			protected override ICompletionProposal[] handleObjectCreation(ObjectCreationExpressionNode objectCreation, Void source, boolean nested) {
+			protected override ICompletionProposal[] handleObjectCreation(ObjectCreationExpressionNode objectCreation, Void source, bool nested) {
 				if (processor.containsOffset(objectCreation.Type)) {
 					var info = objectCreation.getUserData(typeof(ExpressionInfo));
 					return processor.computeCompletionProposalsInType(objectCreation.Type, info.Type);
@@ -1373,7 +1373,7 @@ namespace stab.tools.eclipse.editors {
 			}
 			
 			protected override ICompletionProposal[] handleCollectionInitializer(CollectionInitializerExpressionNode initializer, Void source,
-					boolean nested) {
+					bool nested) {
 				foreach (var e in initializer.Values.selectMany(p => p)) {
 					var bounds = e.getUserData(typeof(SyntaxNodeBounds));
 					if (bounds == null || bounds.isAfterOffset(processor.offset)) {
@@ -1392,7 +1392,7 @@ namespace stab.tools.eclipse.editors {
 			// TODO: handleQuery
 			
 			protected override ICompletionProposal[] handleObjectInitializer(ObjectInitializerExpressionNode initializer, Void source,
-					boolean nested) {
+					bool nested) {
 				foreach (var init in initializer.getMemberInitializers()) {
 					var bounds = init.getUserData(typeof(SyntaxNodeBounds));
 					if (bounds == null || bounds.isAfterOffset(processor.offset)) {
@@ -1413,13 +1413,13 @@ namespace stab.tools.eclipse.editors {
 				return processor.computeCompletionProposalsInExpression(initializer);
 			}
 			
-			protected override ICompletionProposal[] handleSimpleName(SimpleNameExpressionNode simpleName, Void source, boolean nested) {
+			protected override ICompletionProposal[] handleSimpleName(SimpleNameExpressionNode simpleName, Void source, bool nested) {
 				Environment.trace(this, "simple name");
 				return processor.computeCompletionProposalsInExpression(simpleName);
 			}
 			
 	
-			protected override ICompletionProposal[] handleSizeof(SizeofExpressionNode sizeofExpression, Void source, boolean nested) {
+			protected override ICompletionProposal[] handleSizeof(SizeofExpressionNode sizeofExpression, Void source, bool nested) {
 				if (processor.containsOffset(sizeofExpression.Expression)) {
 					return handleExpression(sizeofExpression.Expression, null, true);
 				}
@@ -1427,22 +1427,22 @@ namespace stab.tools.eclipse.editors {
 				return processor.computeCompletionProposalsInExpression(sizeofExpression);
 			}
 			
-			protected override ICompletionProposal[] handleSuperAccess(SuperAccessExpressionNode superAccess, Void source, boolean nested) {
+			protected override ICompletionProposal[] handleSuperAccess(SuperAccessExpressionNode superAccess, Void source, bool nested) {
 				Environment.trace(this, "super access");
 				return processor.computeCompletionProposalsInExpression(superAccess);
 			}
 			
-			protected override ICompletionProposal[] handleThisAccess(ThisAccessExpressionNode thisAccess, Void source, boolean nested) {
+			protected override ICompletionProposal[] handleThisAccess(ThisAccessExpressionNode thisAccess, Void source, bool nested) {
 				Environment.trace(this, "this access");
 				return processor.computeCompletionProposalsInExpression(thisAccess);
 			}
 	
-			protected override ICompletionProposal[] handleType(TypeExpressionNode type, Void source, boolean nested) {
+			protected override ICompletionProposal[] handleType(TypeExpressionNode type, Void source, bool nested) {
 				var info = type.getUserData(typeof(ExpressionInfo));
 				return processor.computeCompletionProposalsInType(type.TypeReference, info.Type);
 			}
 			
-			protected override ICompletionProposal[] handleTypeof(TypeofExpressionNode typeofExpression, Void source, boolean nested) {
+			protected override ICompletionProposal[] handleTypeof(TypeofExpressionNode typeofExpression, Void source, bool nested) {
 				if (processor.containsOffset(typeofExpression.Type)) {
 					return processor.computeCompletionProposalsInType(typeofExpression.Type, typeofExpression.getUserData(typeof(TypeInfo)));
 				}
@@ -1458,7 +1458,7 @@ namespace stab.tools.eclipse.editors {
 				return processor.computeCompletionProposalsInExpression(typeofExpression);
 			}
 			
-			protected override ICompletionProposal[] handleUnary(UnaryExpressionNode unary, Void source, boolean nested) {
+			protected override ICompletionProposal[] handleUnary(UnaryExpressionNode unary, Void source, bool nested) {
 				if (processor.containsOffset(unary.Operand)) {
 					return handleExpression(unary.Operand, null, true);
 				}

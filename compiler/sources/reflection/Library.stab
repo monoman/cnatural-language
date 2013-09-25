@@ -109,11 +109,11 @@ namespace stab.reflection {
         	classNames.remove(type.FullName);
         }
         
-        public boolean typeExists(String name) {
+        public bool typeExists(String name) {
             return (parent != null && parent.typeExists(name)) || isLocalType(name);
         }
 		
-		protected boolean isLocalType(String name) {
+		protected bool isLocalType(String name) {
 			return typeInfos.containsKey(name) || fileClasses.containsKey(name) || jarClasses.containsKey(name);
 		}
 
@@ -188,7 +188,7 @@ namespace stab.reflection {
 			return parent.getGenericType(type, typeArguments, scope);
 		}
 		
-		private boolean isLocalType(TypeInfo type) {
+		private bool isLocalType(TypeInfo type) {
 			return type.Library == this;
 		}
 
@@ -373,7 +373,7 @@ namespace stab.reflection {
         
         public MethodInfo getBoxingMethod(TypeInfo type) {
             ClassFileType ctype = null;
-            boolean isBoolean;
+            bool isBoolean;
             if (type.IsPrimitive) {
                 isBoolean = false;
                 switch (type.TypeKind) {
@@ -446,7 +446,7 @@ namespace stab.reflection {
 
         public MethodInfo getUnboxingMethod(TypeInfo type) {
             ClassFileType ctype = null;
-            boolean isBoolean;
+            bool isBoolean;
             if (type.IsPrimitive) {
                 isBoolean = false;
                 switch (type.TypeKind) {

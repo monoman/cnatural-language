@@ -17,20 +17,20 @@
 namespace stab.query {
 
 	public interface FunctionT<TResult>           { TResult invoke(); }
-	public interface FunctionBoolean              { boolean invoke(); }
+	public interface FunctionBoolean              { bool invoke(); }
 	public interface FunctionInt                  { int invoke(); }
 	public interface FunctionLong                 { long invoke(); }
 	public interface FunctionFloat                { float invoke(); }
 	public interface FunctionDouble               { double invoke(); }
 
-	public interface FunctionTBoolean<TArgument>  { boolean invoke(TArgument argument); }
-	public interface FunctionIntBoolean           { boolean invoke(int argument); }
-	public interface FunctionLongBoolean          { boolean invoke(long argument); }
-	public interface FunctionFloatBoolean         { boolean invoke(float argument); }
-	public interface FunctionDoubleBoolean        { boolean invoke(double argument); }
+	public interface FunctionTBoolean<TArgument>  { bool invoke(TArgument argument); }
+	public interface FunctionIntBoolean           { bool invoke(int argument); }
+	public interface FunctionLongBoolean          { bool invoke(long argument); }
+	public interface FunctionFloatBoolean         { bool invoke(float argument); }
+	public interface FunctionDoubleBoolean        { bool invoke(double argument); }
 
 	public interface FunctionTInt<TArgument>      { int invoke(TArgument argument); }
-	public interface FunctionBooleanInt           { int invoke(boolean argument); }
+	public interface FunctionBooleanInt           { int invoke(bool argument); }
 	public interface FunctionByteInt              { int invoke(byte argument); }
 	public interface FunctionIntByte              { byte invoke(int argument); }
 	public interface FunctionCharInt              { int invoke(char argument); }
@@ -62,14 +62,14 @@ namespace stab.query {
 
 	public interface FunctionTT<TArgument, TResult> { TResult invoke(TArgument argument); }
 
-	public interface FunctionTIntBoolean<TArgument>  { boolean invoke(TArgument argument1, int argument2); }
-	public interface FunctionIntIntBoolean           { boolean invoke(int argument1, int argument2); }
-	public interface FunctionLongIntBoolean          { boolean invoke(long argument1, int argument2); }
-	public interface FunctionFloatIntBoolean         { boolean invoke(float argument1, int argument2); }
-	public interface FunctionDoubleIntBoolean        { boolean invoke(double argument1, int argument2); }
+	public interface FunctionTIntBoolean<TArgument>  { bool invoke(TArgument argument1, int argument2); }
+	public interface FunctionIntIntBoolean           { bool invoke(int argument1, int argument2); }
+	public interface FunctionLongIntBoolean          { bool invoke(long argument1, int argument2); }
+	public interface FunctionFloatIntBoolean         { bool invoke(float argument1, int argument2); }
+	public interface FunctionDoubleIntBoolean        { bool invoke(double argument1, int argument2); }
 
 	public interface FunctionTIntInt<TArgument>           { int invoke(TArgument argument1, int argument2); }
-	public interface FunctionBooleanIntInt                { int invoke(boolean argument1, int argument2); }
+	public interface FunctionBooleanIntInt                { int invoke(bool argument1, int argument2); }
 	public interface FunctionByteIntInt                   { int invoke(byte argument1, int argument2); }
 	public interface FunctionShortIntInt                  { int invoke(short argument1, int argument2); }
 	public interface FunctionCharIntInt                   { int invoke(char argument1, int argument2); }

@@ -418,7 +418,7 @@ namespace stab.tools.parser.test {
 			}
 			if (interfaceDeclaration.InterfaceBase.size() > 0) {
 				sb.append(" : ");
-				boolean first = true;
+				bool first = true;
 				foreach (var t in interfaceDeclaration.InterfaceBase) {
 					if (first) {
 						first = false;
@@ -548,7 +548,7 @@ namespace stab.tools.parser.test {
 			sb.append(" ");
 			sb.append(new String(text, declaration.NameOffset, declaration.NameLength));
 			sb.append("(");
-			boolean first = true;
+			bool first = true;
 			foreach (var p in declaration.Parameters) {
 				if (first) {
 					first = false;
@@ -576,7 +576,7 @@ namespace stab.tools.parser.test {
 			print(classDeclaration.TypeParameters, sb);
 			if (classDeclaration.ClassBase.size() > 0) {
 				sb.append(" : ");
-				boolean first = true;
+				bool first = true;
 				foreach (var t in classDeclaration.ClassBase) {
 					if (first) {
 						first = false;
@@ -818,7 +818,7 @@ namespace stab.tools.parser.test {
 			}
 		}
 
-		private void print(AccessorDeclarationNode accessor, boolean getter, int indent, StringBuilder sb) {
+		private void print(AccessorDeclarationNode accessor, bool getter, int indent, StringBuilder sb) {
 			var indentText = buildIndentText(indent + 1);
 			foreach (var attr in accessor.Annotations) {
 				sb.append(indentText);
@@ -847,7 +847,7 @@ namespace stab.tools.parser.test {
 					sb.append("    where ");
 					sb.append(new String(text, clause.NameOffset, clause.NameLength));
 					sb.append(" : ");
-					boolean first = true;
+					bool first = true;
 					foreach (var c in clause.Constraints) {
 						if (first) {
 							first = false;
@@ -860,7 +860,7 @@ namespace stab.tools.parser.test {
 			}
 		}
 
-		private void print(AnnotationSectionNode a, boolean newline, StringBuilder sb) {
+		private void print(AnnotationSectionNode a, bool newline, StringBuilder sb) {
 			sb.append("[");
 			foreach (var attr in a.getAnnotations()) {
 				print(attr.Type, sb);
@@ -900,7 +900,7 @@ namespace stab.tools.parser.test {
 			print(s, indent, true, sb);
 		}
 
-		private void print(StatementNode statement, int indent, boolean format, StringBuilder sb) {
+		private void print(StatementNode statement, int indent, bool format, StringBuilder sb) {
 			if (!format) {
 				indent = 0;
 			}
@@ -978,7 +978,7 @@ namespace stab.tools.parser.test {
 					print(local.Type, sb);
 				}
 				sb.append(" ");
-				boolean first = true;
+				bool first = true;
 				foreach (var decl in local.Declarators) {
 					if (first) {
 						first = false;
@@ -1601,7 +1601,7 @@ namespace stab.tools.parser.test {
 		private void print(List<? : TypeReferenceNode> typeArgs, StringBuilder sb) {
 			if (typeArgs.size() > 0) {
 				sb.append("<");
-				boolean first = true;
+				bool first = true;
 				foreach (var t in typeArgs) {
 					if (first) {
 						first = false;

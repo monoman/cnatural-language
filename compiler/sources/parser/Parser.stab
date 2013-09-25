@@ -26,13 +26,13 @@ namespace stab.tools.parser {
     public class Parser {
         private IScanner scanner;
         private LexicalUnit lexicalUnit;
-        private boolean newLineOccured;
+        private bool newLineOccured;
         private String savedFilename;
         private int savedLine;
         private int savedColumn;
 		private int savedStartPosition;
         private IntIterable savedDisabledWarnings;
-        private boolean wasSingleLineDocComment;
+        private bool wasSingleLineDocComment;
         private int docCommentStartPosition;
         private int docCommentEndPosition;
  
@@ -64,7 +64,7 @@ namespace stab.tools.parser {
 			return compilationUnit;
         }
 
-        private PackageBodyNode parsePackageBody(boolean global, int startPosition) {
+        private PackageBodyNode parsePackageBody(bool global, int startPosition) {
             var result = new PackageBodyNode { StartPosition = startPosition };
 			startPosition = scanner.StartPosition;
             while (lexicalUnit == LexicalUnit.Keyword && scanner.Keyword == Keyword.Using) {
@@ -311,8 +311,8 @@ namespace stab.tools.parser {
             return result;
         }
 
-        private ClassDeclarationNode parseClass(List<AnnotationSectionNode> annotations, EnumSet<Modifier> modifiers, boolean isEnum,
-                boolean partial, int startPosition) {
+        private ClassDeclarationNode parseClass(List<AnnotationSectionNode> annotations, EnumSet<Modifier> modifiers, bool isEnum,
+                bool partial, int startPosition) {
             if (!isIdentifier(lexicalUnit)) {
                 throw error(ParseErrorId.IdentifierExpected);
             }
@@ -344,7 +344,7 @@ namespace stab.tools.parser {
             return result;
         }
 
-        private int parseClassBody(List<AnnotationSectionNode> annotations, EnumSet<Modifier> modifiers, boolean isEnum,
+        private int parseClassBody(List<AnnotationSectionNode> annotations, EnumSet<Modifier> modifiers, bool isEnum,
                 List<ITypeMember> members) {
 			int startPosition = 0;
             if (nextLexicalUnit(true, LexicalUnit.CloseBrace) != LexicalUnit.CloseBrace) {
@@ -627,7 +627,7 @@ namespace stab.tools.parser {
             }
         }
 
-        private ITypeMember parseClassMember(List<AnnotationSectionNode> annotations, EnumSet<Modifier> modifiers, boolean partial,
+        private ITypeMember parseClassMember(List<AnnotationSectionNode> annotations, EnumSet<Modifier> modifiers, bool partial,
         		int startPosition) {
             var restorePoint = this.createRestorePoint();
             int sp = scanner.StartPosition;
@@ -660,7 +660,7 @@ namespace stab.tools.parser {
         }
 
         private InterfaceDeclarationNode parseInterface(List<AnnotationSectionNode> annotations, EnumSet<Modifier> modifiers,
-                boolean partial, int startPosition) {
+                bool partial, int startPosition) {
             if (!isIdentifier(lexicalUnit)) {
                 throw error(ParseErrorId.IdentifierExpected);
             }
@@ -735,7 +735,7 @@ namespace stab.tools.parser {
 		}
 		
         private ITypeMember parseFieldOrPropertyOrMethod(List<AnnotationSectionNode> annotations, EnumSet<Modifier> modifiers,
-                boolean partial, TypeReferenceNode type, int startPosition) {
+                bool partial, TypeReferenceNode type, int startPosition) {
             if (!isIdentifier(lexicalUnit)) {
                 throw error(ParseErrorId.IdentifierExpected);
             }
@@ -746,7 +746,7 @@ namespace stab.tools.parser {
             nextLexicalUnit(true);
             parseTypeParameters(typeParameters);
 			Modifier setterAccess = checkSetterAccess();
-			boolean forceAsField = false;
+			bool forceAsField = false;
 			if (lexicalUnit == LexicalUnit.Multiply) {
 				forceAsField = true;
                 nextLexicalUnit(true);			
@@ -967,7 +967,7 @@ namespace stab.tools.parser {
         }
         
         private ITypeMember parseConstructorDeclaration(List<AnnotationSectionNode> annotations, EnumSet<Modifier> modifiers,
-                boolean partial, int position, int length, List<SimpleNameTypeReferenceNode> typeParameters, int startPosition) {
+                bool partial, int position, int length, List<SimpleNameTypeReferenceNode> typeParameters, int startPosition) {
             var declaration = new ConstructorDeclarationNode { NameOffset = position, NameLength = length, StartPosition = startPosition };
             if (docCommentEndPosition > 0) {
                 declaration.DocumentationOffset = docCommentStartPosition;
@@ -987,7 +987,7 @@ namespace stab.tools.parser {
                 if (modifiers.contains(Modifier.Static)) {
                     throw error(ParseErrorId.UnexpectedLexicalUnit);
                 }
-                boolean isSuper = false;
+                bool isSuper = false;
                 switch (nextLexicalUnit(true)) {
                 case Keyword:
                     switch (scanner.Keyword) {
@@ -1287,7 +1287,7 @@ namespace stab.tools.parser {
         }
         
         private IndexerDeclarationNode parseIndexerDeclaration(List<AnnotationSectionNode> annotations, EnumSet<Modifier> modifiers,
-                boolean partial, TypeReferenceNode type, boolean inInterface, int startPosition) {
+                bool partial, TypeReferenceNode type, bool inInterface, int startPosition) {
             var declaration = new IndexerDeclarationNode { Type = type, StartPosition = startPosition };
             if (docCommentEndPosition > 0) {
                 declaration.DocumentationOffset = docCommentStartPosition;
@@ -1341,7 +1341,7 @@ namespace stab.tools.parser {
             parseTypeParameters(parameters, true);
         }
     
-        private boolean parseTypeParameters(List<SimpleNameTypeReferenceNode> parameters, boolean fail) {
+        private bool parseTypeParameters(List<SimpleNameTypeReferenceNode> parameters, bool fail) {
             if (lexicalUnit != LexicalUnit.LessThan) {
                 return true;
             }
@@ -1374,7 +1374,7 @@ namespace stab.tools.parser {
             return true;
         }
     
-	    private void fakeParseShortProperty(IAccessorsOwner declaration, Modifier setterAccess, boolean inInterface) {
+	    private void fakeParseShortProperty(IAccessorsOwner declaration, Modifier setterAccess, bool inInterface) {
             var accessor = new AccessorDeclarationNode();
             setScannerState(accessor);
             declaration.GetAccessor = accessor;
@@ -1389,13 +1389,13 @@ namespace stab.tools.parser {
 			}
 		}
 		
-		private static boolean isLess(Modifier m1, Modifier m2) {
+		private static bool isLess(Modifier m1, Modifier m2) {
 			if (m1 == Modifier.Public && m2 != Modifier.Public)
 				return true;
 			return (m1 == Modifier.Protected && m2 == Modifier.Private);
 		}
 		
-        private void parseAccessorDeclaration(IAccessorsOwner declaration, boolean inInterface) {
+        private void parseAccessorDeclaration(IAccessorsOwner declaration, bool inInterface) {
             var accessor = new AccessorDeclarationNode();
             while (lexicalUnit == LexicalUnit.OpenBracket) {
                 accessor.Annotations.add(parseAnnotationSection());
@@ -1986,7 +1986,7 @@ namespace stab.tools.parser {
             return result;
         }
         
-        private StatementNode parseLocalDeclarationOrExpressionStatement(boolean eatSemiColon) {
+        private StatementNode parseLocalDeclarationOrExpressionStatement(bool eatSemiColon) {
             var restorePoint = this.createRestorePoint();
             saveScannerState();
             var type = parseType(false);
@@ -2023,7 +2023,7 @@ namespace stab.tools.parser {
             }
         }
 
-        private LocalDeclarationStatementNode parseLocalDeclarationStatement(TypeReferenceNode type, boolean eatSemiColon) {
+        private LocalDeclarationStatementNode parseLocalDeclarationStatement(TypeReferenceNode type, bool eatSemiColon) {
             var declaration = new LocalDeclarationStatementNode();
             setSavedScannerState(declaration);
             declaration.Type = type;
@@ -2078,7 +2078,7 @@ namespace stab.tools.parser {
             }
         }
 
-        private StatementNode parseExpressionStatement(boolean eatSemiColon) {
+        private StatementNode parseExpressionStatement(bool eatSemiColon) {
             var result = new ExpressionStatementNode();
             setScannerState(result);
             var expression = parseExpression();
@@ -2918,7 +2918,7 @@ namespace stab.tools.parser {
             return result;
         }
 
-        private ExpressionNode parseCastExpression(boolean force) {
+        private ExpressionNode parseCastExpression(bool force) {
             var filename = scanner.Filename;
             var line = scanner.StartLine;
             var column = scanner.StartColumn;
@@ -3418,7 +3418,7 @@ namespace stab.tools.parser {
                         var arrayCreation = new ArrayCreationExpressionNode { Filename = filename, Line = line, Column = column,
                             DisabledWarnings = disabledWarnings, Type = type, StartPosition = startPosition };
                         result = arrayCreation;
-                        boolean noOpenBracket = false;
+                        bool noOpenBracket = false;
                         int endPosition = scanner.EndPosition;
                         while (nextLexicalUnit(true) != LexicalUnit.CloseBracket) {
                             arrayCreation.DimensionExpressions.add(parseExpression());
@@ -3687,19 +3687,19 @@ namespace stab.tools.parser {
             return result;
         }
         
-        private TypeReferenceNode parseClassType(boolean fail) {
+        private TypeReferenceNode parseClassType(bool fail) {
             return parsePackageOrTypeName(fail);
         }
 
-        private TypeReferenceNode parseInterfaceType(boolean fail) {
+        private TypeReferenceNode parseInterfaceType(bool fail) {
             return parsePackageOrTypeName(fail);
         }
 
-        private TypeReferenceNode parseType(boolean fail) {
+        private TypeReferenceNode parseType(bool fail) {
             return parseType(fail, false);
         }
 
-        private TypeReferenceNode parseType(boolean fail, boolean allowVoid) {
+        private TypeReferenceNode parseType(bool fail, bool allowVoid) {
             var result = parseNonArrayType(fail, allowVoid);
             if (lexicalUnit != LexicalUnit.OpenBracket) {
                 return result;
@@ -3722,7 +3722,7 @@ namespace stab.tools.parser {
             throw error(ParseErrorId.CloseBracketExpected);
         }
 
-        private int parseTypeArguments(List<TypeReferenceNode> typeArguments, boolean primaryExpression, int endPosition) {
+        private int parseTypeArguments(List<TypeReferenceNode> typeArguments, bool primaryExpression, int endPosition) {
             if (lexicalUnit != LexicalUnit.LessThan) {
                 return endPosition;
             }
@@ -3833,7 +3833,7 @@ namespace stab.tools.parser {
             }
         }
 
-        private TypeReferenceNode parsePackageOrTypeName(boolean fail) {
+        private TypeReferenceNode parsePackageOrTypeName(bool fail) {
             if (!isIdentifier(lexicalUnit)) {
                 if (fail) {
                     throw error(ParseErrorId.IdentifierExpected);
@@ -3878,7 +3878,7 @@ namespace stab.tools.parser {
             return result;
         }
 
-        private TypeReferenceNode parseNonArrayType(boolean fail, boolean allowVoid) {
+        private TypeReferenceNode parseNonArrayType(bool fail, bool allowVoid) {
             TypeReferenceNode result;
             switch (lexicalUnit) {
             case Identifier:
@@ -4015,7 +4015,7 @@ namespace stab.tools.parser {
             }
         }
 
-        private int parseSemiColon(boolean nextBefore, boolean failAfter) {
+        private int parseSemiColon(bool nextBefore, bool failAfter) {
             if (nextBefore) {
                 nextLexicalUnit(true);
             }
@@ -4093,11 +4093,11 @@ namespace stab.tools.parser {
             }
         }
         
-        private LexicalUnit nextLexicalUnit(boolean fail) {
+        private LexicalUnit nextLexicalUnit(bool fail) {
             return nextLexicalUnit(fail, LexicalUnit.EndOfStream);
         }
 
-        private LexicalUnit nextLexicalUnit(boolean fail, LexicalUnit expected) {
+        private LexicalUnit nextLexicalUnit(bool fail, LexicalUnit expected) {
             newLineOccured = false;
             while (true) {
                 switch (lexicalUnit = scanner.nextLexicalUnit()) {
@@ -4147,7 +4147,7 @@ namespace stab.tools.parser {
             }
         }
         
-        private static boolean isIdentifier(LexicalUnit lu) {
+        private static bool isIdentifier(LexicalUnit lu) {
             switch (lu) {
             case Identifier:
             case VerbatimIdentifier:

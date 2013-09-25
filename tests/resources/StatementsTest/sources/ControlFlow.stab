@@ -5,7 +5,7 @@ public class ControlFlow {
 		return test(2, true);
 	}
 	
-	private static int test(int i, boolean b) {
+	private static int test(int i, bool b) {
 		for (;;) {
 			switch (i) {
 			case 1:

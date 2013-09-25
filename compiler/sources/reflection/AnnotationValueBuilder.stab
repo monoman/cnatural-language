@@ -19,11 +19,11 @@ using java.lang;
 namespace stab.reflection {
 
     public class AnnotationValueBuilder : AnnotationValue {
-        public AnnotationValueBuilder(TypeInfo type, boolean runtimeVisible)
+        public AnnotationValueBuilder(TypeInfo type, bool runtimeVisible)
             : super(type, runtimeVisible) {
         }
         
-        public void setBooleanArgument(String name, boolean value) {
+        public void setBooleanArgument(String name, bool value) {
             arguments[name] = new SimpleAnnotationArgument(AnnotationArgumentKind.Boolean, value);
         }
         
@@ -73,7 +73,7 @@ namespace stab.reflection {
             return result;
         }
         
-        public AnnotationValueBuilder setAnnotationArgument(String name, TypeInfo type, boolean runtimeVisible) {
+        public AnnotationValueBuilder setAnnotationArgument(String name, TypeInfo type, bool runtimeVisible) {
             var result = new AnnotationValueBuilder(type, runtimeVisible);
             arguments[name] = result;
             return result;
@@ -81,7 +81,7 @@ namespace stab.reflection {
     }
     
     public class AnnotationArrayValueBuilder : ArrayAnnotationArgument {
-        public void addBooleanArgument(boolean value) {
+        public void addBooleanArgument(bool value) {
             elements.add(new SimpleAnnotationArgument(AnnotationArgumentKind.Boolean, value));
         }
         
@@ -131,7 +131,7 @@ namespace stab.reflection {
             return result;
         }
         
-        public AnnotationValueBuilder addAnnotationArgument(TypeInfo type, boolean runtimeVisible) {
+        public AnnotationValueBuilder addAnnotationArgument(TypeInfo type, bool runtimeVisible) {
             var result = new AnnotationValueBuilder(type, runtimeVisible);
             elements.add(result);
             return result;

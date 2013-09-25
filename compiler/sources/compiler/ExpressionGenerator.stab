@@ -44,7 +44,7 @@ namespace stab.tools.compiler {
             this.expressionTreeGenerator = new ExpressionTreeGenerator(context);
         }
         
-        public override Void handleExpression(ExpressionNode expression, TargetLabels labels, boolean nested) {
+        public override Void handleExpression(ExpressionNode expression, TargetLabels labels, bool nested) {
             var generator = context.MethodGenerationContext.Generator;
             if (expression.Line > context.MethodGenerationContext.PreviousLineNumber) {
                 var label = generator.defineLabel();
@@ -102,7 +102,7 @@ namespace stab.tools.compiler {
         }
         
         protected override Void handleAnonymousObjectCreation(AnonymousObjectCreationExpressionNode anonymousObject,
-                TargetLabels labels, boolean nested) {
+                TargetLabels labels, bool nested) {
             var generator = context.MethodGenerationContext.Generator;
             var type = anonymousObject.getUserData(typeof(ExpressionInfo)).Type;
             CompilerHelper.initializeAnonymousType(context, type);
@@ -119,7 +119,7 @@ namespace stab.tools.compiler {
             return null;
         }
         
-        protected override Void handleArrayCreation(ArrayCreationExpressionNode arrayCreation, TargetLabels labels, boolean nested) {
+        protected override Void handleArrayCreation(ArrayCreationExpressionNode arrayCreation, TargetLabels labels, bool nested) {
             var generator = context.MethodGenerationContext.Generator;
             foreach (var e in arrayCreation.DimensionExpressions) {
                 emitNestedExpression(e, context.TypeSystem.IntType);
@@ -136,7 +136,7 @@ namespace stab.tools.compiler {
             return null;
         }
         
-        protected override Void handleArrayInitializer(ArrayInitializerExpressionNode arrayInitializer, TargetLabels labels, boolean nested) {
+        protected override Void handleArrayInitializer(ArrayInitializerExpressionNode arrayInitializer, TargetLabels labels, bool nested) {
             var generator = context.MethodGenerationContext.Generator;
             var type = arrayInitializer.getUserData(typeof(ExpressionInfo)).Type;
             BytecodeHelper.emitIntConstant(generator, arrayInitializer.Values.size());
@@ -144,14 +144,14 @@ namespace stab.tools.compiler {
             return null;
         }
         
-        protected override Void handleAssign(AssignExpressionNode assign, TargetLabels labels, boolean nested) {
+        protected override Void handleAssign(AssignExpressionNode assign, TargetLabels labels, bool nested) {
             new AssignExpressionGenerator(context, this).handleExpression(assign.Left, assign, nested);
             emitBoxing(assign);
             emitTest(assign.getUserData(typeof(ExpressionInfo)), labels);
             return null;
         }
         
-        protected override Void handleBinary(BinaryExpressionNode binary, TargetLabels labels, boolean nested) {
+        protected override Void handleBinary(BinaryExpressionNode binary, TargetLabels labels, bool nested) {
             var generator = context.MethodGenerationContext.Generator;
             var info = binary.getUserData(typeof(ExpressionInfo));
             var left = binary.LeftOperand;
@@ -673,7 +673,7 @@ namespace stab.tools.compiler {
             return null;
         }
 
-        protected override Void handleCast(CastExpressionNode cast, TargetLabels labels, boolean nested) {
+        protected override Void handleCast(CastExpressionNode cast, TargetLabels labels, bool nested) {
             var generator = context.MethodGenerationContext.Generator;
             handleExpression(cast.Expression, null, nested);
             var einfo = cast.Expression.getUserData(typeof(ExpressionInfo));
@@ -711,7 +711,7 @@ namespace stab.tools.compiler {
             return null;
         }
         
-        protected override Void handleConditional(ConditionalExpressionNode conditional, TargetLabels labels, boolean nested) {
+        protected override Void handleConditional(ConditionalExpressionNode conditional, TargetLabels labels, bool nested) {
             var generator = context.MethodGenerationContext.Generator;
             var thenLabel = generator.defineLabel();
             var elseLabel = generator.defineLabel();
@@ -731,7 +731,7 @@ namespace stab.tools.compiler {
             return null;
         }
         
-        protected override Void handleElementAccess(ElementAccessExpressionNode elementAccess, TargetLabels labels, boolean nested) {
+        protected override Void handleElementAccess(ElementAccessExpressionNode elementAccess, TargetLabels labels, bool nested) {
             var generator = context.MethodGenerationContext.Generator;
             var target = elementAccess.TargetObject;
             var tinfo = target.getUserData(typeof(ExpressionInfo));
@@ -757,7 +757,7 @@ namespace stab.tools.compiler {
             return null;
         }
         
-        protected override Void handleInvocation(InvocationExpressionNode invocation, TargetLabels labels, boolean nested) {
+        protected override Void handleInvocation(InvocationExpressionNode invocation, TargetLabels labels, bool nested) {
             var generator = context.MethodGenerationContext.Generator;
             var info = invocation.getUserData(typeof(ExpressionInfo));
             var method = info.Method;
@@ -806,7 +806,7 @@ namespace stab.tools.compiler {
             return null;
         }
         
-        protected override Void handleLambda(LambdaExpressionNode lambda, TargetLabels labels, boolean nested) {
+        protected override Void handleLambda(LambdaExpressionNode lambda, TargetLabels labels, bool nested) {
             var targetType = lambda.getUserData(typeof(ExpressionInfo)).Type;
             var typeBuilder = context.MethodGenerationContext.LambdaScope;
 
@@ -860,7 +860,7 @@ namespace stab.tools.compiler {
             return null;
         }
         
-        protected override Void handleMemberAccess(MemberAccessExpressionNode memberAccess, TargetLabels labels, boolean nested) {
+        protected override Void handleMemberAccess(MemberAccessExpressionNode memberAccess, TargetLabels labels, bool nested) {
             var info = memberAccess.getUserData(typeof(ExpressionInfo));
             if (info.Method != null) {
                 emitDelegateCreation(info.Type, info.Method, memberAccess, nested);
@@ -899,7 +899,7 @@ namespace stab.tools.compiler {
             }
         }
 
-        protected override Void handleObjectCreation(ObjectCreationExpressionNode objectCreation, TargetLabels labels, boolean nested) {
+        protected override Void handleObjectCreation(ObjectCreationExpressionNode objectCreation, TargetLabels labels, bool nested) {
             var generator = context.MethodGenerationContext.Generator;
             var info = objectCreation.getUserData(typeof(ExpressionInfo));
             var method = info.Method;
@@ -997,7 +997,7 @@ namespace stab.tools.compiler {
             return null;
         }
         
-        protected override Void handleSimpleName(SimpleNameExpressionNode simpleName, TargetLabels labels, boolean nested) {
+        protected override Void handleSimpleName(SimpleNameExpressionNode simpleName, TargetLabels labels, bool nested) {
             var generator = context.MethodGenerationContext.Generator;
             var info = simpleName.getUserData(typeof(ExpressionInfo));
             var member = info.Member;
@@ -1052,33 +1052,33 @@ namespace stab.tools.compiler {
             }
         }
 
-        protected override Void handleSizeof(SizeofExpressionNode sizeofExpression, TargetLabels labels, boolean nested) {
+        protected override Void handleSizeof(SizeofExpressionNode sizeofExpression, TargetLabels labels, bool nested) {
             var generator = context.MethodGenerationContext.Generator;
             handleExpression(sizeofExpression.Expression, null, true);
             generator.emit(Opcode.Arraylength);
             return null;
         }
         
-        protected override Void handleSuperAccess(SuperAccessExpressionNode superAccess, TargetLabels labels, boolean nested) {
+        protected override Void handleSuperAccess(SuperAccessExpressionNode superAccess, TargetLabels labels, bool nested) {
             var generator = context.MethodGenerationContext.Generator;
             BytecodeGenerator.emitThisAccess(context, generator);
             return null;
         }
         
-        protected override Void handleThisAccess(ThisAccessExpressionNode thisAccess, TargetLabels labels, boolean nested) {
+        protected override Void handleThisAccess(ThisAccessExpressionNode thisAccess, TargetLabels labels, bool nested) {
             var generator = context.MethodGenerationContext.Generator;
             BytecodeGenerator.emitThisAccess(context, generator);
             return null;
         }
         
-        protected override Void handleTypeof(TypeofExpressionNode typeofExpression, TargetLabels labels, boolean nested) {
+        protected override Void handleTypeof(TypeofExpressionNode typeofExpression, TargetLabels labels, bool nested) {
             var generator = context.MethodGenerationContext.Generator;
             var type = typeofExpression.getUserData(typeof(TypeInfo));
             BytecodeHelper.emitTypeof(generator, context.TypeSystem, type);
             return null;
         }
         
-        protected override Void handleUnary(UnaryExpressionNode unary, TargetLabels labels, boolean nested) {
+        protected override Void handleUnary(UnaryExpressionNode unary, TargetLabels labels, bool nested) {
             var generator = context.MethodGenerationContext.Generator;
             var info = unary.getUserData(typeof(ExpressionInfo));
             var type = info.Type;
@@ -1200,7 +1200,7 @@ namespace stab.tools.compiler {
             BytecodeGenerator.emitConversion(context, targetType, expression);
         }
         
-        void emitArguments(List<ExpressionNode> arguments, Iterable<ParameterInfo> parameters, int nparams, boolean varargs) {
+        void emitArguments(List<ExpressionNode> arguments, Iterable<ParameterInfo> parameters, int nparams, bool varargs) {
             int fixedLength = (varargs) ?  nparams - 1 : nparams;
             var generator = context.MethodGenerationContext.Generator;
             var it1 = parameters.iterator();
@@ -1233,7 +1233,7 @@ namespace stab.tools.compiler {
             }
         }
 
-        void emitDelegateCreation(TypeInfo delegateType, MethodInfo method, ExpressionNode arg, boolean nested) {
+        void emitDelegateCreation(TypeInfo delegateType, MethodInfo method, ExpressionNode arg, bool nested) {
             var generator = context.MethodGenerationContext.Generator;
             if (arg != null) {
                 var argType = arg.getUserData(typeof(ExpressionInfo)).Type;
@@ -1254,7 +1254,7 @@ namespace stab.tools.compiler {
             generator.emit(Opcode.Invokespecial, typeInfo.Methods.where(p => p.Name.equals("<init>")).first());
         }
 
-        private void emitInterfaceCreation(TypeInfo interfaceType, MethodInfo method, ExpressionNode arg, boolean nested) {
+        private void emitInterfaceCreation(TypeInfo interfaceType, MethodInfo method, ExpressionNode arg, bool nested) {
             var generator = context.MethodGenerationContext.Generator;
             var currentType = (TypeBuilder)context.CurrentType;
             var prefix = currentType.getFullName() + "$Interface";
@@ -1341,7 +1341,7 @@ namespace stab.tools.compiler {
             generator.emit(Opcode.Invokespecial, methodBuilder);
         }
         
-        private void emitOperands(ExpressionNode left, boolean leftIsZero, ExpressionNode right, boolean rightIsZero) {
+        private void emitOperands(ExpressionNode left, bool leftIsZero, ExpressionNode right, bool rightIsZero) {
             var generator = context.MethodGenerationContext.Generator;
             var li = left.getUserData(typeof(ExpressionInfo));
             var ri = right.getUserData(typeof(ExpressionInfo));
@@ -1527,7 +1527,7 @@ namespace stab.tools.compiler {
             }
         }
         
-        private void emitComparison(BinaryExpressionNode binary, boolean leftIsZero, boolean rightIsZero,
+        private void emitComparison(BinaryExpressionNode binary, bool leftIsZero, bool rightIsZero,
                 Opcode ifLeftZero, Opcode ifRightZero, Opcode intOperation, LabelMarker elseLabel) {
             var generator = context.MethodGenerationContext.Generator;
             switch (binary.getUserData(typeof(TypeInfo)).TypeKind) {
@@ -1582,7 +1582,7 @@ namespace stab.tools.compiler {
             }
         }
         
-        private void emitEquality(BinaryExpressionNode binary, boolean leftIsZero, boolean rightIsZero, LabelMarker label, boolean negate) {
+        private void emitEquality(BinaryExpressionNode binary, bool leftIsZero, bool rightIsZero, LabelMarker label, bool negate) {
             var generator = context.MethodGenerationContext.Generator;
             TypeInfo type = binary.getUserData(typeof(TypeInfo));
             switch (type.TypeKind) {

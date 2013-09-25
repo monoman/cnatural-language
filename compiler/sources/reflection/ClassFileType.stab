@@ -98,7 +98,7 @@ namespace stab.reflection {
             }
         }
         
-		private static boolean hasGenericArguments(TypeInfo type) {
+		private static bool hasGenericArguments(TypeInfo type) {
 			if (type instanceof ClassFileType) {
 				var classInfo = ((ClassFileType)type).classInfo;
 				if (classInfo != null && classInfo.name != null) {
@@ -617,7 +617,7 @@ namespace stab.reflection {
                 }
             }
             
-            public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+            public AnnotationVisitor visitAnnotation(String desc, bool visible) {
                 var annotation = new RawAnnotationValue(AsmType.getType(desc), visible);
                 if (classFileType.classInfo.annotations == null) {
                 	classFileType.classInfo.annotations = new ArrayList<RawAnnotationValue>();
@@ -726,7 +726,7 @@ namespace stab.reflection {
         private class FieldInfoBuilder : FieldVisitor {
             RawFieldInfo field;
 
-            public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+            public AnnotationVisitor visitAnnotation(String desc, bool visible) {
                 var annotation = new RawAnnotationValue(AsmType.getType(desc), visible);
                 if (field.annotations == null) {
                 	field.annotations = new ArrayList<RawAnnotationValue>();
@@ -742,7 +742,7 @@ namespace stab.reflection {
         private class MethodInfoBuilder : MethodVisitor {
             RawMethodInfo method;
             
-            public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+            public AnnotationVisitor visitAnnotation(String desc, bool visible) {
                 var annotation = new RawAnnotationValue(AsmType.getType(desc), visible);
                 if (method.annotations == null) {
                 	method.annotations = new ArrayList<RawAnnotationValue>();
@@ -755,7 +755,7 @@ namespace stab.reflection {
                 return new RawAnnotationDefaultValueBuilder(method);
             }
 
-            public AnnotationVisitor visitParameterAnnotation(int parameter, String desc, boolean visible) {
+            public AnnotationVisitor visitParameterAnnotation(int parameter, String desc, bool visible) {
                 var annotation = new RawAnnotationValue(AsmType.getType(desc), visible);
                 var par = method.parameters.get(parameter);
                 if (par.annotations == null) {
@@ -907,7 +907,7 @@ namespace stab.reflection {
                 }
             }
             
-            public virtual boolean IsRuntimeVisible {
+            public virtual bool IsRuntimeVisible {
                 get {
                     throw new UnsupportedOperationException();
                 }
@@ -996,10 +996,10 @@ namespace stab.reflection {
 
         private class RawAnnotationValue : RawAnnotationArgument {
             private AsmType type;
-            private boolean runtimeVisible;
+            private bool runtimeVisible;
             HashMap<String, RawAnnotationArgument> arguments;
             
-            RawAnnotationValue(AsmType type, boolean runtimeVisible)
+            RawAnnotationValue(AsmType type, bool runtimeVisible)
                 : super(AnnotationArgumentKind.Annotation) {
                 this.type = type;
                 this.runtimeVisible = runtimeVisible;
@@ -1012,7 +1012,7 @@ namespace stab.reflection {
                 }
             }
 
-            public override boolean IsRuntimeVisible {
+            public override bool IsRuntimeVisible {
                 get {
                     return runtimeVisible;
                 }

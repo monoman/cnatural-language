@@ -33,7 +33,7 @@ namespace stab.tools.eclipse {
 		
 		public String OutputPath;
 		
-		public boolean load(IFile file) {
+		public bool load(IFile file) {
 			if (file.exists()) {
 				try {
 					var libraries = new ArrayList<ProjectLibrary>();
@@ -127,6 +127,6 @@ namespace stab.tools.eclipse {
 
 		public String Path^;
 		
-		public boolean Enabled;
+		public bool Enabled;
 	}
 }

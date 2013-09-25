@@ -1,6 +1,6 @@
 
 public class LongWidening {
-	public static boolean test() {
+	public static bool test() {
 		long l = 0x7fffffffL;
 		int i = 0x80000000;
 

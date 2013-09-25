@@ -27,7 +27,7 @@ namespace stab.reflection {
             this.type = type;
         }
     
-        public AnnotationValueBuilder addAnnotation(TypeInfo type, boolean runtimeVisible) {
+        public AnnotationValueBuilder addAnnotation(TypeInfo type, bool runtimeVisible) {
             checkCreated();
             var result = new AnnotationValueBuilder(type, runtimeVisible);
             annotations.add(result);
@@ -39,43 +39,43 @@ namespace stab.reflection {
             this.value = value;
         }
     
-        public void setEnum(boolean value) {
+        public void setEnum(bool value) {
             setModifiers(Opcodes.ACC_ENUM, value);
         }
     
-        public void setFinal(boolean value) {
+        public void setFinal(bool value) {
             setModifiers(Opcodes.ACC_FINAL, value);
         }
     
-        public void setPrivate(boolean value) {
+        public void setPrivate(bool value) {
             setModifiers(Opcodes.ACC_PRIVATE, value);
         }
     
-        public void setProtected(boolean value) {
+        public void setProtected(bool value) {
             setModifiers(Opcodes.ACC_PROTECTED, value);
         }
     
-        public void setPublic(boolean value) {
+        public void setPublic(bool value) {
             setModifiers(Opcodes.ACC_PUBLIC, value);
         }
     
-        public void setStatic(boolean value) {
+        public void setStatic(bool value) {
             setModifiers(Opcodes.ACC_STATIC, value);
         }
     
-        public void setSynthetic(boolean value) {
+        public void setSynthetic(bool value) {
             setModifiers(Opcodes.ACC_SYNTHETIC, value);
         }
     
-        public void setTransient(boolean value) {
+        public void setTransient(bool value) {
             setModifiers(Opcodes.ACC_TRANSIENT, value);
         }
     
-        public void setVolatile(boolean value) {
+        public void setVolatile(bool value) {
             setModifiers(Opcodes.ACC_VOLATILE, value);
         }
     
-        private void setModifiers(int modifiers, boolean value) {
+        private void setModifiers(int modifiers, bool value) {
             checkCreated();
             if (value) {
                 this.modifiers |= modifiers;

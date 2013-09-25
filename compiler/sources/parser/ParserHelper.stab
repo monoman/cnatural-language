@@ -257,11 +257,11 @@ namespace stab.tools.parser {
             }
         }
         
-        public static boolean isIdentifierStartChar(int c) {
+        public static bool isIdentifierStartChar(int c) {
             return Character.isJavaIdentifierStart(c);
         }
 
-        public static boolean isIdentifierPartChar(int c) {
+        public static bool isIdentifierPartChar(int c) {
             return Character.isJavaIdentifierPart(c);
         }
 

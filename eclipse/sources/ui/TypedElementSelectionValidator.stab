@@ -25,10 +25,10 @@ namespace stab.tools.eclipse.ui {
 		private final static IStatus ERROR_STATUS = new Status(Status.ERROR, "unknown", "");
 
 		private Iterable<Class<?>> acceptedTypes;
-		private boolean allowMultipleSelection;
+		private bool allowMultipleSelection;
 		private Iterable<?> rejectedElements;
 
-		public TypedElementSelectionValidator(Class<?>[] acceptedTypes, boolean allowMultipleSelection, Iterable<?> rejectedElements) {
+		public TypedElementSelectionValidator(Class<?>[] acceptedTypes, bool allowMultipleSelection, Iterable<?> rejectedElements) {
 			this.acceptedTypes = Query.asIterable(acceptedTypes);
 			this.allowMultipleSelection = allowMultipleSelection;
 			this.rejectedElements = (rejectedElements == null) ? Query.empty<?>() : rejectedElements;

@@ -24,7 +24,7 @@ namespace stab.tools.compiler {
         StatementInfo() {
         }
         
-        boolean IsEndPointReachable {
+        bool IsEndPointReachable {
             get;
             set;
         }
@@ -34,7 +34,7 @@ namespace stab.tools.compiler {
             set;
         }
         
-        boolean IsTargeted {
+        bool IsTargeted {
             get;
             set;
         }

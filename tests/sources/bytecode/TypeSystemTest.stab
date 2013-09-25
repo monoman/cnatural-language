@@ -182,7 +182,7 @@ namespace stab.reflection.test {
 						sb.append("\n").append(indent).append("        ").append("where ");
 						typeName(t, sb);
 						sb.append(": ");
-						boolean first = true;
+						bool first = true;
 						foreach (var bound in t.GenericParameterBounds) {
 							if (first) {
 								first = false;

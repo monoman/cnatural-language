@@ -1,7 +1,7 @@
 using java.lang;
 
 public class WildcardArgument<T> {
-	public static boolean test() {
+	public static bool test() {
 		WildcardArgument<String> obj1 = new WildcardArgument<String>("str");
 		WildcardArgument<Integer> obj2 = new WildcardArgument<Integer>(1);
 		return method(obj1) instanceof String && method(obj2) instanceof Integer;
