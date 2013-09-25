@@ -3,7 +3,7 @@ using java.util;
 
 public class CollectionInitializer {
 	public static int test() {
-		var list = new ArrayList<String> { "a", "b", "c" };
+		var list = new ArrayList<string> { "a", "b", "c" };
 		return list.size();
 	}
 }

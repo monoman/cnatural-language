@@ -1,9 +1,9 @@
 using java.lang;
 
 public class StringAdd4 {
-	static String field = "c";
+	static string field = "c";
 
-	public static String test() {
+	public static string test() {
 		return "a" + 'b' + field;
 	}
 }

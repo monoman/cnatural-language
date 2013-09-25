@@ -7,5 +7,5 @@ public class StringEqual2 {
 }
 
 public class StringEqual2Aux {
-	public static final String STR = "str";
+	public static final string STR = "str";
 }

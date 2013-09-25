@@ -3,7 +3,7 @@ using java.util;
 using stab.query;
 
 public class GroupBy2 {
-	public static String test() {
+	public static string test() {
 		var list = new ArrayList<GroupBy2Aux> {
 			new GroupBy2Aux { Key = "a", Value = "b" },
 			new GroupBy2Aux { Key = "a", Value = "c" },
@@ -24,12 +24,12 @@ public class GroupBy2 {
 }
 
 public class GroupBy2Aux {
-	public String Key {
+	public string Key {
 		get;
 		set;
 	}
 	
-	public String Value {
+	public string Value {
 		get;
 		set;
 	}

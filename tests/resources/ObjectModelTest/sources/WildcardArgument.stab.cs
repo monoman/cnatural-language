@@ -2,9 +2,9 @@ using java.lang;
 
 public class WildcardArgument<T> {
 	public static bool test() {
-		WildcardArgument<String> obj1 = new WildcardArgument<String>("str");
+		WildcardArgument<string> obj1 = new WildcardArgument<string>("str");
 		WildcardArgument<Integer> obj2 = new WildcardArgument<Integer>(1);
-		return method(obj1) instanceof String && method(obj2) instanceof Integer;
+		return method(obj1) instanceof string && method(obj2) instanceof Integer;
 	}
 	
 	T value;

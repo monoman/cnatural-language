@@ -3,19 +3,19 @@ using java.util;
 using stab.query;
 
 public class WhereSequenceEqual {
-	public static String test() {
+	public static string test() {
 		var objects = new ArrayList<WhereSequenceEqual> {
-			new WhereSequenceEqual("obj1", new ArrayList<String> { "a", "b" }),
-			new WhereSequenceEqual("obj2", new ArrayList<String> { "c", "d" }),
-			new WhereSequenceEqual("obj3", new ArrayList<String> { "e", "f" })
+			new WhereSequenceEqual("obj1", new ArrayList<string> { "a", "b" }),
+			new WhereSequenceEqual("obj2", new ArrayList<string> { "c", "d" }),
+			new WhereSequenceEqual("obj3", new ArrayList<string> { "e", "f" })
 		};
-		return objects.where(p => p.items.sequenceEqual(new ArrayList<String> { "c", "d" })).single().name;
+		return objects.where(p => p.items.sequenceEqual(new ArrayList<string> { "c", "d" })).single().name;
 	}
 	
-	public String name*;
-	public List<String> items*;
+	public string name*;
+	public List<string> items*;
 
-	public WhereSequenceEqual(String name, List<String> items) {
+	public WhereSequenceEqual(string name, List<string> items) {
 		this.name = name;
 		this.items = items;
 	}

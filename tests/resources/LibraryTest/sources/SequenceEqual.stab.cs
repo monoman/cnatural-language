@@ -4,6 +4,6 @@ using stab.query;
 
 public class SequenceEqual {
 	public static bool test() {
-		return new ArrayList<String> { "a", "b", "c" }.sequenceEqual(Query.asIterable(new[] { "a", "b", "c" }));
+		return new ArrayList<string> { "a", "b", "c" }.sequenceEqual(Query.asIterable(new[] { "a", "b", "c" }));
 	}
 }

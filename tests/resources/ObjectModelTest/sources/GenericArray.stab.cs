@@ -1,9 +1,9 @@
 using java.lang;
 
 public class GenericArray<T> {
-	public static String test(String arg) {
+	public static string test(string arg) {
         #pragma warning disable 313
-		GenericArray<String> x = new GenericArray<String>();
+		GenericArray<string> x = new GenericArray<string>();
 		x.set(arg);
 		return x.get();
 	}

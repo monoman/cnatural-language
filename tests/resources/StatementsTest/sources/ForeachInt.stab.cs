@@ -2,7 +2,7 @@ using java.lang;
 using stab.lang;
 
 public class ForeachInt {
-	public static String test() {
+	public static string test() {
 		var sb = new StringBuilder();
 		var first = true;
 		foreach (var i in range(0, 5)) {

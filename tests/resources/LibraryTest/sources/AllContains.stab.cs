@@ -4,16 +4,16 @@ using stab.query;
 
 public class AllContains {
 	public static bool test() {
-		return new AllContains(new ArrayList<String> { "AA", "ZZ" }).method(new ArrayList<String> { "AA", "ZZ", "AA" });
+		return new AllContains(new ArrayList<string> { "AA", "ZZ" }).method(new ArrayList<string> { "AA", "ZZ", "AA" });
 	}
 	
-	private Iterable<String> strings;
+	private Iterable<string> strings;
 	
-	AllContains(Iterable<String> strings) {
+	AllContains(Iterable<string> strings) {
 		this.strings = strings;
 	}
 	
-	bool method(Iterable<String> si) {
+	bool method(Iterable<string> si) {
 		return si.all(s => strings.contains(s));
 	}
 }

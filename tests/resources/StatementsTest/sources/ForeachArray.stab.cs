@@ -1,8 +1,8 @@
 using java.lang;
 
 public class ForeachArray {
-	public static String test() {
-		String[] t = { "a", "b", "c" };
+	public static string test() {
+		string[] t = { "a", "b", "c" };
 		
 		var sb = new StringBuilder();
 		foreach (var s in t) {

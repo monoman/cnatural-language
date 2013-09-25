@@ -4,7 +4,7 @@ namespace p {
 	using stab.lang;
 
 	public class ForeachInt2 {
-		public static String test() {
+		public static string test() {
 			var sb = new StringBuilder();
 			var first = true;
 			foreach (var i in even(range(0, 10))) {

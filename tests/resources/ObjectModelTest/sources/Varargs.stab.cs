@@ -1,7 +1,7 @@
 using java.lang;
 
 public class Varargs {
-	public static String method(params String[] values) {
+	public static string method(params string[] values) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < sizeof(values); i++) {
 			sb.append(values[i]);
@@ -9,7 +9,7 @@ public class Varargs {
 		return sb.toString();
 	}
 	
-	public static String test() {
+	public static string test() {
 		return method();
 	}
 }

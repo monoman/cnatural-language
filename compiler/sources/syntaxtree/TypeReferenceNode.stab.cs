@@ -28,6 +28,7 @@ namespace stab.tools.syntaxtree {
 		Long,
 		Short,
 		Void,
+		String,
 		SimpleName,
 		Qualified,
 		Array,

@@ -1,7 +1,7 @@
 using java.lang;
 
 public class InheritedMethodCall {
-	public static String test() {
+	public static string test() {
 		var sb = new StringBuilder();
 		sb.append("ABC");
 		sb.setLength(2);

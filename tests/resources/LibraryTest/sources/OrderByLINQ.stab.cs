@@ -3,8 +3,8 @@ using java.util;
 using stab.query;
 
 public class OrderByLINQ {
-	public static String test() {
-		var list = new ArrayList<String> { "bb", "a", "ccc" };
+	public static string test() {
+		var list = new ArrayList<string> { "bb", "a", "ccc" };
 		var query = from s in list
 					orderby s
 					select s;

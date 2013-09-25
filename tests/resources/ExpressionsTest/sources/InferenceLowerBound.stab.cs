@@ -3,7 +3,7 @@ using java.util;
 
 public class InferenceLowerBound {
 	public static int test() {
-		return test1(new ArrayList<String>());
+		return test1(new ArrayList<string>());
 	}
 	
 	public static int test1<T>(List<T> t) {

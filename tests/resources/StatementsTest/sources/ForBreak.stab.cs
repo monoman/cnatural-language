@@ -3,9 +3,9 @@ using java.util;
 using stab.query;
 
 public class ForBreak {
-	public static String test() {
-		var l = new ArrayList<String> { "str0", "str1" };
-		String s;
+	public static string test() {
+		var l = new ArrayList<string> { "str0", "str1" };
+		string s;
 		if ("str" == null) {
 			s = "str0";
 		} else {

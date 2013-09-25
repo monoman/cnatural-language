@@ -4,7 +4,7 @@ using stab.query;
 
 public class ToTFloatMap5 {
 	public static bool test() {
-		var map1 = new HashMap<String, Float> { { "K1.0", 1f }, { "K2.0", 2f }, { "K3.0", 3f }};
+		var map1 = new HashMap<string, Float> { { "K1.0", 1f }, { "K2.0", 2f }, { "K3.0", 3f }};
 		var map2 = Query.asIterable(new[] { 1f, 2f, 3f }).toMap(p => "K" + p);
 		int i = 0;
 		foreach (var k in map2.keySet()) {

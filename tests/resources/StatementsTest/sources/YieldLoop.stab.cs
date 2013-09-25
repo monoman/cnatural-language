@@ -2,12 +2,12 @@ using java.lang;
 using stab.lang;
 
 public class YieldLoop {
-	public static String test() {
+	public static string test() {
 		var obj = new YieldLoop();
 		return obj.method();
 	}
 
-	public String method() {
+	public string method() {
 		var sb = new StringBuilder();
 		var it = power(2, 8).iterator();
 		var first = true;

@@ -1,7 +1,7 @@
 using java.lang;
 
 public class InferenceOutputParameter {
-	public static String test() {
+	public static string test() {
 		return method();
 	}
 	

@@ -1,4 +1,5 @@
 class C : B {
     volatile int i = 1, j = 2;
 	public int k*;
+	public string s*;
 }

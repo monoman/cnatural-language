@@ -1,7 +1,7 @@
 using java.lang;
 
 public class CastToString {
-	public static String test(Object obj) {
-		return (String)obj;
+	public static string test(Object obj) {
+		return (string)obj;
 	}
 }

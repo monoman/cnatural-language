@@ -76,6 +76,7 @@ namespace stab.tools.parser {
         Sizeof,
         Static,
         Strictfp,
+		String,
         Super,
         Switch,
         Synchronized,

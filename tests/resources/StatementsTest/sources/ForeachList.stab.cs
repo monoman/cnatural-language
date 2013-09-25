@@ -2,8 +2,8 @@ using java.lang;
 using java.util;
 
 public class ForeachList {
-	public static String test() {
-		var list = new ArrayList<String>();
+	public static string test() {
+		var list = new ArrayList<string>();
 		list.add("a");
 		list.add("b");
 		list.add("c");

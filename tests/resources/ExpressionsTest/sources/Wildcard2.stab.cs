@@ -2,9 +2,9 @@ using java.lang;
 
 public class Wildcard2 {
 	public static bool test() {
-		Wildcard2Aux<?>[] t = { new Wildcard2Aux<Object>(new Object()), new Wildcard2Aux<String>("STR") };
+		Wildcard2Aux<?>[] t = { new Wildcard2Aux<Object>(new Object()), new Wildcard2Aux<string>("STR") };
 		var ot = test(t);
-		return ot[0] instanceof Object && ot[1] instanceof String;
+		return ot[0] instanceof Object && ot[1] instanceof string;
 	}
 	
 	public static Object[] test(Wildcard2Aux<?>[] t) {

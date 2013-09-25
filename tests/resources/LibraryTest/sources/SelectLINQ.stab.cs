@@ -3,8 +3,8 @@ using java.util;
 using stab.query;
 
 public class SelectLINQ {
-	public static String test() {
-		var list = new ArrayList<String> { "a", "b", "c" };
+	public static string test() {
+		var list = new ArrayList<string> { "a", "b", "c" };
 		var query = from s in list
 					select s.toUpperCase();
 		var result = "";

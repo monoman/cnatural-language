@@ -3,7 +3,7 @@ using java.util;
 using stab.query;
 
 public class GroupJoin {
-	public static String test() {
+	public static string test() {
 		var owners = new ArrayList<GroupJoinOwner> {
 			new GroupJoinOwner { Name = "A1" }, 
 			new GroupJoinOwner { Name = "A2" }, 
@@ -27,14 +27,14 @@ public class GroupJoin {
 }
 
 public class GroupJoinOwner {
-	public String Name {
+	public string Name {
 		get;
 		set;
 	}
 }
 
 public class GroupJoinOwned {
-	public String Name {
+	public string Name {
 		get;
 		set;
 	}

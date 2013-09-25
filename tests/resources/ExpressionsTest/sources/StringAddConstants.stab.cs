@@ -1,7 +1,7 @@
 using java.lang;
 
 public class StringAddConstants {
-	public static String test() {
+	public static string test() {
 		return "a" + "bc";
 	}
 }

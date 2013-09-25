@@ -1,7 +1,7 @@
 using java.lang;
 
 public class C {
-	String m() {
+	string m() {
 		return null.toString();
 	}
 }

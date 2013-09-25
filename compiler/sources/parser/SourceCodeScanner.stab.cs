@@ -585,7 +585,19 @@ namespace stab.tools.parser {
                             return scanKeyword("", Keyword.None);
                         }
                     case 'r':
-                        return scanKeyword("rictfp", Keyword.Strictfp);
+                        switch (advance()) {
+                        case 'i':
+							switch (advance()) {
+							case 'c':
+								return scanKeyword("ctfp", Keyword.Strictfp);
+							case 'n':
+								return scanKeyword("ng", Keyword.String);
+							default:
+								return scanKeyword("", Keyword.None);
+							}
+                        default:
+                            return scanKeyword("", Keyword.None);
+                        }
                     default:
                         return scanKeyword("", Keyword.None);
                     }

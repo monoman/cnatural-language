@@ -1,7 +1,7 @@
 using java.lang;
 
 public class C {
-	public void m(String s) {
+	public void m(string s) {
 	}
 }
 

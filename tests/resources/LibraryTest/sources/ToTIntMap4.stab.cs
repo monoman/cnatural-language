@@ -4,7 +4,7 @@ using stab.query;
 
 public class ToTIntMap4 {
 	public static int test() {
-		var map1 = new HashMap<String, Integer> { { "K1", 1 }, { "K2", 2 }, { "K3", 3 }};
+		var map1 = new HashMap<string, Integer> { { "K1", 1 }, { "K2", 2 }, { "K3", 3 }};
 		var map2 = Query.emptyInt().toMap(p => "");
 		map2.putAll(map1);
 		int i = 0;

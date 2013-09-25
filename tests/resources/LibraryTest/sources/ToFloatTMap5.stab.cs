@@ -4,8 +4,8 @@ using stab.query;
 
 public class ToFloatTMap5 {
 	public static bool test() {
-		var map1 = new HashMap<Float, String> { { 1f, "V1" }, { 2f, "V2" }, { 3f, "V3" }};
-		var list = new ArrayList<String> { "V1", "V2", "V3" };
+		var map1 = new HashMap<Float, string> { { 1f, "V1" }, { 2f, "V2" }, { 3f, "V3" }};
+		var list = new ArrayList<string> { "V1", "V2", "V3" };
 		var key = 1f;
 		var map2 = list.toMap(p => key++);
 		int i = 0;

@@ -5,7 +5,7 @@ public class GenericClass2<T> {
 		return t;
 	}
 	
-	public static String test(String s) {
-		return new GenericClass2<String>().get(s);
+	public static string test(string s) {
+		return new GenericClass2<string>().get(s);
 	}
 }

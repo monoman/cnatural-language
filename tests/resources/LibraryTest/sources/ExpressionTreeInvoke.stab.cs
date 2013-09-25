@@ -4,7 +4,7 @@ using stab.tree;
 
 public class ExpressionTreeInvoke {
     delegate int D(int i);
-    public static String test() {
+    public static string test() {
         D d = method;
         ExpressionTree<FunctionIntInt> expr = p => d(p);
         return ((InvocationExpression)((ExpressionStatement)expr.Body).Expression).Target.Type.getName();

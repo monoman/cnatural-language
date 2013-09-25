@@ -3,10 +3,10 @@ using java.lang;
 public class WildcardArrayArgument<T> {
 	public static bool test() {
 		WildcardArrayArgument<?>[] args = new[] {
-				new WildcardArrayArgument<String>("str"),
+				new WildcardArrayArgument<string>("str"),
 				new WildcardArrayArgument<Integer>(1) };
 		var res = method(args);
-		return res[0] instanceof String && res[1] instanceof Integer;
+		return res[0] instanceof string && res[1] instanceof Integer;
 	}
 	
 	T value;

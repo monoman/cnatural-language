@@ -1181,6 +1181,7 @@ namespace stab.tools.parser.test {
 				case Boolean:
 				case Byte:
 				case Void:
+				case String:
 					sb.append(typeRef.TypeReferenceKind.toString().toLowerCase());
 					break;
 

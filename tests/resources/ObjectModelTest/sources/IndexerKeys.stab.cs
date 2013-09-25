@@ -1,9 +1,9 @@
 using java.lang;
 
 public class IndexerKeys {
-	private String field = "a";
+	private string field = "a";
 	
-	public String this[String s, double d] {
+	public string this[string s, double d] {
 		get {
 			return field + s + d;
 		}
@@ -12,11 +12,11 @@ public class IndexerKeys {
 		}
 	}
 	
-	public String method() {
+	public string method() {
 		return this["b", 2] += "c";
 	}
 	
-	public static String test() {
+	public static string test() {
 		var obj = new IndexerKeys();
 		return obj.method();
 	}

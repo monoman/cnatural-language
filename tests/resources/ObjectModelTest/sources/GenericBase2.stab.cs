@@ -2,7 +2,7 @@ using java.lang;
 
 public class GenericBase2 {
 	public static int test() {
-		GenericBase2Aux2<String, Object> gb = new GenericBase2Aux2<String, Object>();
+		GenericBase2Aux2<string, Object> gb = new GenericBase2Aux2<string, Object>();
 		return gb.test1(null) + gb.test2("", null);
 	}
 }

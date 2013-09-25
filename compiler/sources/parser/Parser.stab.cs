@@ -1486,6 +1486,7 @@ namespace stab.tools.parser {
                 case Double:
                 case Float:
                 case Void:
+				case String:
                     return parseLabeledOrLocalDeclarationOrExpressionStatement();
 
                 case Yield: {
@@ -2305,6 +2306,7 @@ namespace stab.tools.parser {
                         case Double:
                         case Float:
                         case Void:
+						case String:
                             break;
 
                         default:
@@ -2400,7 +2402,8 @@ namespace stab.tools.parser {
             var result = new QueryExpressionNode();
             setScannerState(result);
             var doParseType = true;
-            if (!isIdentifier(nextLexicalUnit(false))) {
+			var lex = nextLexicalUnit(false);
+            if (!(isIdentifier(lex) || (lex == LexicalUnit.Keyword && scanner.Keyword == Keyword.String))) {
                 this.restore(restorePoint);
                 return null;
             } else {
@@ -3118,6 +3121,11 @@ namespace stab.tools.parser {
 
                 case Short:
                     result = createTypeExpression(TypeReferenceKind.Short);
+                    nextLexicalUnit(false);
+                    break;
+
+                case String:
+                    result = createTypeExpression(TypeReferenceKind.String);
                     nextLexicalUnit(false);
                     break;
 
@@ -3930,6 +3938,12 @@ namespace stab.tools.parser {
 
                 case Double:
                     result = new PrimitiveTypeReferenceNode(TypeReferenceKind.Double) { EndPosition = scanner.EndPosition };
+                    setScannerState(result);
+                    nextLexicalUnit(false);
+                    break;
+
+                case String:
+                    result = new PrimitiveTypeReferenceNode(TypeReferenceKind.String) { EndPosition = scanner.EndPosition };
                     setScannerState(result);
                     nextLexicalUnit(false);
                     break;

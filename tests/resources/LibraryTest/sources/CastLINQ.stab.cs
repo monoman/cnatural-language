@@ -3,9 +3,9 @@ using java.util;
 using stab.query;
 
 public class CastLINQ {
-	public static String test() {
+	public static string test() {
 		var list = new ArrayList<Object> { "ab", "cd", "ef" };
-		var query = from String s in list
+		var query = from string s in list
 					select s;
 		var str = "";
 		foreach (var s in query) {

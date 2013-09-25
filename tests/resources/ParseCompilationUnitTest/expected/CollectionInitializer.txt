@@ -2,6 +2,6 @@ using java.util;
 
 class C {
     ArrayList<string> createList() {
-        return new ArrayList<String>{ { "a" }, { "b" }, { "c" } };
+        return new ArrayList<string>{ { "a" }, { "b" }, { "c" } };
     }
 }

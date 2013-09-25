@@ -4,8 +4,8 @@ using stab.query;
 
 public class ToIntTMap5 {
 	public static bool test() {
-		var map1 = new HashMap<Integer, String> { { 1, "V1" }, { 2, "V2" }, { 3, "V3" }};
-		var list = new ArrayList<String> { "V1", "V2", "V3" };
+		var map1 = new HashMap<Integer, string> { { 1, "V1" }, { 2, "V2" }, { 3, "V3" }};
+		var list = new ArrayList<string> { "V1", "V2", "V3" };
 		var key = 1;
 		var map2 = list.toMap(p => key++);
 		int i = 0;

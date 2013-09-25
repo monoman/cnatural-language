@@ -2,7 +2,7 @@ using java.lang;
 using stab.query;
 
 public class C {
-    public static void m(Iterable<String> s) {
-        var query = s.cast(typeof(String));
+    public static void m(Iterable<string> s) {
+        var query = s.cast(typeof(string));
     }
 }

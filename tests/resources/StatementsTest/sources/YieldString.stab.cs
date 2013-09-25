@@ -1,14 +1,14 @@
 using java.lang;
 
 public class YieldString {
-	private String[] t = { "a", "b", "c" };
+	private string[] t = { "a", "b", "c" };
 
-	public static String test() {
+	public static string test() {
 		var obj = new YieldString();
 		return obj.method();
 	}
 	
-	public String method() {
+	public string method() {
 		var sb = new StringBuilder();
 		var it = strings().iterator();
 		while (it.hasNext()) {
@@ -17,7 +17,7 @@ public class YieldString {
 		return sb.toString();		
 	}
 	
-	public Iterable<String> strings() {
+	public Iterable<string> strings() {
 		yield return t[0];
 		yield return t[1];
 		yield return t[2];

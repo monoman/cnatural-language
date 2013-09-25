@@ -4,7 +4,7 @@ using stab.query;
 
 public class ToTLongMap5 {
 	public static bool test() {
-		var map1 = new HashMap<String, Long> { { "K1", 1L }, { "K2", 2L }, { "K3", 3L }};
+		var map1 = new HashMap<string, Long> { { "K1", 1L }, { "K2", 2L }, { "K3", 3L }};
 		var map2 = Query.asIterable(new[] { 1L, 2L, 3L }).toMap(p => "K" + p);
 		int i = 0;
 		foreach (var k in map2.keySet()) {

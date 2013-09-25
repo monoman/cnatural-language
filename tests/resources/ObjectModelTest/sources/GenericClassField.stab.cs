@@ -2,7 +2,7 @@ namespace p {
 	using java.lang;
 
 	public class GenericClassField {
-		private GenericClassFieldAux<String> field = new GenericClassFieldAux<String>();
+		private GenericClassFieldAux<string> field = new GenericClassFieldAux<string>();
 	
 		public int method() {
 			return field.field;		

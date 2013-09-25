@@ -3,7 +3,7 @@ using java.util;
 using stab.query;
 
 public class SelectMany {
-	public static String test() {
+	public static string test() {
 		var obj1 = new SelectManyAux(1);
 		var obj2 = new SelectManyAux(2);
 		var lst = new ArrayList<SelectManyAux> { obj1, obj2 };
@@ -22,7 +22,7 @@ public class SelectManyAux {
 		this.n = n;
 	}
 
-	public Iterable<String> getStrings() {
+	public Iterable<string> getStrings() {
 		yield return "a" + n;
 		yield return "b" + n;
 		yield return "c" + n;

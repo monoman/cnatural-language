@@ -3,7 +3,7 @@ using java.util;
 using stab.query;
 
 public class GroupByLINQ {
-	public static String test() {
+	public static string test() {
 		var list = new ArrayList<GroupByAux> {
 			new GroupByAux { Key = "a", Value = "b" },
 			new GroupByAux { Key = "a", Value = "c" },
@@ -25,12 +25,12 @@ public class GroupByLINQ {
 }
 
 public class GroupByAux {
-	public String Key {
+	public string Key {
 		get;
 		set;
 	}
 	
-	public String Value {
+	public string Value {
 		get;
 		set;
 	}

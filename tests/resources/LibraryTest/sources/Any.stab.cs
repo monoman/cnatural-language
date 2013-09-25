@@ -4,7 +4,7 @@ using stab.query;
 
 public class Any {
 	public static bool test() {
-		var list = new ArrayList<String> { "a", "bb", "ccc" };
+		var list = new ArrayList<string> { "a", "bb", "ccc" };
 		return list.any(p => p.length() > 2);
 	}
 }

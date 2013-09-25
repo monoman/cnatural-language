@@ -5,7 +5,7 @@ public class LambdaStatic {
 		return method("ab");
 	}
 	
-	static int method(String arg) {
+	static int method(string arg) {
 		f1 = p => {
 			int i = 0;
 			i++;
@@ -23,6 +23,6 @@ public class LambdaStatic {
 	}
 	
 	interface Func {
-		void call(String arg);
+		void call(string arg);
 	}
 }

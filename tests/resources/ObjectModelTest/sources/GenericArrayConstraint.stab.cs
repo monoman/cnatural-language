@@ -1,8 +1,8 @@
 using java.lang;
 
 public class GenericArrayConstraint<T> where T : java.lang.CharSequence {
-	public static String test(String arg) {
-		GenericArrayConstraint<String> x = new GenericArrayConstraint<String>();
+	public static string test(string arg) {
+		GenericArrayConstraint<string> x = new GenericArrayConstraint<string>();
 		x.set(arg);
 		return x.get();
 	}

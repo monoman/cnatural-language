@@ -3,7 +3,7 @@ using java.util;
 using stab.query;
 
 public class Join {
-	public static String test() {
+	public static string test() {
 		var owners = new ArrayList<JoinOwner> {
 			new JoinOwner { Name = "A1" }, 
 			new JoinOwner { Name = "A2" }, 
@@ -24,14 +24,14 @@ public class Join {
 }
 
 public class JoinOwner {
-	public String Name {
+	public string Name {
 		get;
 		set;
 	}
 }
 
 public class JoinOwned {
-	public String Name {
+	public string Name {
 		get;
 		set;
 	}

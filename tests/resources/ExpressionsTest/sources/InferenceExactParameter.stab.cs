@@ -8,7 +8,7 @@ public class InferenceExactParameter {
 		return field;		
 	}
 
-	private static String m(int i) {
+	private static string m(int i) {
 		field += i;
 		return "";
 	}

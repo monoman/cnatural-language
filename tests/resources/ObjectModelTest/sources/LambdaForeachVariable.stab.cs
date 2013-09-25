@@ -2,11 +2,11 @@ using java.lang;
 using java.util;
 
 public class LambdaForeachVariable {
-	interface Func { String call(); }
+	interface Func { string call(); }
 
-	public static String test() {
+	public static string test() {
 		var result = "";
-		foreach (var s in new ArrayList<String> { "a", "b", "c" }) {
+		foreach (var s in new ArrayList<string> { "a", "b", "c" }) {
 			Func f = () => s;
 			result += f.call();
 		}

@@ -1,9 +1,9 @@
 using java.lang;
 
 public class LambdaCatchVariable {
-	interface Func { String call(); }
+	interface Func { string call(); }
 
-	public static String test() {
+	public static string test() {
 		try {
 			throw new Exception("Message");
 		} catch (Exception e) {

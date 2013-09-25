@@ -2,7 +2,7 @@ using java.lang;
 
 public class ExplicitGenericCall {
 	public static int test() {
-		return method<String>();
+		return method<string>();
 	}
 
 	public static int method<T>() {

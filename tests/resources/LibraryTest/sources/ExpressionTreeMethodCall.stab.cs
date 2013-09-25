@@ -3,7 +3,7 @@ using stab.query;
 using stab.tree;
 
 public class ExpressionTreeMethodCall {
-    public static String test() {
+    public static string test() {
         ExpressionTree<FunctionIntInt> expr = p => method(p);
         return ((MethodCallExpression)((ExpressionStatement)expr.Body).Expression).Method.getName();
     }

@@ -3,7 +3,7 @@ using stab.query;
 using stab.tree;
 
 public class ExpressionTreeField {
-    public static String test() {
+    public static string test() {
         ExpressionTree<FunctionIntInt> expr = p => field;
         return ((FieldExpression)((ExpressionStatement)expr.Body).Expression).Field.getName();
     }

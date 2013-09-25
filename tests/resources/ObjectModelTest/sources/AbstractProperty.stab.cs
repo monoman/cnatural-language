@@ -1,12 +1,12 @@
 using java.lang;
 
 public class AbstractProperty : AbstractPropertyAux {
-	public static String test() {
+	public static string test() {
 		var obj = new AbstractProperty();
 		return obj.Prop;
 	}
 
-	public override String Prop {
+	public override string Prop {
 		get {
 			return "STR";
 		}
@@ -14,7 +14,7 @@ public class AbstractProperty : AbstractPropertyAux {
 }
 
 public abstract class AbstractPropertyAux {
-	public abstract String Prop {
+	public abstract string Prop {
 		get;
 	}
 }

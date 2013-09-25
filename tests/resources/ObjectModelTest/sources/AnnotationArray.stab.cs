@@ -2,7 +2,7 @@ using java.lang;
 using java.lang.reflect;
 using javax.xml.bind.annotation;
 
-[XmlSeeAlso(value = { typeof(Object), typeof(String) })]
+[XmlSeeAlso(value = { typeof(Object), typeof(string) })]
 public class AnnotationArray {
 
 	public static bool test() {

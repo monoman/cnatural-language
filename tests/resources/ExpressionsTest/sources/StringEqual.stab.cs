@@ -2,7 +2,7 @@ using java.lang;
 
 public class StringEqual {
 	public static bool test() {
-		String s = "str";
+		string s = "str";
 		return s == "str";
 	}
 }

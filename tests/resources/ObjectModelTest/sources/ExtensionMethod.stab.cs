@@ -7,7 +7,7 @@ public class ExtensionMethod {
 }
 
 public static class ExtensionMethodAux {
-	public static int size(this String s) {
+	public static int size(this string s) {
 		return s.length();
 	}
 }

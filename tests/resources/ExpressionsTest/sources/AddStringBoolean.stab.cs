@@ -1,7 +1,7 @@
 using java.lang;
 
 public class AddStringBoolean {
-	public static String test() {
+	public static string test() {
 		return "" + true;
 	}
 }

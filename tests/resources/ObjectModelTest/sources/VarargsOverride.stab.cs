@@ -8,7 +8,7 @@ public class VarargsOverride {
 
 public class VarargsOverrideOther {
 	
-	    public virtual int method1 (String message, params Object[] args)
+	    public virtual int method1 (string message, params Object[] args)
         {
                 return 1;
         }
@@ -17,7 +17,7 @@ public class VarargsOverrideOther {
 
 public class VarargsOverrideOther2 : VarargsOverrideOther {
 
-        public override int method1 (String message, params Object[] args)
+        public override int method1 (string message, params Object[] args)
         {
                 return 2;
         }

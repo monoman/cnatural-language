@@ -5,11 +5,11 @@ public class GenericOverload {
 		return 1;
 	}
 	
-	public static int method(String s) {
+	public static int method(string s) {
 		return 2;
 	}
 	
 	public static int test() {
-		return method<String>("STR");
+		return method<string>("STR");
 	}
 }

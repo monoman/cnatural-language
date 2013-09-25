@@ -1,7 +1,7 @@
 using java.lang;
 
 public class StringAdd {
-	public static String test(String s) {
+	public static string test(string s) {
 		return "a" + s;
 	}
 }

@@ -4,7 +4,7 @@ using stab.query;
 
 public class ToMap5 {
 	public static bool test() {
-		var list = new ArrayList<String> { "V1", "V2", "V3" };
+		var list = new ArrayList<string> { "V1", "V2", "V3" };
 		var map = list.toMap(p => "K" + p.substring(1));
 		return map.containsValue("V1") &&
 				map.containsValue("V2") &&

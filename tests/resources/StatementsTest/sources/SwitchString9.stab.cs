@@ -1,7 +1,7 @@
 using java.lang;
 
 public class SwitchString9 {
-	public static int test(String s) {
+	public static int test(string s) {
 		switch (s) {
 		case "STR1":
 		default:

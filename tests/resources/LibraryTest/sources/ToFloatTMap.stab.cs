@@ -4,7 +4,7 @@ using stab.query;
 
 public class ToFloatTMap {
 	public static bool test() {
-		var list = new ArrayList<String> { "V1", "V2", "V3" };
+		var list = new ArrayList<string> { "V1", "V2", "V3" };
 		var k = 0f;
 		var map = list.toMap(p => k++);
 		return map.containsValue("V1") &&

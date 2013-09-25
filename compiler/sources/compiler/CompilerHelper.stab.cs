@@ -203,6 +203,8 @@ namespace stab.tools.compiler {
                 return context.TypeSystem.LongType;
             case Short:
                 return context.TypeSystem.ShortType;
+            case String:
+                return context.TypeSystem.StringType;
             case Void:
                 return context.TypeSystem.VoidType;
             case Wildcard:

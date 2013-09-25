@@ -4,7 +4,7 @@ using stab.query;
 
 public class SelectInt {
 	public static int test() {
-		var list = new ArrayList<String> { "a", "bb", "ccc" };
+		var list = new ArrayList<string> { "a", "bb", "ccc" };
 		int result = 0;
 		foreach (var l in list.select(p => p.length())) {
 			result += l;
