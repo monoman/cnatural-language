@@ -26,7 +26,7 @@ namespace stab.tools.compiler {
 
     public class Application {
         public static void main(String[] args) {
-            System.out.println("Stab 1.1 beta");
+            System.out.println("Cnatural Compiler 1.1 RC2");
             System.out.println();
             System.exit(new Application().run(args));
         }
@@ -317,7 +317,7 @@ namespace stab.tools.compiler {
                     break;
                 }
                 case Help: {
-                    System.out.println("    Stab Compiler Options");
+                    System.out.println("    Cnatural Compiler Options");
                     System.out.println();
                     foreach (var opt in OptionInfos) {
                         System.out.print("-");
