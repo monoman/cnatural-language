@@ -23,76 +23,94 @@ namespace stab.tools.tests {
 
 	public class Application {
 		public static void main(params String[] args) {
-			if (sizeof(args) == 1) {
-				switch (args[0]) {
-				case "Expressions":
-				case "ExpressionsError":
-				case "Statements":
-				case "StatementsError":
-				case "ObjectModel":
-				case "ObjectModelError":
-				case "Library":
-				case "ExpressionTrees":
-				{
-					JUnitCore core = new JUnitCore();
-					core.addListener(new TestListener());
-					core.run(new Class<?>[] {
-						Class.forName("stab.tools.compiler.test." + args[0] + "Test"),
-					});
-					return;
+
+			if (sizeof(args) > 0) {
+				System.out.println();
+				System.out.print("Running tests for selectors: ");
+				foreach (var arg in args) {
+					System.out.print(arg);
+					System.out.print(" ");
 				}
-				case "Parser":
-				{
-					JUnitCore core = new JUnitCore();
-					core.addListener(new TestListener());
-					core.run(new Class<?>[] {
-						Class.forName("stab.tools.parser.test.SourceCodeScannerTest"),
-						Class.forName("stab.tools.parser.test.PreprocessorTest"),
-						Class.forName("stab.tools.parser.test.PreprocessedTextScannerTest"),
-						Class.forName("stab.tools.parser.test.ParseExpressionTest"),
-						Class.forName("stab.tools.parser.test.ParseCompilationUnitTest"),
-					});
-					return;
+				System.out.println();
+				System.out.println();
+				foreach (var arg in args) {
+					switch (arg) {
+					case "Expressions":
+					case "ExpressionsError":
+					case "Statements":
+					case "StatementsError":
+					case "ObjectModel":
+					case "ObjectModelError":
+					case "Library":
+					case "ExpressionTrees":
+						runTests(new Class<?>[] {
+							Class.forName("stab.tools.compiler.test." + arg + "Test"),
+						});
+						break;
+					case "Parser":
+						runTests(new Class<?>[] {
+							Class.forName("stab.tools.parser.test.SourceCodeScannerTest"),
+							Class.forName("stab.tools.parser.test.PreprocessorTest"),
+							Class.forName("stab.tools.parser.test.PreprocessedTextScannerTest"),
+							Class.forName("stab.tools.parser.test.ParseExpressionTest"),
+							Class.forName("stab.tools.parser.test.ParseCompilationUnitTest"),
+						});
+						break;
+					case "Errors":
+						runTests(new Class<?>[] {
+							Class.forName("stab.tools.compiler.test.SyntaxErrorTest"),
+							Class.forName("stab.tools.compiler.test.ObjectModelErrorTest"),
+							Class.forName("stab.tools.compiler.test.StatementsErrorTest"),
+							Class.forName("stab.tools.compiler.test.ExpressionsErrorTest"),
+						});
+						break;
+					default:
+						System.out.println("Unrecognized selector: " + arg);
+						return;
+					}
 				}
+			} else {
+				System.out.println();
+				System.out.println("Running all tests...");
+				System.out.println();
+				bool wasSuccessful = runTests(new Class<?>[] {
+					Class.forName("stab.tools.helpers.test.UserDataContainerTest"),
+					Class.forName("stab.tools.parser.test.SourceCodeScannerTest"),
+					Class.forName("stab.tools.parser.test.PreprocessorTest"),
+					Class.forName("stab.tools.parser.test.PreprocessedTextScannerTest"),
+					Class.forName("stab.tools.parser.test.ParseExpressionTest"),
+					Class.forName("stab.tools.parser.test.ParseCompilationUnitTest"),
+					Class.forName("stab.reflection.test.TypeSystemTest"),
+					Class.forName("stab.reflection.test.TypeBuilderTest"),
+					Class.forName("stab.tools.compiler.test.MemberInfoTest"),
+					Class.forName("stab.tools.compiler.test.MemberResolverTest"),
+					Class.forName("stab.tools.compiler.test.ExpressionsTest"),
+					Class.forName("stab.tools.compiler.test.ObjectModelTest"),
+					Class.forName("stab.tools.compiler.test.StatementsTest"),
+					Class.forName("stab.tools.compiler.test.LibraryTest"),
+					Class.forName("stab.tools.compiler.test.ExpressionTreesTest"),
+					Class.forName("stab.tools.compiler.test.SyntaxErrorTest"),
+					Class.forName("stab.tools.compiler.test.ObjectModelErrorTest"),
+					Class.forName("stab.tools.compiler.test.StatementsErrorTest"),
+					Class.forName("stab.tools.compiler.test.ExpressionsErrorTest"),
+					Class.forName("stab.tools.compiler.test.IntegrationTest"),
+					Class.forName("stab.tools.syntaxtree.test.QueryTranslatorTest"),
+				});
+				if (wasSuccessful) {
+					System.out.println();
+					System.out.println("Moving binaries...");
+					move("annotated/stabal.jar", "bin/stabal.jar");
+					move("compiler/stabc.jar", "bin/stabc.jar");
+					move("runtime/stabrt.jar", "bin/stabrt.jar");
 				}
-			}
+			}			
+		}
 		
-			System.out.println();
-			System.out.println("Running tests...");
-			System.out.println();
-			
+		private static bool runTests(Class<?>[] list) {
 			JUnitCore core = new JUnitCore();
 			core.addListener(new TestListener());
-			Result result = core.run(new Class<?>[] {
-				Class.forName("stab.tools.helpers.test.UserDataContainerTest"),
-				Class.forName("stab.tools.parser.test.SourceCodeScannerTest"),
-				Class.forName("stab.tools.parser.test.PreprocessorTest"),
-				Class.forName("stab.tools.parser.test.PreprocessedTextScannerTest"),
-				Class.forName("stab.tools.parser.test.ParseExpressionTest"),
-				Class.forName("stab.tools.parser.test.ParseCompilationUnitTest"),
-				Class.forName("stab.reflection.test.TypeSystemTest"),
-				Class.forName("stab.reflection.test.TypeBuilderTest"),
-				Class.forName("stab.tools.compiler.test.MemberInfoTest"),
-				Class.forName("stab.tools.compiler.test.MemberResolverTest"),
-				Class.forName("stab.tools.compiler.test.ExpressionsTest"),
-				Class.forName("stab.tools.compiler.test.ObjectModelTest"),
-				Class.forName("stab.tools.compiler.test.StatementsTest"),
-				Class.forName("stab.tools.compiler.test.LibraryTest"),
-				Class.forName("stab.tools.compiler.test.ExpressionTreesTest"),
-				Class.forName("stab.tools.compiler.test.SyntaxErrorTest"),
-				Class.forName("stab.tools.compiler.test.ObjectModelErrorTest"),
-				Class.forName("stab.tools.compiler.test.StatementsErrorTest"),
-				Class.forName("stab.tools.compiler.test.ExpressionsErrorTest"),
-				Class.forName("stab.tools.compiler.test.IntegrationTest"),
-				Class.forName("stab.tools.syntaxtree.test.QueryTranslatorTest"),
-			});
-			if (result.wasSuccessful()) {
-				System.out.println();
-				System.out.println("Moving binaries...");
-				move("annotated/stabal.jar", "bin/stabal.jar");
-				move("compiler/stabc.jar", "bin/stabc.jar");
-				move("runtime/stabrt.jar", "bin/stabrt.jar");
-			}
+			Result result = core.run(list);
+			return result.wasSuccessful();
 		}
 		
 		private static void move(String sourcePath, String targetPath) {
@@ -148,6 +166,7 @@ namespace stab.tools.tests {
 		}
 		
 		public override void testRunFinished(Result r) {
+			System.out.println(className + ": " + success + "/" + count);
 			System.out.println();
 			System.out.println(String.format("%d tests run in %.2fs", globalCount, (System.nanoTime() - startTime) / 1e9));
 		}
