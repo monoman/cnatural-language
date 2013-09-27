@@ -190,17 +190,23 @@ namespace stab.reflection {
 
             foreach (var f in classInfo.fields) {
                 var field = new FieldInfo(this, f.modifiers, f.name, f.value);
+				try {
+					if (f.signature == null) {
+						field.type = getTypeInfo(f.type);
+					} else {
+							field.type = getTypeInfo(f.signature);
+					}
+					if (f.annotations == null) {
+						field.annotations = Collections.emptyList();
+					} else {
+						field.annotations = buildAnnotationValues(f.annotations);
+					}
+				} catch (Exception e) {
+					System.out.print("Error on " + field);
+					System.out.println((f.signature == null) ? (" by type " + f.type) : (" by signature " + f.signature.Name) );
+					continue;
+				}
                 fields.add(field);
-                if (f.signature == null) {
-                    field.type = getTypeInfo(f.type);
-                } else {
-                    field.type = getTypeInfo(f.signature);
-                }
-                if (f.annotations == null) {
-                    field.annotations = Collections.emptyList();
-                } else {
-                    field.annotations = buildAnnotationValues(f.annotations);
-                }
             }
             
             classInfo.fields = null;
@@ -524,7 +530,7 @@ namespace stab.reflection {
                 if (signature.TypeArguments.any()) {
                     var typeArgs = new ArrayList<TypeInfo>();
                     foreach (var sig in signature.TypeArguments) {
-                        typeArgs.add(getTypeInfo(sig));
+						typeArgs.add(getTypeInfo(sig));						
                     }
                     result = typeSystem.getGenericTypeCore(result, typeArgs, null);
                 }
@@ -583,7 +589,7 @@ namespace stab.reflection {
                 break;
 
             case TypeVariable:
-                result = genericsScope.getBindingValue(signature.Name);
+				result = genericsScope.getBindingValue(signature.Name);
                 break;
                 
             default:

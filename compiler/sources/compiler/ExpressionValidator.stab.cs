@@ -1286,22 +1286,26 @@ namespace stab.tools.compiler {
                     }
                     ttype = ttype.OriginalTypeDefinition;
                 }
-                var members = MemberInfo.getMembers(context.AnnotatedTypeSystem, context.CurrentType, ttype, name, typeArgs, true);
-                if (staticOnly) {
-                    members = members.where(p => p.IsStatic).toList();
-                }
+				try {
+					var members = MemberInfo.getMembers(context.AnnotatedTypeSystem, context.CurrentType, ttype, name, typeArgs, true);
+					if (staticOnly) {
+						members = members.where(p => p.IsStatic).toList();
+					}
 
-                var info = new ExpressionInfo(null) { Members = members };
-                if (staticOnly) {
-                    info.ExtensionMethods = Query.empty<MethodInfo>();
-                } else {
-                    info.ExtensionMethods = context.MemberResolver.getExtensionMethods(ttype, name, typeArgs);
-                }
-                if (!info.Members.any() && !info.ExtensionMethods.any()) {
+					var info = new ExpressionInfo(null) { Members = members };
+					if (staticOnly) {
+						info.ExtensionMethods = Query.empty<MethodInfo>();
+					} else {
+						info.ExtensionMethods = context.MemberResolver.getExtensionMethods(ttype, name, typeArgs);
+					}
+					if (!info.Members.any() && !info.ExtensionMethods.any()) {
+						throw context.error(CompileErrorId.NoAccessibleMembers, nameExpression, name, BytecodeHelper.getDisplayName(ttype));
+					}
+					info.IsSuperCall = memberAccess.TargetObject.ExpressionKind == ExpressionKind.SuperAccess;
+					memberAccess.addOrReplaceUserData(info);
+				} catch (IllegalArgumentException e) {
                     throw context.error(CompileErrorId.NoAccessibleMembers, nameExpression, name, BytecodeHelper.getDisplayName(ttype));
-                }
-                info.IsSuperCall = memberAccess.TargetObject.ExpressionKind == ExpressionKind.SuperAccess;
-                memberAccess.addOrReplaceUserData(info);
+				}
                 if (targetType != null && BytecodeHelper.isDelegateType(targetType)) {
                     MethodResolver.resolveDelegate(targetType, memberAccess, tinfo, memberAccess);
                 }

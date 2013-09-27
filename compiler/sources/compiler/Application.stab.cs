@@ -25,10 +25,15 @@ using stab.tools.helpers;
 namespace stab.tools.compiler {
 
     public class Application {
+	
+		private static string MISSING_FILE = "Error: File not found: ";
+		
         public static void main(String[] args) {
             System.out.println("Cnatural Compiler 1.1 RC2");
             System.out.println();
-            System.exit(new Application().run(args));
+			var result = new Application().run(args);
+			System.out.println("Done("+result+")");
+            System.exit(result);
         }
 
         private enum Option {
@@ -257,7 +262,7 @@ namespace stab.tools.compiler {
                             parameter = "";
                         }
                         if (!new File(file).exists()) {
-                            System.out.println("Error: File not found: " + file);
+                            System.out.println(MISSING_FILE + file);
                             return false;
                         }
                         parameters.AnnotatedLibraryPaths.add(file);
@@ -276,7 +281,7 @@ namespace stab.tools.compiler {
                             parameter = "";
                         }
                         if (!new File(file).exists()) {
-                            System.out.println("Error: File not found: " + file);
+                            System.out.println(MISSING_FILE + file);
                             return false;
                         }
                         parameters.ClassPath.add(file);
@@ -303,7 +308,7 @@ namespace stab.tools.compiler {
                 case Manifest: {
                     manifestPath = parameter;
                     if (!new File(manifestPath).exists()) {
-                        System.out.println("Error: File not found: " + manifestPath);
+                        System.out.println(MISSING_FILE + manifestPath);
                         return false;
                     }
                     break;
@@ -345,7 +350,7 @@ namespace stab.tools.compiler {
             while (i < sizeof(arguments)) {
                 File file = new File(arguments[i]);
                 if (!file.exists()) {
-                    System.out.println("Error: File not found: " + arguments[i]);
+                    System.out.println(MISSING_FILE + arguments[i]);
                     return false;
                 }
                 if (file.isDirectory()) {
@@ -361,9 +366,11 @@ namespace stab.tools.compiler {
             }
             if (outputPath == null) {
                 var absolutePath = sourceFiles[0].getAbsolutePath();
-                outputPath = PathHelper.combine(PathHelper.getDirectoryName(absolutePath),
-                        PathHelper.getFileNameWithoutExtension(absolutePath) + ".jar");
+				var dir = PathHelper.getDirectoryName(absolutePath);
+				var filename = PathHelper.getFileNameWithoutExtension((absolutePath.endsWith(".cs"))? PathHelper.getFileNameWithoutExtension(absolutePath) : absolutePath);
+                outputPath = PathHelper.combine(dir, filename + ".jar");
             }
+			System.out.println("Output: "+outputPath);
             return true;
         }
         

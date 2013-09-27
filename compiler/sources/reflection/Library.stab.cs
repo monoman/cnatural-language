@@ -31,6 +31,7 @@ namespace stab.reflection {
 	}
 
     public class Library {
+		private ArrayList<String> classPath;
         private Library parent;
         private HashMap<String, File> fileClasses;
 		private HashMap<String, ZipFile> jarClasses;
@@ -46,11 +47,32 @@ namespace stab.reflection {
         private TypeInfo classType;
         private TypeInfo unboundedClassType;
 
+		private string join(Iterable<String> items, int limit) {
+			StringBuilder sb = new StringBuilder();
+			int count = 0;
+			foreach (string item in items) {
+				if (count > 0)
+					sb.append(", ");
+				sb.append(item);
+				if (limit > 0 && count == limit)
+					break;
+				count++;
+			}
+			return sb.toString();
+		}
+		public override string toString()
+		{
+			return "Library from " + join(classPath, 0) + " with (" + join(classNames, 3)+"...)"+ ( parent == null ? "":("\nParent: " + parent.toString())); 
+		}
+		
         public Library(String[] classPath)
         		: this(classPath, null) {
         }
         
         public Library(String[] classPath, Library parent) {
+			this.classPath = new ArrayList<String>();
+			foreach(string path in classPath)
+				this.classPath.add(path);
             this.fileClasses = new HashMap<String, File>(128);
             int capacity = (parent == null) ? 0x5000 : 128;
             this.jarClasses = new HashMap<String, ZipFile>(capacity);

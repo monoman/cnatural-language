@@ -27,6 +27,10 @@ namespace stab.reflection {
         List<AnnotationValue> annotations;
         protected Object value*;
         
+		public override string toString() {
+			return "Field " + Name + " of " + DeclaringType + " type " + Type + " signature " + Signature;
+		}
+		
         FieldInfo(TypeInfo declaringType, int modifiers, String name, Object value) {
             this.DeclaringType = declaringType;
             this.modifiers = modifiers;
@@ -68,7 +72,7 @@ namespace stab.reflection {
         
         public String Signature {
             get {
-                return (type.IsPrimitive) ? null : type.Signature;
+                return (type == null || type.IsPrimitive) ? null : type.Signature;
             }
         }
         

@@ -22,31 +22,59 @@ using stab.tools.helpers;
 namespace stab.tools.build {
 
 	public class Application {
-		public static void main(String[] args) {
+		public static void main(string[] args) {
 			System.exit(new Application().run(args));
 		}
 		
-		public int run(String[] arguments) {
-			if (sizeof(arguments) == 1) {
-				switch (arguments[0]) {
-				case "clean":
-					clean();
-					return 0;
-				case "compiler":
-					return buildCompiler();
-				case "runtime":
-					return buildRuntimeLibrary();
-				case "eclipse":
-					return buildEclipse();
-				case "build":
-					return buildBuild();
-				case "tests":
-					return buildTests();
+		public int run(params string[] arguments) {
+			if (sizeof(arguments) > 0) {
+				System.out.print("Targets ");
+				foreach(string command in arguments) {
+					System.out.print(command);
+					System.out.print(" ");
 				}
+				System.out.println("...");
+
+				foreach(string command in arguments){
+					int code;
+					if ((code = doIt(command)) != 0) {
+						return code;
+					}
+				}
+				return 0;
 			}
+			return buildAll();
+		}
+
+		private int doIt(string command)
+		{
+			switch (command) {
+			case "clean":
+				clean();
+				return 0;
+			case "compiler":
+				return buildCompiler();
+			case "runtime":
+				return buildRuntimeLibrary();
+			case "eclipse":
+				return buildEclipse();
+			case "build":
+				return buildBuild();
+			case "tests":
+				return buildTests();
+			case "install":
+				int code;
+				if ((code = buildAll()) != 0) {
+					return code;
+				}
+				return runTests();
+			}
+			System.out.println("Error: Unrecognized command '"+ command +"'");
+			return 100;
+		}
 		
-			System.out.println("Building...");
-			
+		private int buildAll() {
+			System.out.println("Building all...");
 			int code;
 			if ((code = buildAnnotatedLibrary()) != 0) {
 				return code;
@@ -71,12 +99,12 @@ namespace stab.tools.build {
 			System.out.println("Annotated Library");
 			System.out.println("--------------------------");
 			
-			var args = new ArrayList<String>();
+			var args = new ArrayList<string>();
 			args.add("-cp:bin/stabrt.jar");
 			args.add("-out:annotated/stabal.jar");
 			addSourceFiles(new File("annotated/sources"), args);
 			
-			return new stab.tools.compiler.Application().run(args.toArray(new String[args.size()]));
+			return new stab.tools.compiler.Application().run(args.toArray(new string[args.size()]));
 		}
 
 		private int buildCompiler() {
@@ -84,7 +112,7 @@ namespace stab.tools.build {
 			System.out.println("Compiler");
 			System.out.println("--------------------------");
 
-			var args = new ArrayList<String>();
+			var args = new ArrayList<string>();
 			args.add("-al:bin/stabal.jar");
 			args.add("-cp:bin/stabrt.jar;bin/asm-3.3.jar");
 			args.add("-resources:compiler/resources");
@@ -92,7 +120,7 @@ namespace stab.tools.build {
 			args.add("-out:compiler/stabc.jar");
 			addSourceFiles(new File("compiler/sources"), args);
 			
-			return new stab.tools.compiler.Application().run(args.toArray(new String[args.size()]));
+			return new stab.tools.compiler.Application().run(args.toArray(new string[args.size()]));
 		}
 
 		private int buildRuntimeLibrary() {
@@ -100,13 +128,13 @@ namespace stab.tools.build {
 			System.out.println("Runtime Library");
 			System.out.println("--------------------------");
 			
-			var args = new ArrayList<String>();
+			var args = new ArrayList<string>();
 			args.add("-al:bin/stabal.jar");
 			args.add("-doc:runtime/doc.xml");
 			args.add("-out:runtime/stabrt.jar");
 			addSourceFiles(new File("runtime/sources"), args);
 			
-			return new stab.tools.compiler.Application().run(args.toArray(new String[args.size()]));
+			return new stab.tools.compiler.Application().run(args.toArray(new string[args.size()]));
 		}
 
 		private int buildTests() {
@@ -114,24 +142,24 @@ namespace stab.tools.build {
 			System.out.println("Tests");
 			System.out.println("--------------------------");
 			
-			var args = new ArrayList<String>();
+			var args = new ArrayList<string>();
 			args.add("-al:bin/stabal.jar");
 			args.add("-cp:bin/stabrt.jar;bin/junit-4.8.1.jar;bin/asm-3.3.jar;compiler/stabc.jar");
 			args.add("-out:tests/tests.jar");
 			addSourceFiles(new File("tests/sources"), args);
 			
-			int code = new stab.tools.compiler.Application().run(args.toArray(new String[args.size()]));
+			int code = new stab.tools.compiler.Application().run(args.toArray(new string[args.size()]));
 			if (code == 0) {
 				System.out.println();
 				System.out.println("Tests Launcher");
-				args = new ArrayList<String>();
+				args = new ArrayList<string>();
 				args.add("-al:bin/stabal.jar");
 				args.add("-cp:bin/stabrt.jar;bin/junit-4.8.1.jar");
 				args.add("-manifest:tools/tests/MANIFEST.MF");
 				args.add("-out:bin/tests.jar");
 				addSourceFiles(new File("tools/tests"), args);
 				
-				code = new stab.tools.compiler.Application().run(args.toArray(new String[args.size()]));
+				code = new stab.tools.compiler.Application().run(args.toArray(new string[args.size()]));
 			}
 			return code;
 		}
@@ -141,22 +169,22 @@ namespace stab.tools.build {
 			System.out.println("Eclipse Plugin");
 			System.out.println("--------------------------");
 
-			var args = new ArrayList<String>();
+			var args = new ArrayList<string>();
 			args.add("-al:bin/stabal.jar");
 			args.add("-resources:eclipse/resources");
 
 			var tmpManifest = new File("eclipse/MANIFEST.MF.TMP");
-			String version = "1.0.0";
+			string version = "1.0.0";
 			using (var reader = new BufferedReader(new FileReader("eclipse/MANIFEST.MF"))) {
 				using (var writer = new BufferedWriter(new FileWriter(tmpManifest))) {
-					String line;
+					string line;
 					while ((line = reader.readLine()) != null) {
 						if (line.startsWith("Bundle-Version:")) {
 							int idx = line.indexOf(".qualifier");
 							var sb = new StringBuilder();
 							sb.append(line.substring("Bundle-Version:".length(), idx + 1).trim());
 							writer.write(line.substring(0, idx + 1));
-							var qualifier = String.format("%1$tY%1$tm%1$td%1$tH%1$tM", GregorianCalendar.getInstance());
+							var qualifier = string.format("%1$tY%1$tm%1$td%1$tH%1$tM", GregorianCalendar.getInstance());
 							sb.append(qualifier);
 							writer.write(qualifier);
 							version = sb.toString();
@@ -185,7 +213,7 @@ namespace stab.tools.build {
 			args.add(sb.toString());
 			addSourceFiles(new File("eclipse/sources"), args);
 			
-			int result = new stab.tools.compiler.Application().run(args.toArray(new String[args.size()]));
+			int result = new stab.tools.compiler.Application().run(args.toArray(new string[args.size()]));
 			tmpManifest.delete();
 			return result;
 		}
@@ -195,25 +223,34 @@ namespace stab.tools.build {
 			System.out.println("Build Application");
 			System.out.println("--------------------------");
 
-			var args = new ArrayList<String>();
+			var args = new ArrayList<string>();
 			args.add("-al:bin/stabal.jar");
-			args.add("-cp:bin/stabrt.jar;bin/asm-3.3.jar;bin/stabc.jar");
+			args.add("-cp:bin/stabrt.jar;bin/asm-3.3.jar;bin/stabc.jar;bin/tests.jar");
 			args.add("-manifest:tools/build/MANIFEST.MF");
 			args.add("-out:bin/build.jar");
 			addSourceFiles(new File("tools/build"), args);
 			
-			return new stab.tools.compiler.Application().run(args.toArray(new String[args.size()]));
+			return new stab.tools.compiler.Application().run(args.toArray(new string[args.size()]));
+		}
+		
+		private int runTests()
+		{
+			System.out.println();
+			System.out.println("Run Tests");
+			System.out.println("--------------------------");
+			
+			return new stab.tools.tests.Application().run();
 		}
 
-		private void addSourceFiles(File dir, List<String> args) {
+		private void addSourceFiles(File dir, List<string> args) {
 			var files = dir.listFiles();
 			if (files != null) {
 				foreach (var file in files) {
 					if (file.isDirectory()) {
 						addSourceFiles(file, args);
 					} else {
-						String filename = file.getName();
-						if (filename.endsWith(".stab") || filename.endsWith(".stab.cs")) {
+						string filename = file.getName();
+						if (filename.endsWith(".stab") || filename.endsWith(".stab.cs") || filename.endsWith(".cnatural.cs")) {
 							args.add(file.getAbsolutePath());
 						}
 					}
@@ -225,7 +262,6 @@ namespace stab.tools.build {
 			System.out.println("Cleaning...");
 		
 			deleteFile("annotated/stabal.jar");
-			deleteFile("bin/tests.jar");
 			deleteFile("compiler/stabc.jar");
 			deleteFile("runtime/stabrt.jar");
 			deleteFile("runtime/doc.xml");
@@ -251,7 +287,7 @@ namespace stab.tools.build {
 			deleteDir("tests/resources/ExpressionTreesTest/generated");
 		}
 
-		private static void deleteFile(String path) {
+		private static void deleteFile(string path) {
 			var f = new File(path);
 			if (f.exists()) {
 				if (!new File(path).delete()) {
@@ -260,7 +296,7 @@ namespace stab.tools.build {
 			}
 		}
 		
-		private static void deleteDir(String dir) {
+		private static void deleteDir(string dir) {
 			var d = new File(dir);
 			if (d.exists()) {
 				if (!deleteDir(d)) {

@@ -900,6 +900,11 @@ namespace stab.reflection {
         protected ArrayList<MethodInfo> methods*;
         protected ArrayList<TypeInfo> nestedTypes*;
         
+		public override string toString()
+		{
+			return FullName;
+		}
+		
     	protected ObjectTypeInfo(Library library, String fullName)
     			: super(library, TypeKind.Reference) {
 			this.fullName = fullName;

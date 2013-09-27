@@ -22,8 +22,12 @@ using org.junit.runner.notification;
 namespace stab.tools.tests {
 
 	public class Application {
-		public static void main(params String[] args) {
-
+		public static void main(String[] args) {
+			System.exit(new Application().run(args));
+		}
+		
+		public int run(params String[] args) {
+			bool wasSuccessful = true;
 			if (sizeof(args) > 0) {
 				System.out.println();
 				System.out.print("Running tests for selectors: ");
@@ -43,12 +47,12 @@ namespace stab.tools.tests {
 					case "ObjectModelError":
 					case "Library":
 					case "ExpressionTrees":
-						runTests(new Class<?>[] {
+						wasSuccessful &= runTests(new Class<?>[] {
 							Class.forName("stab.tools.compiler.test." + arg + "Test"),
 						});
 						break;
 					case "Parser":
-						runTests(new Class<?>[] {
+						wasSuccessful &= runTests(new Class<?>[] {
 							Class.forName("stab.tools.parser.test.SourceCodeScannerTest"),
 							Class.forName("stab.tools.parser.test.PreprocessorTest"),
 							Class.forName("stab.tools.parser.test.PreprocessedTextScannerTest"),
@@ -57,7 +61,7 @@ namespace stab.tools.tests {
 						});
 						break;
 					case "Errors":
-						runTests(new Class<?>[] {
+						wasSuccessful &= runTests(new Class<?>[] {
 							Class.forName("stab.tools.compiler.test.SyntaxErrorTest"),
 							Class.forName("stab.tools.compiler.test.ObjectModelErrorTest"),
 							Class.forName("stab.tools.compiler.test.StatementsErrorTest"),
@@ -66,14 +70,14 @@ namespace stab.tools.tests {
 						break;
 					default:
 						System.out.println("Unrecognized selector: " + arg);
-						return;
+						return 100;
 					}
 				}
 			} else {
 				System.out.println();
 				System.out.println("Running all tests...");
 				System.out.println();
-				bool wasSuccessful = runTests(new Class<?>[] {
+				wasSuccessful = runTests(new Class<?>[] {
 					Class.forName("stab.tools.helpers.test.UserDataContainerTest"),
 					Class.forName("stab.tools.parser.test.SourceCodeScannerTest"),
 					Class.forName("stab.tools.parser.test.PreprocessorTest"),
@@ -103,7 +107,8 @@ namespace stab.tools.tests {
 					move("compiler/stabc.jar", "bin/stabc.jar");
 					move("runtime/stabrt.jar", "bin/stabrt.jar");
 				}
-			}			
+			}		
+			return wasSuccessful ? 0 : 1;
 		}
 		
 		private static bool runTests(Class<?>[] list) {

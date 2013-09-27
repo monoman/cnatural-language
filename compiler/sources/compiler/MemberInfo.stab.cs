@@ -106,7 +106,14 @@ namespace stab.tools.compiler {
         
         public static Iterable<MemberInfo> getMembers(Library typeSystem, TypeInfo scope, TypeInfo type, String name,
                 Iterable<TypeInfo> typeArguments, bool useCache) {
-            return getMembersRecursively(typeSystem, scope, type, name, typeArguments, useCache, new LookupContext()).distinct().toList();
+			try {
+				var allMembers = getMembersRecursively(typeSystem, scope, type, name, typeArguments, useCache, new LookupContext());
+				var members = allMembers.toList();
+				return members.distinct().toList();
+			} catch (IllegalArgumentException e) {
+				throw new RuntimeException("Unexpected error in getMembers: \ntypeSystem " + typeSystem + 
+				"\nscope " + scope + "\ntype " + type + "\nname " + name + "\ntypeArguments " + typeArguments + "\nuseCache " + useCache, e);
+			}
         }
         
         private static Iterable<MemberInfo> getMembersRecursively(Library typeSystem, TypeInfo scope, TypeInfo type, String name,
