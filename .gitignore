@@ -6,3 +6,4 @@ generated/
 !bin/*.jar
 bin/tests.jar
 runtime/doc.xml
+*.log
