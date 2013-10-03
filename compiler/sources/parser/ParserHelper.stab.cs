@@ -16,7 +16,7 @@
  */
 using java.lang;
 
-namespace stab.tools.parser {
+namespace cnatural.parser {
 
     public class ParserHelper {
         public static int decodeHexadecimalInteger(String value) {
@@ -262,7 +262,7 @@ namespace stab.tools.parser {
         }
 
         public static bool isIdentifierPartChar(int c) {
-            return Character.isJavaIdentifierPart(c);
+            return Character.isJavaIdentifierPart(c) || (c == 9876);
         }
 
         public static void unescapeIdentifier(StringBuilder sb, char[] text, int offset, int length) {

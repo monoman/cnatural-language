@@ -18,11 +18,11 @@ using java.lang;
 using java.io;
 using java.util;
 using org.junit;
-using stab.tools.helpers;
-using stab.tools.parser;
-using stab.tools.parser.test;
+using cnatural.helpers;
+using cnatural.parser;
+using cnatural.parser.test;
 
-namespace stab.tools.syntaxtree.test {
+namespace cnatural.syntaxtree.test {
 	public class QueryTranslatorTest {
 		private QueryTranslator translator;
 	

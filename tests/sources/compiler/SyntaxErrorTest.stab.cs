@@ -17,7 +17,7 @@
 using java.lang;
 using org.junit;
 
-namespace stab.tools.compiler.test {
+namespace cnatural.compiler.test {
 
 	public class SyntaxErrorTest : ErrorTest {
 		protected override String ResourcesPath {

@@ -20,15 +20,15 @@ using java.util;
 using javax.xml.xpath;
 using stab.query;
 using stab.reflection;
-using stab.tools.helpers;
-using stab.tools.parser;
-using stab.tools.syntaxtree;
+using cnatural.helpers;
+using cnatural.parser;
+using cnatural.syntaxtree;
 
 using Document = org.w3c.dom.Document;
 using Element = org.w3c.dom.Element;
 using Node = org.w3c.dom.Node;
  
-namespace stab.tools.compiler {
+namespace cnatural.compiler {
 
     class DocumentationBuilder {
         private CompilerContext context;

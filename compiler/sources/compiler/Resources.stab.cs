@@ -16,9 +16,9 @@
  */
 using java.lang;
 using java.util;
-using stab.tools.helpers;
+using cnatural.helpers;
 
-namespace stab.tools.compiler {
+namespace cnatural.compiler {
 
     enum CompileErrorId {
         AbstractMethodNotImplemented,

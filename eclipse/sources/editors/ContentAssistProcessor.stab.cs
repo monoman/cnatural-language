@@ -21,12 +21,12 @@ using org.eclipse.jface.text.contentassist;
 using org.eclipse.jface.text.source;
 using stab.query;
 using stab.reflection;
-using stab.tools.compiler;
-using stab.tools.helpers;
-using stab.tools.parser;
-using stab.tools.syntaxtree;
+using cnatural.compiler;
+using cnatural.helpers;
+using cnatural.parser;
+using cnatural.syntaxtree;
 
-namespace stab.tools.eclipse.editors {
+namespace cnatural.eclipse.editors {
 
 	public class ContentAssistProcessor : IContentAssistProcessor {
 		private static final ICompletionProposal[] EMPTY_PROPOSALS = CompletionProposalHelper.createEmpty();

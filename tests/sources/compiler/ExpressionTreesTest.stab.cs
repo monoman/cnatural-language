@@ -19,10 +19,10 @@ using java.lang;
 using java.util;
 using org.junit;
 using stab.query;
-using stab.tools.helpers;
+using cnatural.helpers;
 using stab.tree;
 
-namespace stab.tools.compiler.test {
+namespace cnatural.compiler.test {
 
 	public class ExpressionTreesTest {
 		[Test]

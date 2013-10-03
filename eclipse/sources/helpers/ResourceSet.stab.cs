@@ -18,7 +18,7 @@ using java.lang;
 using java.util;
 using org.eclipse.core.resources;
 
-namespace stab.tools.eclipse.helpers {
+namespace cnatural.eclipse.helpers {
 
 	//
 	// Stores mappings between resources and project relative names.

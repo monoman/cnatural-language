@@ -18,9 +18,9 @@ using java.lang;
 using java.util;
 using stab.query;
 using stab.reflection;
-using stab.tools.helpers;
+using cnatural.helpers;
 
-namespace stab.tools.compiler {
+namespace cnatural.compiler {
 
     public class TypeFinder {
         private Node root;

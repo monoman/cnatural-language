@@ -20,9 +20,9 @@ using java.util;
 using java.util.jar;
 using java.util.zip;
 using stab.reflection;
-using stab.tools.helpers;
+using cnatural.helpers;
 
-namespace stab.tools.compiler {
+namespace cnatural.compiler {
 
     public class Application {
 	
@@ -103,6 +103,10 @@ namespace stab.tools.compiler {
             sourceFiles = new ArrayList<File>();
         }
         
+        public int runWith(List<String> args) {
+			return run(args.toArray(new string[args.size()]));
+		}
+		
         public int run(String[] arguments) {
             sourceFiles.clear();
             if (!handleArguments(arguments)) {

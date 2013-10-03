@@ -18,10 +18,10 @@ using java.lang;
 using java.io;
 using java.util;
 using org.junit;
-using stab.tools.helpers;
-using stab.tools.syntaxtree;
+using cnatural.helpers;
+using cnatural.syntaxtree;
 
-namespace stab.tools.parser.test {
+namespace cnatural.parser.test {
 	public class ParseExpressionTest {
 		private char[] text;
 		

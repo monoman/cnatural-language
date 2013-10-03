@@ -16,10 +16,10 @@
  */
 using java.lang;
 using stab.reflection;
-using stab.tools.parser;
-using stab.tools.syntaxtree;
+using cnatural.parser;
+using cnatural.syntaxtree;
 
-namespace stab.tools.compiler {
+namespace cnatural.compiler {
 
     class ConstantBuilder : ExpressionHandler<Boolean, Object> {
         private CompilerContext context;

@@ -16,7 +16,7 @@
  */
 using java.util;
 
-namespace stab.tools.syntaxtree {
+namespace cnatural.syntaxtree {
 	
 	public enum PackageMemberKind {
 		Package,

@@ -17,9 +17,9 @@
 using java.lang;
 using org.eclipse.core.resources;
 using org.eclipse.jface.viewers;
-using stab.tools.eclipse.helpers;
+using cnatural.eclipse.helpers;
 
-namespace stab.tools.eclipse {
+namespace cnatural.eclipse {
 
 	//
 	// Filters the output folder in the project view.

@@ -19,10 +19,10 @@ using java.lang.annotation;
 using java.util;
 using stab.query;
 using stab.reflection;
-using stab.tools.helpers;
-using stab.tools.syntaxtree;
+using cnatural.helpers;
+using cnatural.syntaxtree;
 
-namespace stab.tools.compiler {
+namespace cnatural.compiler {
 
     class BytecodeGenerator : StatementHandler<Void, Void> {
         private CompilerContext context;

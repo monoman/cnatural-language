@@ -17,9 +17,9 @@
 using java.lang;
 using java.util;
 using stab.query;
-using stab.tools.helpers;
+using cnatural.helpers;
 
-namespace stab.tools.parser {
+namespace cnatural.parser {
 
     public class PreprocessedText {
         PreprocessedText(char[] text, Iterable<InputSectionPart> inputSectionParts) {

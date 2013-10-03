@@ -16,7 +16,7 @@
  */
 using java.lang;
 
-namespace stab.tools.helpers {
+namespace cnatural.helpers {
 
 	public static class PathHelper {
 		public final static char DIRECTORY_SEPARATOR_CHAR;

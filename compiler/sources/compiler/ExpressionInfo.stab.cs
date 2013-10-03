@@ -17,7 +17,7 @@
 using java.lang;
 using stab.reflection;
 
-namespace stab.tools.compiler {
+namespace cnatural.compiler {
 
     public class ExpressionInfo {
         ExpressionInfo(TypeInfo type) {

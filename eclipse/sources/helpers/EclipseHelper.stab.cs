@@ -21,7 +21,7 @@ using org.eclipse.core.runtime;
 using org.eclipse.jface.viewers;
 using stab.query;
 
-namespace stab.tools.eclipse.helpers {
+namespace cnatural.eclipse.helpers {
 
 	//
 	// Utility methods to manipulate Eclipse APIs.

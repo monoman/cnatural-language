@@ -20,7 +20,7 @@ using java.util;
 using stab.query;
 using stab.reflection;
 
-namespace stab.tools.compiler {
+namespace cnatural.compiler {
 
     public static class BytecodeHelper {
         private static HashMap<String, TypeKind> IterableOrIteratorElementTypes;

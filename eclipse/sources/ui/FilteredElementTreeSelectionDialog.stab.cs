@@ -22,7 +22,7 @@ using org.eclipse.swt.widgets;
 using org.eclipse.ui.dialogs;
 using org.eclipse.ui.progress;
 
-namespace stab.tools.eclipse.ui {
+namespace cnatural.eclipse.ui {
 
 	public class FilteredElementTreeSelectionDialog : ElementTreeSelectionDialog {
 

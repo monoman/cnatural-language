@@ -19,7 +19,7 @@ using org.eclipse.core.runtime;
 using org.eclipse.ui.dialogs;
 using stab.query;
 
-namespace stab.tools.eclipse.ui {
+namespace cnatural.eclipse.ui {
 
 	public class TypedElementSelectionValidator : ISelectionStatusValidator {
 		private final static IStatus ERROR_STATUS = new Status(Status.ERROR, "unknown", "");

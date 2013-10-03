@@ -24,10 +24,10 @@ using org.eclipse.ui.progress;
 using org.eclipse.ui.texteditor;
 using stab.query;
 using stab.reflection;
-using stab.tools.eclipse.helpers;
-using stab.tools.syntaxtree;
+using cnatural.eclipse.helpers;
+using cnatural.syntaxtree;
 
-namespace stab.tools.eclipse.editors {
+namespace cnatural.eclipse.editors {
 
 	class BackgroundCompiler : IProjectBuildListener {
 		private SourceEditor editor;
@@ -112,8 +112,8 @@ namespace stab.tools.eclipse.editors {
 				while (it.hasNext()) {
 					var annotation = (Annotation)it.next();
 					switch (annotation.getType()) {
-					case "stab.tools.eclipse.parsingErrorAnnotation":
-					case "stab.tools.eclipse.parsingWarningAnnotation":
+					case "cnatural.eclipse.parsingErrorAnnotation":
+					case "cnatural.eclipse.parsingWarningAnnotation":
 						annotationModel.removeAnnotation(annotation);
 						break;
 					}
@@ -142,7 +142,7 @@ namespace stab.tools.eclipse.editors {
 							}
 						}
 						var annotationType = (error.Level == 0) ?
-								"stab.tools.eclipse.parsingErrorAnnotation" : "stab.tools.eclipse.parsingWarningAnnotation";
+								"cnatural.eclipse.parsingErrorAnnotation" : "cnatural.eclipse.parsingWarningAnnotation";
 						var annotation = (marker == null) ?
 								new Annotation(annotationType, false, error.Message) : new MarkerAnnotation(annotationType, marker);
 						int offset = document.getLineOffset(error.Line - 1);

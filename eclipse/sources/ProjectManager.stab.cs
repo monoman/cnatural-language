@@ -21,10 +21,10 @@ using org.eclipse.core.resources;
 using org.eclipse.ui;
 using stab.query;
 using stab.reflection;
-using stab.tools.eclipse.helpers;
-using stab.tools.syntaxtree;
+using cnatural.eclipse.helpers;
+using cnatural.syntaxtree;
 
-namespace stab.tools.eclipse {
+namespace cnatural.eclipse {
 
 	public interface IProjectBuildListener {
 		void projectBuilt(ProjectBuildEvent event);

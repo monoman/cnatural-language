@@ -28,10 +28,10 @@ using org.eclipse.swt.layout;
 using org.eclipse.swt.widgets;
 using org.eclipse.ui.model;
 using org.eclipse.ui.views.navigator;
-using stab.tools.eclipse.ui;
-using stab.tools.helpers;
+using cnatural.eclipse.ui;
+using cnatural.helpers;
 
-namespace stab.tools.eclipse.preferences {
+namespace cnatural.eclipse.preferences {
 
 	//
 	// Manages the controls and events of the Libraries table

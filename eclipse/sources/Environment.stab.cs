@@ -25,7 +25,7 @@ using org.eclipse.ui.texteditor;
 using org.osgi.framework;
 using stab.lang;
 
-namespace stab.tools.eclipse {
+namespace cnatural.eclipse {
 
 	//
 	// Type-safe manipulation of the icons embedded into the archive of the plug-in.
@@ -64,9 +64,9 @@ namespace stab.tools.eclipse {
 	// Gives access to the objects shared across the plug-in.
 	//
 	public class Environment {
-		public static final String PLUGIN_ID = "stab.tools.eclipse";
-		public static final String NATURE_ID = "stab.tools.eclipse.stabnature";
-		public static final String BUILDER_ID = "stab.tools.eclipse.stabbuilder";
+		public static final String PLUGIN_ID = "cnatural.eclipse";
+		public static final String NATURE_ID = "cnatural.eclipse.stabnature";
+		public static final String BUILDER_ID = "cnatural.eclipse.stabbuilder";
 
 		private static MessageConsoleStream consoleStream;
 
@@ -166,10 +166,10 @@ namespace stab.tools.eclipse {
 		
 		private static Activator Activator {
 			get {
-				if (stab.tools.eclipse.Activator.instance == null) {
+				if (cnatural.eclipse.Activator.instance == null) {
 					throw new IllegalStateException("No plug-in loaded");
 				}
-				return stab.tools.eclipse.Activator.instance;
+				return cnatural.eclipse.Activator.instance;
 			}
 		}
 	}

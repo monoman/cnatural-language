@@ -18,7 +18,7 @@ using java.lang;
 using org.junit;
 using stab.query;
 
-namespace stab.tools.helpers.test {
+namespace cnatural.helpers.test {
 	
 	public class UserDataContainerTest {
 		[Test]

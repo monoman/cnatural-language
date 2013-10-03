@@ -18,7 +18,7 @@ using java.lang;
 using java.text;
 using java.util;
 
-namespace stab.tools.helpers {
+namespace cnatural.helpers {
 
 	public class ResourceManager {
 		private Map<Locale, ResourceBundle> resourceBundles;

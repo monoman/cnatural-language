@@ -14,7 +14,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-namespace stab.tools.parser {
+namespace cnatural.parser {
 
     public enum LexicalUnit {
         EndOfStream,

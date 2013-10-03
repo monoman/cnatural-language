@@ -22,14 +22,14 @@ using java.util;
 using org.eclipse.core.resources;
 using org.eclipse.core.runtime;
 using stab.reflection;
-using stab.tools.compiler;
-using StabCompiler = stab.tools.compiler.Compiler;
-using stab.tools.helpers;
-using stab.tools.parser;
-using stab.tools.syntaxtree;
+using cnatural.compiler;
+using StabCompiler = cnatural.compiler.Compiler;
+using cnatural.helpers;
+using cnatural.parser;
+using cnatural.syntaxtree;
 using stab.query;
 
-namespace stab.tools.eclipse.helpers {
+namespace cnatural.eclipse.helpers {
 
 	public class SourceCompilerParameters {
 		public SourceCompilerParameters() {

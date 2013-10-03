@@ -18,11 +18,11 @@ using java.lang;
 using java.util;
 using stab.query;
 using stab.reflection;
-using stab.tools.compiler;
-using stab.tools.parser;
-using stab.tools.syntaxtree;
+using cnatural.compiler;
+using cnatural.parser;
+using cnatural.syntaxtree;
 
-namespace stab.tools.eclipse.editors {
+namespace cnatural.eclipse.editors {
 
 	class SyntaxNodeBounds {
 		SyntaxNodeBounds(Token start, Token end) {

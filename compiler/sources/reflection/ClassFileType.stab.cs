@@ -21,8 +21,8 @@ using java.util;
 using java.util.zip;
 using org.objectweb.asm;
 using stab.query;
-using stab.tools.bytecode.signature;
-using stab.tools.helpers;
+using cnatural.bytecode.signature;
+using cnatural.helpers;
 
 using AsmType = org.objectweb.asm.Type;
 

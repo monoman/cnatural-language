@@ -18,9 +18,9 @@ using java.lang;
 using java.util;
 using stab.query;
 using stab.reflection;
-using stab.tools.syntaxtree;
+using cnatural.syntaxtree;
 
-namespace stab.tools.compiler {
+namespace cnatural.compiler {
 
     class AssignExpressionGenerator : ExpressionHandler<ExpressionNode, Void> {
         private CompilerContext context;

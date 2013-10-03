@@ -26,10 +26,10 @@ using org.eclipse.jface.resource;
 using Image = org.eclipse.swt.graphics.Image;
 using org.eclipse.ui.plugin;
 using org.osgi.framework;
-using stab.tools.eclipse.editors;
-using stab.tools.eclipse.helpers;
+using cnatural.eclipse.editors;
+using cnatural.eclipse.helpers;
 
-namespace stab.tools.eclipse {
+namespace cnatural.eclipse {
 
 	//
 	// The plug-in entry point

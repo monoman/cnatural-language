@@ -16,9 +16,9 @@
  */
 using java.lang;
 using stab.lang;
-using stab.tools.helpers;
+using cnatural.helpers;
 
-namespace stab.tools.parser {
+namespace cnatural.parser {
 
     public enum InputSectionPartKind {
         SourceCode,

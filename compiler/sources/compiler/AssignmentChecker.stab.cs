@@ -16,9 +16,9 @@
  */
 using java.lang;
 using java.util;
-using stab.tools.syntaxtree;
+using cnatural.syntaxtree;
 
-namespace stab.tools.compiler {
+namespace cnatural.compiler {
 
     enum AssignmentState {
         NotAssigned,

@@ -16,9 +16,9 @@
  */
 using org.eclipse.core.runtime.preferences;
 using org.eclipse.jface.preference;
-using stab.tools.eclipse.editors;
+using cnatural.eclipse.editors;
 
-namespace stab.tools.eclipse {
+namespace cnatural.eclipse {
 
 	public class PreferenceInitializer : AbstractPreferenceInitializer {
 		

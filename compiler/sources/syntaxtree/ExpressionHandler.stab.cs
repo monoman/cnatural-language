@@ -16,7 +16,7 @@
  */
 using java.lang;
 
-namespace stab.tools.syntaxtree {
+namespace cnatural.syntaxtree {
 
 	public abstract class ExpressionHandler<TSource, TResult> {
 		private bool failWhenUnhandled;

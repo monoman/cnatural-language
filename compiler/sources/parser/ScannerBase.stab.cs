@@ -17,9 +17,9 @@
 using java.lang;
 using java.util;
 using stab.lang;
-using stab.tools.helpers;
+using cnatural.helpers;
 
-namespace stab.tools.parser {
+namespace cnatural.parser {
 
     public class ScannerBase {
         protected ScannerBase(CodeErrorManager codeErrorManager, char[] text, int position, int length, int line, int column) {

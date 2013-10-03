@@ -19,7 +19,7 @@ using java.io;
 using java.util;
 using org.junit;
 using stab.query;
-using stab.tools.helpers;
+using cnatural.helpers;
 
 namespace stab.reflection.test {
 

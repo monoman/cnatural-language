@@ -18,9 +18,9 @@ using java.lang;
 using org.junit;
 using stab.query;
 using stab.reflection;
-using stab.tools.helpers;
+using cnatural.helpers;
 
-namespace stab.tools.compiler.test {
+namespace cnatural.compiler.test {
 	
 	public class MemberInfoTest {
 

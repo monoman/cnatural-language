@@ -21,12 +21,12 @@ using org.eclipse.core.resources;
 using org.eclipse.core.runtime;
 using org.eclipse.jface.dialogs;
 using stab.query;
-using stab.tools.bytecode;
-using stab.tools.helpers;
-using stab.tools.syntaxtree;
-using stab.tools.eclipse.helpers;
+using cnatural.bytecode;
+using cnatural.helpers;
+using cnatural.syntaxtree;
+using cnatural.eclipse.helpers;
 
-namespace stab.tools.eclipse {
+namespace cnatural.eclipse {
 
 	//
 	// The incremental builder for Stab source files.

@@ -18,10 +18,10 @@ using java.lang;
 using java.util;
 using stab.query;
 using stab.reflection;
-using stab.tools.helpers;
-using stab.tools.syntaxtree;
+using cnatural.helpers;
+using cnatural.syntaxtree;
 
-namespace stab.tools.compiler {
+namespace cnatural.compiler {
 
     class ExpressionValidator : ExpressionHandler<TypeInfo, Void> {
         private CompilerContext context;

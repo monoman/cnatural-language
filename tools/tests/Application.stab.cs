@@ -19,7 +19,7 @@ using java.io;
 using org.junit.runner;
 using org.junit.runner.notification;
  
-namespace stab.tools.tests {
+namespace cnatural.tests {
 
 	public class Application {
 		public static void main(String[] args) {
@@ -48,24 +48,24 @@ namespace stab.tools.tests {
 					case "Library":
 					case "ExpressionTrees":
 						wasSuccessful &= runTests(new Class<?>[] {
-							Class.forName("stab.tools.compiler.test." + arg + "Test"),
+							Class.forName("cnatural.compiler.test." + arg + "Test"),
 						});
 						break;
 					case "Parser":
 						wasSuccessful &= runTests(new Class<?>[] {
-							Class.forName("stab.tools.parser.test.SourceCodeScannerTest"),
-							Class.forName("stab.tools.parser.test.PreprocessorTest"),
-							Class.forName("stab.tools.parser.test.PreprocessedTextScannerTest"),
-							Class.forName("stab.tools.parser.test.ParseExpressionTest"),
-							Class.forName("stab.tools.parser.test.ParseCompilationUnitTest"),
+							Class.forName("cnatural.parser.test.SourceCodeScannerTest"),
+							Class.forName("cnatural.parser.test.PreprocessorTest"),
+							Class.forName("cnatural.parser.test.PreprocessedTextScannerTest"),
+							Class.forName("cnatural.parser.test.ParseExpressionTest"),
+							Class.forName("cnatural.parser.test.ParseCompilationUnitTest"),
 						});
 						break;
 					case "Errors":
 						wasSuccessful &= runTests(new Class<?>[] {
-							Class.forName("stab.tools.compiler.test.SyntaxErrorTest"),
-							Class.forName("stab.tools.compiler.test.ObjectModelErrorTest"),
-							Class.forName("stab.tools.compiler.test.StatementsErrorTest"),
-							Class.forName("stab.tools.compiler.test.ExpressionsErrorTest"),
+							Class.forName("cnatural.compiler.test.SyntaxErrorTest"),
+							Class.forName("cnatural.compiler.test.ObjectModelErrorTest"),
+							Class.forName("cnatural.compiler.test.StatementsErrorTest"),
+							Class.forName("cnatural.compiler.test.ExpressionsErrorTest"),
 						});
 						break;
 					default:
@@ -78,27 +78,27 @@ namespace stab.tools.tests {
 				System.out.println("Running all tests...");
 				System.out.println();
 				wasSuccessful = runTests(new Class<?>[] {
-					Class.forName("stab.tools.helpers.test.UserDataContainerTest"),
-					Class.forName("stab.tools.parser.test.SourceCodeScannerTest"),
-					Class.forName("stab.tools.parser.test.PreprocessorTest"),
-					Class.forName("stab.tools.parser.test.PreprocessedTextScannerTest"),
-					Class.forName("stab.tools.parser.test.ParseExpressionTest"),
-					Class.forName("stab.tools.parser.test.ParseCompilationUnitTest"),
+					Class.forName("cnatural.helpers.test.UserDataContainerTest"),
+					Class.forName("cnatural.parser.test.SourceCodeScannerTest"),
+					Class.forName("cnatural.parser.test.PreprocessorTest"),
+					Class.forName("cnatural.parser.test.PreprocessedTextScannerTest"),
+					Class.forName("cnatural.parser.test.ParseExpressionTest"),
+					Class.forName("cnatural.parser.test.ParseCompilationUnitTest"),
 					Class.forName("stab.reflection.test.TypeSystemTest"),
 					Class.forName("stab.reflection.test.TypeBuilderTest"),
-					Class.forName("stab.tools.compiler.test.MemberInfoTest"),
-					Class.forName("stab.tools.compiler.test.MemberResolverTest"),
-					Class.forName("stab.tools.compiler.test.ExpressionsTest"),
-					Class.forName("stab.tools.compiler.test.ObjectModelTest"),
-					Class.forName("stab.tools.compiler.test.StatementsTest"),
-					Class.forName("stab.tools.compiler.test.LibraryTest"),
-					Class.forName("stab.tools.compiler.test.ExpressionTreesTest"),
-					Class.forName("stab.tools.compiler.test.SyntaxErrorTest"),
-					Class.forName("stab.tools.compiler.test.ObjectModelErrorTest"),
-					Class.forName("stab.tools.compiler.test.StatementsErrorTest"),
-					Class.forName("stab.tools.compiler.test.ExpressionsErrorTest"),
-					Class.forName("stab.tools.compiler.test.IntegrationTest"),
-					Class.forName("stab.tools.syntaxtree.test.QueryTranslatorTest"),
+					Class.forName("cnatural.compiler.test.MemberInfoTest"),
+					Class.forName("cnatural.compiler.test.MemberResolverTest"),
+					Class.forName("cnatural.compiler.test.ExpressionsTest"),
+					Class.forName("cnatural.compiler.test.ObjectModelTest"),
+					Class.forName("cnatural.compiler.test.StatementsTest"),
+					Class.forName("cnatural.compiler.test.LibraryTest"),
+					Class.forName("cnatural.compiler.test.ExpressionTreesTest"),
+					Class.forName("cnatural.compiler.test.SyntaxErrorTest"),
+					Class.forName("cnatural.compiler.test.ObjectModelErrorTest"),
+					Class.forName("cnatural.compiler.test.StatementsErrorTest"),
+					Class.forName("cnatural.compiler.test.ExpressionsErrorTest"),
+					Class.forName("cnatural.compiler.test.IntegrationTest"),
+					Class.forName("cnatural.syntaxtree.test.QueryTranslatorTest"),
 				});
 				if (wasSuccessful) {
 					System.out.println();

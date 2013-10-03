@@ -18,9 +18,9 @@ using java.lang;
 using java.util;
 using stab.lang;
 using stab.query;
-using stab.tools.helpers;
+using cnatural.helpers;
 
-namespace stab.tools.parser {
+namespace cnatural.parser {
     public class PreprocessedTextScanner : IScanner {
         private String filename;
         private String lineFilename;

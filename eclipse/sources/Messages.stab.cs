@@ -17,14 +17,14 @@
 using java.lang;
 using org.eclipse.osgi.util;
 
-namespace stab.tools.eclipse {
+namespace cnatural.eclipse {
 
 	//
 	// Localized strings
 	//
 	public static class Messages : NLS {
 		static Messages() {
-			NLS.initializeMessages("stab.tools.eclipse.messages", typeof(Messages));
+			NLS.initializeMessages("cnatural.eclipse.messages", typeof(Messages));
 		}
 		
 		public static String pluginStartup;

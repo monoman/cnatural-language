@@ -18,10 +18,10 @@ using java.lang;
 using java.util;
 using stab.query;
 using stab.reflection;
-using stab.tools.compiler;
-using stab.tools.syntaxtree;
+using cnatural.compiler;
+using cnatural.syntaxtree;
 
-namespace stab.tools.eclipse.editors {
+namespace cnatural.eclipse.editors {
 
 	public class ContentAssistContext {
 		private Library typeSystem;

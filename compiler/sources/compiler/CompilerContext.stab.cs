@@ -18,11 +18,11 @@ using java.lang;
 using java.util;
 using stab.query;
 using stab.reflection;
-using stab.tools.helpers;
-using stab.tools.parser;
-using stab.tools.syntaxtree;
+using cnatural.helpers;
+using cnatural.parser;
+using cnatural.syntaxtree;
 
-namespace stab.tools.compiler {
+namespace cnatural.compiler {
 
     class CompilerContext {
         HashMap<LocalMemberInfo, FieldInfo> localFields;

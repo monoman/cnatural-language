@@ -17,9 +17,9 @@
 using java.lang;
 using stab.query;
 using stab.reflection;
-using stab.tools.syntaxtree;
+using cnatural.syntaxtree;
 
-namespace stab.tools.compiler {
+namespace cnatural.compiler {
     
     enum BoxingKind {
         None,

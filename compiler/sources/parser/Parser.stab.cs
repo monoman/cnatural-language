@@ -18,10 +18,10 @@ using java.lang;
 using java.util;
 using stab.query;
 using stab.lang;
-using stab.tools.helpers;
-using stab.tools.syntaxtree;
+using cnatural.helpers;
+using cnatural.syntaxtree;
 
-namespace stab.tools.parser {
+namespace cnatural.parser {
 
     public class Parser {
         private IScanner scanner;

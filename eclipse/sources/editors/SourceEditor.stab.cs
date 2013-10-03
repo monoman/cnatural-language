@@ -26,7 +26,7 @@ using org.eclipse.ui;
 using org.eclipse.ui.editors.text;
 using org.eclipse.ui.texteditor;
 
-namespace stab.tools.eclipse.editors {
+namespace cnatural.eclipse.editors {
 
 	public class SourceEditorActionContributor : BasicTextEditorActionContributor {
 	

@@ -18,7 +18,7 @@ using java.lang;
 using java.util;
 using stab.query;
 
-namespace stab.tools.eclipse.helpers {
+namespace cnatural.eclipse.helpers {
 
 	//
 	// To store the dependencies between types and files.

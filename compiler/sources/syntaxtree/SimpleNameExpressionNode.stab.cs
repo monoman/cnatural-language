@@ -17,7 +17,7 @@
 using java.lang;
 using java.util;
 
-namespace stab.tools.syntaxtree {
+namespace cnatural.syntaxtree {
 	
 	public class SimpleNameExpressionNode : ExpressionNode {
 		public SimpleNameExpressionNode()

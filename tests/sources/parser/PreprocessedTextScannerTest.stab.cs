@@ -16,10 +16,10 @@
  */
 using java.lang;
 using org.junit;
-using stab.tools.helpers;
-using stab.tools.parser;
+using cnatural.helpers;
+using cnatural.parser;
 
-namespace stab.tools.parser.test {
+namespace cnatural.parser.test {
 	
 	public class PreprocessedTextScannerTest {
 		[Test]

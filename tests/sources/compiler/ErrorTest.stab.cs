@@ -19,9 +19,9 @@ using java.lang;
 using java.util;
 using org.junit;
 using stab.reflection;
-using stab.tools.helpers;
+using cnatural.helpers;
 
-namespace stab.tools.compiler.test {
+namespace cnatural.compiler.test {
 
 	public abstract class ErrorTest {
 		private static Library typeSystem;

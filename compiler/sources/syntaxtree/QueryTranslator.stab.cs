@@ -18,7 +18,7 @@ using java.lang;
 using java.util;
 using stab.lang;
 
-namespace stab.tools.syntaxtree {
+namespace cnatural.syntaxtree {
 
     public class QueryScope {
         QueryScope next;

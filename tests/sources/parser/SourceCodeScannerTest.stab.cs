@@ -15,9 +15,9 @@
    limitations under the License.
  */
 using org.junit;
-using stab.tools.helpers;
+using cnatural.helpers;
 
-namespace stab.tools.parser.test {
+namespace cnatural.parser.test {
 	public class SourceCodeScannerTest {
 		[Test]
 		public void keywordTest() {

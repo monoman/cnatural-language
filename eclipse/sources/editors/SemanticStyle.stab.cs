@@ -21,7 +21,7 @@ using org.eclipse.jface.util;
 using org.eclipse.swt;
 using org.eclipse.swt.graphics;
 
-namespace stab.tools.eclipse.editors {
+namespace cnatural.eclipse.editors {
 
 	public enum TextStyle {
 		Bold,

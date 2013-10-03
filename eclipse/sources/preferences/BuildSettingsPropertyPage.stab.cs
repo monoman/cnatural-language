@@ -22,7 +22,7 @@ using org.eclipse.swt.layout;
 using org.eclipse.swt.widgets;
 using org.eclipse.ui.dialogs;
 
-namespace stab.tools.eclipse.preferences {
+namespace cnatural.eclipse.preferences {
 
 	//
 	// The project property page to customize the build.

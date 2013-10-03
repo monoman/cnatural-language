@@ -16,9 +16,9 @@
  */
 using java.lang;
 using java.util;
-using stab.tools.helpers;
+using cnatural.helpers;
 
-namespace stab.tools.parser {
+namespace cnatural.parser {
     
     public enum ParseErrorId {
         InternalError,

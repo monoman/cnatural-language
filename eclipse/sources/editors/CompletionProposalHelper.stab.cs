@@ -21,9 +21,9 @@ using org.eclipse.jface.text.contentassist;
 using org.eclipse.swt.graphics;
 using stab.query;
 using stab.reflection;
-using stab.tools.compiler;
+using cnatural.compiler;
 
-namespace stab.tools.eclipse.editors {
+namespace cnatural.eclipse.editors {
 
 	public class CompletionProposalHelper {
 		private static CompletionProposalComparator completionProposalComparator = new CompletionProposalComparator();

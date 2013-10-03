@@ -17,9 +17,9 @@
 using java.lang;
 using stab.query;
 using stab.reflection;
-using stab.tools.helpers;
+using cnatural.helpers;
 
-namespace stab.tools.eclipse.helpers {
+namespace cnatural.eclipse.helpers {
 
 	public class JvmTypeSystemHelper {
 	

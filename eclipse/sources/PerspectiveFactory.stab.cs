@@ -18,7 +18,7 @@ using org.eclipse.debug.ui;
 using org.eclipse.ui;
 using org.eclipse.ui.console;
 
-namespace stab.tools.eclipse {
+namespace cnatural.eclipse {
 
 	//
 	// Layout the Stab perspective

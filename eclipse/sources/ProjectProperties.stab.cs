@@ -20,9 +20,9 @@ using java.util;
 using org.eclipse.core.resources;
 using org.w3c.dom;
 using stab.query;
-using stab.tools.helpers;
+using cnatural.helpers;
 
-namespace stab.tools.eclipse {
+namespace cnatural.eclipse {
 
 	public class ProjectProperties {
 		private final static String EMPTY_DOC = @"<?xml version=""1.0"" encoding=""UTF-8""?><stabProperties><libraries/></stabProperties>";

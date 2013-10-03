@@ -20,9 +20,9 @@ using org.eclipse.core.runtime;
 using org.eclipse.jface.action;
 using org.eclipse.jface.viewers;
 using org.eclipse.ui;
-using stab.tools.eclipse.helpers;
+using cnatural.eclipse.helpers;
 
-namespace stab.tools.eclipse {
+namespace cnatural.eclipse {
 
 	//
 	// The nature for the Stab language

@@ -17,7 +17,7 @@
 using java.lang;
 using java.util;
 using org.objectweb.asm;
-using stab.tools.helpers;
+using cnatural.helpers;
 
 namespace stab.reflection {
 

@@ -17,9 +17,9 @@
 using java.io;
 using java.lang;
 using java.util;
-using stab.tools.helpers;
+using cnatural.helpers;
 
-namespace stab.tools.build {
+namespace cnatural.build {
 
 	public class Application {
 		public static void main(string[] args) {
@@ -94,6 +94,10 @@ namespace stab.tools.build {
 			return buildBuild();
 		}
 		
+		private cnatural.compiler.Application Compiler {
+			get { return new cnatural.compiler.Application(); }
+		}
+		
 		private int buildAnnotatedLibrary() {
 			System.out.println();
 			System.out.println("Annotated Library");
@@ -104,7 +108,7 @@ namespace stab.tools.build {
 			args.add("-out:annotated/stabal.jar");
 			addSourceFiles(new File("annotated/sources"), args);
 			
-			return new stab.tools.compiler.Application().run(args.toArray(new string[args.size()]));
+			return Compiler.runWith(args);
 		}
 
 		private int buildCompiler() {
@@ -120,7 +124,7 @@ namespace stab.tools.build {
 			args.add("-out:compiler/stabc.jar");
 			addSourceFiles(new File("compiler/sources"), args);
 			
-			return new stab.tools.compiler.Application().run(args.toArray(new string[args.size()]));
+			return Compiler.runWith(args);
 		}
 
 		private int buildRuntimeLibrary() {
@@ -134,7 +138,7 @@ namespace stab.tools.build {
 			args.add("-out:runtime/stabrt.jar");
 			addSourceFiles(new File("runtime/sources"), args);
 			
-			return new stab.tools.compiler.Application().run(args.toArray(new string[args.size()]));
+			return Compiler.runWith(args);
 		}
 
 		private int buildTests() {
@@ -148,7 +152,7 @@ namespace stab.tools.build {
 			args.add("-out:tests/tests.jar");
 			addSourceFiles(new File("tests/sources"), args);
 			
-			int code = new stab.tools.compiler.Application().run(args.toArray(new string[args.size()]));
+			int code = Compiler.runWith(args);
 			if (code == 0) {
 				System.out.println();
 				System.out.println("Tests Launcher");
@@ -159,7 +163,7 @@ namespace stab.tools.build {
 				args.add("-out:bin/tests.jar");
 				addSourceFiles(new File("tools/tests"), args);
 				
-				code = new stab.tools.compiler.Application().run(args.toArray(new string[args.size()]));
+				code = Compiler.runWith(args);
 			}
 			return code;
 		}
@@ -213,7 +217,7 @@ namespace stab.tools.build {
 			args.add(sb.toString());
 			addSourceFiles(new File("eclipse/sources"), args);
 			
-			int result = new stab.tools.compiler.Application().run(args.toArray(new string[args.size()]));
+			int result = Compiler.runWith(args);
 			tmpManifest.delete();
 			return result;
 		}
@@ -230,7 +234,7 @@ namespace stab.tools.build {
 			args.add("-out:bin/build.jar");
 			addSourceFiles(new File("tools/build"), args);
 			
-			return new stab.tools.compiler.Application().run(args.toArray(new string[args.size()]));
+			return Compiler.runWith(args);
 		}
 		
 		private int runTests()
@@ -239,7 +243,7 @@ namespace stab.tools.build {
 			System.out.println("Run Tests");
 			System.out.println("--------------------------");
 			
-			return new stab.tools.tests.Application().run();
+			return new cnatural.tests.Application().run();
 		}
 
 		private void addSourceFiles(File dir, List<string> args) {

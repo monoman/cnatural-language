@@ -16,7 +16,7 @@
  */
 using java.lang;
 
-namespace stab.tools.helpers {
+namespace cnatural.helpers {
 
 	public static class Helper {
 		public static bool equals(Object obj1, Object obj2) {

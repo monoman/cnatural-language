@@ -15,9 +15,9 @@
    limitations under the License.
  */
 using java.lang;
-using stab.tools.helpers;
+using cnatural.helpers;
 
-namespace stab.tools.parser {
+namespace cnatural.parser {
 
     public class PreprocessorScanner : ScannerBase {
         private bool lineStart;

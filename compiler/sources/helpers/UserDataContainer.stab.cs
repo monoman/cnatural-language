@@ -16,7 +16,7 @@
  */
 using java.lang;
 
-namespace stab.tools.helpers {
+namespace cnatural.helpers {
 
 	public abstract class UserDataContainer {
 		private Object userData;

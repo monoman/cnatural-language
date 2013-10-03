@@ -15,9 +15,9 @@
    limitations under the License.
  */
 using stab.reflection;
-using stab.tools.syntaxtree;
+using cnatural.syntaxtree;
 
-namespace stab.tools.compiler {
+namespace cnatural.compiler {
 
     public class StatementInfo {
     
