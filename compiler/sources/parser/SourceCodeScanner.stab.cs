@@ -833,6 +833,7 @@ namespace cnatural.parser {
 
             default:
                 if (!ParserHelper.isIdentifierStartChar(this.Next)) {
+					System.out.println("Invalid char " + (char)this.Next + " ("+this.Next+")");
                     throw error(ParseErrorId.InvalidSourceCodeChar);
                 }
                 scanIdentifierPart();

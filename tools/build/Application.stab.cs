@@ -17,11 +17,15 @@
 using java.io;
 using java.lang;
 using java.util;
+using cnatural.compiler;
 using cnatural.helpers;
 
 namespace cnatural.build {
 
 	public class Application {
+	
+		private static C♮ language = new C♮();
+
 		public static void main(string[] args) {
 			System.exit(new Application().run(args));
 		}

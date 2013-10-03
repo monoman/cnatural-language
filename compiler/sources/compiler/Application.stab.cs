@@ -27,9 +27,13 @@ namespace cnatural.compiler {
     public class Application {
 	
 		private static string MISSING_FILE = "Error: File not found: ";
+		private static C♮ language = new C♮();
+		private static string version = "1.1-RC3";
+		
+		public string Title { get { return "Cnatural Compiler "+ version + " - Language Version: " + language.Version; } }
 		
         public static void main(String[] args) {
-            System.out.println("Cnatural Compiler 1.1 RC2");
+            System.out.println();
             System.out.println();
 			var result = new Application().run(args);
 			System.out.println("Done("+result+")");

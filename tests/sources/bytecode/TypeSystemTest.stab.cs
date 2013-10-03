@@ -16,6 +16,7 @@
  */
 using java.lang;
 using java.io;
+using java.nio.charset;
 using java.util;
 using org.junit;
 using stab.query;
@@ -121,7 +122,7 @@ namespace stab.reflection.test {
 			var expectedPath = PathHelper.combine(userDir, "Tests/resources/TypeSystemTest/expected");
 			var expectedFile = new File(PathHelper.combine(expectedPath, test + ".txt"));
 			Assert.assertTrue("Expected file not found: " + expectedFile, expectedFile.exists());
-			var fileReader = new FileReader(expectedFile);
+			var fileReader = new InputStreamReader(new FileInputStream((expectedFile)), Charset.forName("UTF-8"));
 			var reference = readToEnd(fileReader);
 			
 			var genReader = new BufferedReader(new StringReader(result));

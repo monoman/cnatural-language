@@ -16,6 +16,7 @@
  */
 using java.lang;
 using java.io;
+using java.nio.charset;
 using java.util;
 using org.junit;
 using cnatural.helpers;
@@ -281,7 +282,7 @@ namespace cnatural.parser.test {
 		private void doTest(String test) {
 			var userDir = System.getProperty("user.dir");
 			var sourcePath = PathHelper.combine(PathHelper.combine(userDir, "tests/resources/ParseCompilationUnitTest/sources"), test + ".stab.cs");
-			var fileReader = new FileReader(sourcePath);
+			var fileReader = new InputStreamReader(new FileInputStream((sourcePath)), Charset.forName("UTF-8"));
 			var code = readToEnd(fileReader);
 			var text = code.toCharArray();
 			var parser = new Parser();
@@ -301,7 +302,7 @@ namespace cnatural.parser.test {
 			var expectedPath = PathHelper.combine(userDir, "tests/resources/ParseCompilationUnitTest/expected");
 			var expectedFile = new File(PathHelper.combine(expectedPath, test + ".txt"));
 			Assert.assertTrue("Expected file not found: " + expectedFile, expectedFile.exists());
-			fileReader = new FileReader(expectedFile);
+			fileReader = new InputStreamReader(new FileInputStream((expectedFile)), Charset.forName("UTF-8"));
 			var reference = readToEnd(fileReader);
 			
 			var genReader = new BufferedReader(new StringReader(result));

@@ -17,6 +17,7 @@
 using java.io;
 using java.lang;
 using java.util;
+using java.nio.charset;
 using org.junit;
 using stab.query;
 using cnatural.helpers;
@@ -240,7 +241,7 @@ namespace cnatural.compiler.test {
 			var referenceFile = new File(referencePath);
 			String reference = null;
 			if (referenceFile.exists()) {
-				var fileReader = new FileReader(referencePath);
+				var fileReader = new InputStreamReader(new FileInputStream((referencePath)), Charset.forName("UTF-8"));
 				reference = readToEnd(fileReader);
 			} else {
 				Assert.fail("No reference for '" + test + "'");

@@ -16,6 +16,7 @@
  */
 using java.lang;
 using java.io;
+using java.nio.charset;
 using java.util;
 using org.junit;
 using cnatural.helpers;
@@ -119,7 +120,7 @@ namespace cnatural.syntaxtree.test {
 		private void doTest(String test) {
 			var userDir = System.getProperty("user.dir");
 			var sourcePath = PathHelper.combine(PathHelper.combine(userDir, "tests/resources/QueryTranslatorTest/sources"), test + ".stab.cs");
-			var fileReader = new FileReader(sourcePath);
+			var fileReader = new InputStreamReader(new FileInputStream((sourcePath)), Charset.forName("UTF-8"));
 			var code = readToEnd(fileReader);
 			var text = code.toCharArray();
 			translator = new QueryTranslator(text);
@@ -140,7 +141,7 @@ namespace cnatural.syntaxtree.test {
 			var expectedPath = PathHelper.combine(userDir, "tests/resources/QueryTranslatorTest/expected");
 			var expectedFile = new File(PathHelper.combine(expectedPath, test + ".stab.cs"));
 			Assert.assertTrue("Expected file not found: " + expectedFile, expectedFile.exists());
-			fileReader = new FileReader(expectedFile);
+			fileReader = new InputStreamReader(new FileInputStream((expectedFile)), Charset.forName("UTF-8"));
 			var reference = readToEnd(fileReader);
 			
 			var genReader = new BufferedReader(new StringReader(result));

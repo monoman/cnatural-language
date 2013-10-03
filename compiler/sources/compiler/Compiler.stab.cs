@@ -17,6 +17,7 @@
 using java.io;
 using java.lang;
 using java.lang.annotation;
+using java.nio.charset;
 using java.util;
 using stab.query;
 using stab.reflection;
@@ -25,6 +26,10 @@ using cnatural.parser;
 using cnatural.syntaxtree;
 
 namespace cnatural.compiler {
+
+	public class C♮ {
+		public string Version = "1.1";
+	}
 
     public class CompilerParameters {
         public CompilerParameters() {
@@ -139,16 +144,17 @@ namespace cnatural.compiler {
             this.reachabilityChecker = new ReachabilityChecker(context);
             this.assignmentChecker = new AssignmentChecker(context);
             this.bytecodeGenerator = new BytecodeGenerator(context);
-            
+            bool tragicError = false;
+			
             var buffer = new char[4096];
             var sb = new StringBuilder();
             var parser = new Parser();
             
             foreach (var file in files) {
                 sb.setLength(0);
-                FileReader reader = null;
+                InputStreamReader reader = null;
                 try {
-                    reader = new FileReader(file);
+                    reader = new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-8"));
                     int read;
                     while ((read = reader.read(buffer)) != -1) {
                         sb.append(buffer, 0, read);
@@ -174,6 +180,10 @@ namespace cnatural.compiler {
                         context.CompilationUnits.add(compilationUnit);
                     }
                 } catch (CodeErrorException) {
+				} catch (Exception e) {
+					e.printStackTrace();
+					tragicError = true;
+					break;
                 } finally {
                     if (reader != null) {
                         try {
@@ -183,14 +193,14 @@ namespace cnatural.compiler {
                     }
                 }
             }
-            
-            if (!context.HasErrors) {
-				if (parameters.ProgressTracker != null) {
-					parameters.ProgressTracker.compilationStageFinished(CompilationStage.Parsing);
+            if (!tragicError) {
+				if (!context.HasErrors) {
+					if (parameters.ProgressTracker != null) {
+						parameters.ProgressTracker.compilationStageFinished(CompilationStage.Parsing);
+					}
+					doCompile();
 				}
-                doCompile();
-            }
-			
+			}
             this.context = null;
             this.statementValidator = null;
             this.expressionValidator = null;

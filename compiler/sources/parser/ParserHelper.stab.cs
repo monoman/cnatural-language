@@ -258,11 +258,11 @@ namespace cnatural.parser {
         }
         
         public static bool isIdentifierStartChar(int c) {
-            return Character.isJavaIdentifierStart(c);
+            return Character.isJavaIdentifierStart(c) || ((char)c) == '♮';
         }
 
         public static bool isIdentifierPartChar(int c) {
-            return Character.isJavaIdentifierPart(c) || (c == 9876);
+            return Character.isJavaIdentifierPart(c) || ((char)c) == '♮';
         }
 
         public static void unescapeIdentifier(StringBuilder sb, char[] text, int offset, int length) {
