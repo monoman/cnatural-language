@@ -3,9 +3,9 @@ The C♮ Programming Language
 
 A multi-paradigm programming language designed for the Java and .NET Virtual Machines, starting from the C# syntax. 
 
-Pronounced "see-natural".
+Pronounced *"see-natural"*.
 
-A fork from the original stab-language project at https://code.google.com/p/stab-language/, contains all the svn repo except the embedded eclipse (on eclipse/eclipse).
+A fork from the original stab-language project at https://code.google.com/p/stab-language/, contains all the svn repo except the embedded eclipse plugin (on eclipse/eclipse).
 
 To build
 --------
